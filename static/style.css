@@ -1,0 +1,62 @@
+@media (min-width: 642px) {
+    .container {
+        max-width: 642px;
+    }
+}
+
+[class*="col-"] {
+    padding: 0 !important;
+}
+
+.p1 {
+    padding: 1px !important;
+}
+
+.p3 {
+    padding: 3px !important;
+}
+
+.primary {
+    color: #337ab7;
+}
+
+.success {
+    color: #5cb85c;
+}
+
+.info {
+    color: #5bc0de;
+}
+
+.warning {
+    color: #f0ad4e;
+}
+
+.danger {
+    color: #d9534f;
+}
+
+.bg_warning {
+    background-color: #f0ad4e;
+}
+
+.bg_danger {
+    background-color: #d9534f;
+}
+
+.bg_gray {
+    background-color: #eeeeee;
+}
+
+.alert {
+    width: 350px;
+    color: #333333;
+}
+
+.break-word {
+    word-wrap: break-word;
+}
+
+.text-center {
+    text-align: center;
+}
