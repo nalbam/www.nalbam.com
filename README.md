@@ -1,11 +1,5 @@
 ## nalbam
 
-### smartforge.kr
-* http://smartforge.kr
-
-### spi.kr / spic.me
-* http://spic.kr
-
 ### nalbam.Blog
 * http://blog.nalbam.com/
 
