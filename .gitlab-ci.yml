@@ -11,9 +11,12 @@ before_script:
 
 deploy:
   stage: deploy
-  image: nalbam/builder:python
+  image: python:latest
   script:
+    - pip install awscli
     - aws s3 sync src/main/webapp/ s3://${BUCKET}/ --quiet --acl public-read
+  only:
+    - master
 
 after_script:
   - ls -alh src/main/webapp
