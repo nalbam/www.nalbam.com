@@ -13,7 +13,7 @@ deploy:
   stage: deploy
   image: nalbam/builder:python
   script:
-    - aws s3 sync target/ s3://${BUCKET}/ --quiet --acl public-read
+    - aws s3 sync src/main/webapp/ s3://${BUCKET}/ --quiet --acl public-read
 
 after_script:
   - ls -alh src/main/webapp
