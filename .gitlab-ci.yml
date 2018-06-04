@@ -1,0 +1,17 @@
+# gitlab-ci
+
+stages:
+  - deploy
+
+before_script:
+  - curl -s toast.sh/install-v3 | bash
+
+release:
+  stage: deploy
+  image: python:latest
+  script:
+    - pip install awscli
+    - ~/toaster/toast.sh deploy bucket www.nalbam.com
+
+after_script:
+  - ls -alh target
