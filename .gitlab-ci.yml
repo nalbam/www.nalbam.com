@@ -1,17 +1,19 @@
 # gitlab-ci
 
+variables:
+  BUCKET: www.nalbam.com
+
 stages:
   - deploy
 
 before_script:
-  - curl -s toast.sh/install-v3 | bash
+  - ls -alh
 
-release:
+deploy:
   stage: deploy
-  image: python:latest
+  image: nalbam/builder:python
   script:
-    - pip install awscli
-    - ~/toaster/toast.sh deploy bucket www.nalbam.com
+    - aws s3 sync target/ s3://${BUCKET}/ --quiet --acl public-read
 
 after_script:
-  - ls -alh target
+  - ls -alh src/main/webapp
