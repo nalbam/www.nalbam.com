@@ -1,0 +1,12 @@
+#
+# CircleCI 2.0
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: nalbam/builder:python
+    steps:
+      - checkout
+      - run: echo ${CIRCLE_PROJECT_REPONAME}
+      - run: aws s3 sync src/main/webapp/ s3://${CIRCLE_PROJECT_REPONAME}/ --acl public-read
