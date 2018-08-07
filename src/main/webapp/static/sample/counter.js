@@ -1,4 +1,4 @@
-let API_URL = location.protocol + '//' + location.host.replace(/sample-([a-z]+)./,'sample-node.');
+let API_URL = location.protocol + '//' + location.host.replace(/sample-([a-z]+)/,'sample-node');
 
 function _counter(name, type) {
     let url = API_URL + `/counter/${name}`;
