@@ -2,7 +2,7 @@
 #
 version: 2
 jobs:
-  publish:
+  build:
     docker:
       - image: opspresso/builder
     steps:
