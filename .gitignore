@@ -22,3 +22,7 @@ $RECYCLE.BIN/
 .settings/
 .metadata/
 .project
+
+# Maven
+target/
+build/

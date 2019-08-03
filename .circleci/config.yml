@@ -1,12 +1,13 @@
-#
 # CircleCI 2.0
 #
 version: 2
 jobs:
-  build:
+  publish:
     docker:
       - image: opspresso/builder
     steps:
       - checkout
-      - run: echo ${CIRCLE_PROJECT_REPONAME}
-      - run: aws s3 sync src/main/webapp/ s3://${CIRCLE_PROJECT_REPONAME}/ --acl public-read
+      - run:
+          name: Publish
+          command: |
+            bash ./publish.sh
