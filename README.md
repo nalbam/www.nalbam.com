@@ -1,2 +1,3 @@
 # nalbam.com
-* http://nalbam.com
+
+* <http://nalbam.com>
