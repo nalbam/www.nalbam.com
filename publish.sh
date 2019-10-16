@@ -7,7 +7,7 @@ RUN_PATH=$(dirname $0)
 BUCKET="${CIRCLE_PROJECT_REPONAME}"
 
 # aws s3 sync
-aws s3 sync ${RUN_PATH}/src/main/webapp/ s3://${BUCKET}/ --acl public-read
+aws s3 sync ${RUN_PATH}/web/ s3://${BUCKET}/ --acl public-read
 
 # aws cf reset
 CFID=$(aws cloudfront list-distributions --query "DistributionList.Items[].{Id:Id,Origin:Origins.Items[0].DomainName}[?contains(Origin,'${BUCKET}')] | [0]" | grep 'Id' | cut -d'"' -f4)
