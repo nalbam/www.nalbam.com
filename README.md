@@ -1,3 +1,3 @@
 # nalbam.com
 
-* <https://www.nalbam.com>
+* <https://nalbam.com>
