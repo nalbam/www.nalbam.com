@@ -1,9 +1,3 @@
-dr-sola-oa-22-clone
-dr-sola-oa-22-clone-13-16
-dr-sola-oa-22-clone-14
-dr-sola-oa-22-clone-14-17
-dr-sola-oa-22-clone-146
-dr-sola-oa-22-clone-15
-dr-sola-oa-25-clone
-dr-sola-oa-25-clone-14-17
-dr-sola-oa-25-clone-15-18
+dr-sola-oa-22-clone-14-17    23.414
+dr-sola-oa-25-clone-14-17    23.884
+dr-sola-oa-25-clone-15-18    22.771
