@@ -1,4 +1,0 @@
-dr-sola-h2h-01              40.594
-dr-sola-h2h-01-clone        39.378
-dr-sola-h2h-01-clone-15-2   38.182
-dr-sola-h2h-01-clone-clone  41.472

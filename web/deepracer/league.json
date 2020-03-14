@@ -1,44 +1,53 @@
-{
-  "tt": [
-    {
-      "name": "dr-dola-tt-01-16-20",
-      "best": "01:01.450"
-    }
-  ],
-  "oa": [
-    {
-      "name": "dr-sola-oa-22-clone-14",
-      "best": "01:29.046"
-    },
-    {
-      "name": "dr-sola-oa-22-clone-14-17",
-      "best": ""
-    },
-    {
-      "name": "dr-sola-oa-25-clone-14-17",
-      "best": ""
-    },
-    {
-      "name": "dr-sola-oa-25-clone-15-18",
-      "best": ""
-    }
-  ],
-  "h2h": [
-    {
-      "name": "dr-sola-h2h-01",
-      "best": "02:06.602"
-    },
-    {
-      "name": "dr-sola-h2h-01-clone",
-      "best": ""
-    },
-    {
-      "name": "dr-sola-h2h-01-clone-15-2",
-      "best": ""
-    },
-    {
-      "name": "dr-sola-h2h-01-clone-clone",
-      "best": ""
-    }
-  ]
-}
+[
+  {
+    "season": "tt",
+    "models": [
+      {
+        "name": "dr-dola-tt-01-16-20",
+        "best": "01:01.450"
+      }
+    ]
+  },
+  {
+    "season": "oa",
+    "models": [
+      {
+        "name": "dr-sola-oa-22-clone-14",
+        "best": "01:29.046"
+      },
+      {
+        "name": "dr-sola-oa-22-clone-14-17",
+        "best": ""
+      },
+      {
+        "name": "dr-sola-oa-25-clone-14-17",
+        "best": ""
+      },
+      {
+        "name": "dr-sola-oa-25-clone-15-18",
+        "best": ""
+      }
+    ]
+  },
+  {
+    "season": "h2h",
+    "models": [
+      {
+        "name": "dr-sola-h2h-01",
+        "best": "02:06.602"
+      },
+      {
+        "name": "dr-sola-h2h-01-clone",
+        "best": ""
+      },
+      {
+        "name": "dr-sola-h2h-01-clone-15-2",
+        "best": ""
+      },
+      {
+        "name": "dr-sola-h2h-01-clone-clone",
+        "best": ""
+      }
+    ]
+  }
+]
