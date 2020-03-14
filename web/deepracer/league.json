@@ -1,6 +1,7 @@
 [
   {
-    "season": "tt",
+    "league": "tt",
+    "season": "2020-03-tt",
     "models": [
       {
         "name": "dr-dola-tt-01-16-20",
@@ -9,7 +10,8 @@
     ]
   },
   {
-    "season": "oa",
+    "league": "oa",
+    "season": "2020-03-oa",
     "models": [
       {
         "name": "dr-sola-oa-22-clone-14",
@@ -30,7 +32,8 @@
     ]
   },
   {
-    "season": "h2h",
+    "league": "h2h",
+    "season": "2020-03-h2h",
     "models": [
       {
         "name": "dr-sola-h2h-01",
