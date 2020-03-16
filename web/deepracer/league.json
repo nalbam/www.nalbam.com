@@ -6,10 +6,10 @@
       "best": "01:01.450"
     }, {
       "name": "dr-dola-tt-01-16-22",
-      "best": "01:06.438"
+      "best": "01:01.256"
     }, {
       "name": "dr-dola-tt-01-clone-16-22-2",
-      "best": ""
+      "best": "01:07.529"
     }]
   },
   {
@@ -53,12 +53,8 @@
         "best": "02:19.163"
       },
       {
-        "name": "dr-sola-h2h-01-clone-15-2",
-        "best": "02:41.960"
-      },
-      {
-        "name": "dr-sola-h2h-01-clone-clone",
-        "best": "03:40.241"
+        "name": "h2h-sola-02-clone2",
+        "best": "02:18.904"
       }
     ]
   }
