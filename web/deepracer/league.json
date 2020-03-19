@@ -42,11 +42,14 @@
       "name": "dr-sola-h2h-01-clone",
       "best": "02:02.113"
     }, {
-      "name": "h2h-sola-02-clone2",
-      "best": "02:18.904"
+      "name": "h2h-sola-03-clone",
+      "best": ""
     }, {
-      "name": "dr-sola-oa-22-clone-14",
-      "best": "01:29.046"
+      "name": "dr-sola-oa-22-clone",
+      "best": ""
+    }, {
+      "name": "dr-sola-oa-25-clone",
+      "best": ""
     }]
   }
 ]
