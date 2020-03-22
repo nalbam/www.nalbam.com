@@ -20,6 +20,9 @@
     "models": [{
       "name": "dr-sola-oa-22-clone-14",
       "best": "01:29.046"
+    }, {
+      "name": "dr-sola-oa-25-clone",
+      "best": ""
     }]
   },
   {
@@ -36,11 +39,11 @@
       "name": "h2h-sola-03-clone",
       "best": ""
     }, {
-      "name": "dr-sola-oa-22-clone",
+      "name": "dr-sola-oa-22-clone-14",
       "best": ""
     }, {
       "name": "dr-sola-oa-25-clone",
-      "best": ""
+      "best": "02:00.136"
     }]
   }
 ]
