@@ -18,12 +18,6 @@
     "league": "oa",
     "season": "2020-03-oa",
     "models": [{
-      "name": "dr-sola-oa-22-clone-14",
-      "best": "01:25.526"
-    }, {
-      "name": "dr-sola-oa-25-clone",
-      "best": ""
-    }, {
       "name": "oa-sola-03-c-c",
       "best": ""
     }, {
@@ -36,12 +30,6 @@
     "league": "h2h",
     "season": "2020-03-h2h",
     "models": [{
-      "name": "dr-sola-h2h-01",
-      "best": "02:06.602"
-    }, {
-      "name": "dr-sola-h2h-01-clone",
-      "best": "02:02.113"
-    }, {
       "name": "dr-sola-oa-22-clone-14",
       "best": ""
     }, {
