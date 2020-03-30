@@ -23,6 +23,12 @@
     }, {
       "name": "oa-sola-03-c-c-c-14-17",
       "best": "01:24.050"
+    }, {
+      "name": "dr-sola-oa-22-clone-14",
+      "best": ""
+    }, {
+      "name": "dr-sola-oa-25-clone",
+      "best": ""
     }]
   },
   {
@@ -31,6 +37,9 @@
     "season": "2020-03-h2h",
     "models": [{
       "name": "oa-sola-03-c-c",
+      "best": ""
+    }, {
+      "name": "oa-sola-03-c-c-c-14-17",
       "best": ""
     }, {
       "name": "dr-sola-oa-22-clone-14",
