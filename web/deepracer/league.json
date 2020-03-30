@@ -22,7 +22,7 @@
       "best": ""
     }, {
       "name": "oa-sola-03-c-c-c-14-17",
-      "best": ""
+      "best": "01:24.050"
     }]
   },
   {
@@ -30,6 +30,9 @@
     "league": "h2h",
     "season": "2020-03-h2h",
     "models": [{
+      "name": "oa-sola-03-c-c",
+      "best": ""
+    }, {
       "name": "dr-sola-oa-22-clone-14",
       "best": ""
     }, {
