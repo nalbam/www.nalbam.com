@@ -21,9 +21,6 @@
     "league": "oa",
     "season": "2020-03-oa",
     "models": [{
-      "name": "oa-sola-04",
-      "best": ""
-    }, {
       "name": "oa-sola-04-clone",
       "best": ""
     }, {
