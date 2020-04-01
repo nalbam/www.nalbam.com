@@ -1,57 +1,33 @@
 [{
     "enable": "true",
     "league": "tt",
-    "season": "2020-03-tt",
+    "season": "2020-04-tt",
     "models": [{
       "name": "dr-dola-tt-01-16-20",
       "best": "01:01.450"
     }, {
       "name": "dr-dola-tt-01-16-22",
       "best": "00:59.828"
-    }, {
-      "name": "dr-dola-tt-01-clone-16-22-2",
-      "best": "01:06.480"
-    }, {
-      "name": "dr-dola-tt-01-clone-16-22-3",
-      "best": ""
     }]
   },
   {
-    "enable": "false",
+    "enable": "true",
     "league": "oa",
-    "season": "2020-03-oa",
+    "season": "2020-04-oa",
     "models": [{
       "name": "oa-sola-04-clone",
       "best": ""
     }, {
       "name": "oa-sola-04-c-14-17",
-      "best": ""
-    }, {
-      "name": "oa-sola-03-c-c-14-17",
-      "best": ""
-    }, {
-      "name": "oa-sola-03-c-c-c-14-17",
       "best": ""
     }]
   },
   {
-    "enable": "false",
+    "enable": "true",
     "league": "h2h",
-    "season": "2020-03-h2h",
+    "season": "2020-04-h2h",
     "models": [{
-      "name": "oa-sola-04",
-      "best": ""
-    }, {
-      "name": "oa-sola-04-clone",
-      "best": ""
-    }, {
-      "name": "oa-sola-04-c-14-17",
-      "best": ""
-    }, {
-      "name": "oa-sola-03-c-c-14-17",
-      "best": ""
-    }, {
-      "name": "oa-sola-03-c-c-c-14-17",
+      "name": "h2h-sola-01",
       "best": ""
     }]
   }
