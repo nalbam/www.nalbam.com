@@ -3,7 +3,13 @@
     "league": "tt",
     "season": "2020-04-tt",
     "models": [{
-      "name": "tt-bd-03-c-16-22",
+      "name": "tt-bd-03-c-16-23-s",
+      "best": ""
+    }, {
+      "name": "tt-bd-03-c-16-23",
+      "best": ""
+    }, {
+      "name": "tt-bd-03-c-16-25",
       "best": ""
     }]
   },
