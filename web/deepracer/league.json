@@ -8,6 +8,9 @@
     }, {
       "name": "tt-bd-03",
       "best": ""
+    }, {
+      "name": "tt-bd-02",
+      "best": ""
     }]
   },
   {
@@ -15,7 +18,7 @@
     "league": "oa",
     "season": "2020-04-oa",
     "models": [{
-      "name": "oa-bd-02",
+      "name": "oa-bd-01-c",
       "best": ""
     }]
   },
