@@ -3,10 +3,10 @@
     "league": "tt",
     "season": "2020-04-tt",
     "models": [{
-      "name": "dr-dola-tt-01-16-20",
+      "name": "tt-bd-02-cs-c",
       "best": ""
     }, {
-      "name": "dr-dola-tt-01-16-22",
+      "name": "tt-bd-03",
       "best": ""
     }]
   },
@@ -15,10 +15,7 @@
     "league": "oa",
     "season": "2020-04-oa",
     "models": [{
-      "name": "oa-sola-04-clone",
-      "best": ""
-    }, {
-      "name": "oa-sola-04-c-14-17",
+      "name": "oa-bd-02",
       "best": ""
     }]
   },
@@ -27,7 +24,7 @@
     "league": "h2h",
     "season": "2020-04-h2h",
     "models": [{
-      "name": "h2h-sola-01",
+      "name": "h2h-bd-01",
       "best": ""
     }]
   }
