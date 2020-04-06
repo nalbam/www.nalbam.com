@@ -23,6 +23,12 @@
     }, {
       "name": "oa-bd-03-c-14-17",
       "best": ""
+    }, {
+      "name": "oa-bd-03",
+      "best": ""
+    }, {
+      "name": "oa-bd-04",
+      "best": ""
     }]
   },
   {
@@ -31,6 +37,9 @@
     "season": "2020-04-h2h",
     "models": [{
       "name": "h2h-bd-01",
+      "best": ""
+    }, {
+      "name": "h2h-bd-01-c",
       "best": ""
     }]
   }
