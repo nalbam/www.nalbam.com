@@ -18,15 +18,6 @@
     "league": "oa",
     "season": "2020-04-oa",
     "models": [{
-      "name": "oa-bd-01-c",
-      "best": ""
-    }, {
-      "name": "oa-bd-03-c-14-17",
-      "best": ""
-    }, {
-      "name": "oa-bd-03",
-      "best": ""
-    }, {
       "name": "oa-bd-04",
       "best": ""
     }]
