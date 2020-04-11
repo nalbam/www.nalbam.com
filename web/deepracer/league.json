@@ -5,6 +5,9 @@
     "models": [{
       "name": "tt-bd-01-c-16-23-2",
       "best": ""
+    }, {
+      "name": "tt-bd-01-c-16-23-2-c-17-24",
+      "best": ""
     }]
   },
   {
@@ -12,7 +15,10 @@
     "league": "oa",
     "season": "2020-04-oa",
     "models": [{
-      "name": "oa-bd-01-cr-cr",
+      "name": "oa-bd-02",
+      "best": ""
+    }, {
+      "name": "oa-bd-01-c",
       "best": ""
     }]
   },
