@@ -1,7 +1,7 @@
 [{
     "enable": "true",
     "league": "tt",
-    "season": "2020-04-tt",
+    "season": "2020-05-tt",
     "models": [{
       "name": "tt-bd-01-c-16-23-2",
       "best": ""
@@ -13,7 +13,7 @@
   {
     "enable": "true",
     "league": "oa",
-    "season": "2020-04-oa",
+    "season": "2020-05-oa",
     "models": [{
       "name": "oa-bd-01-c-c-15-17-cp",
       "best": ""
@@ -25,7 +25,7 @@
   {
     "enable": "true",
     "league": "h2h",
-    "season": "2020-04-h2h",
+    "season": "2020-05-h2h",
     "models": [{
       "name": "h2h-bd-01",
       "best": ""
