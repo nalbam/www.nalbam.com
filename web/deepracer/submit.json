@@ -39,9 +39,6 @@
     "league": "summitLeague",
     "season": "summit-season-2020-05-tt",
     "models": [{
-      "name": "tt-ch-02",
-      "best": ""
-    }, {
       "name": "tt-ch-04-c-16-22",
       "best": ""
     }, {
@@ -55,10 +52,10 @@
     "league": "summitLeague",
     "season": "summit-season-2020-05-h2h",
     "models": [{
-      "name": "h2h-bd-01",
+      "name": "oa-ch-01",
       "best": ""
     }, {
-      "name": "h2h-bd-01-c",
+      "name": "oa-ch-02",
       "best": ""
     }]
   }
