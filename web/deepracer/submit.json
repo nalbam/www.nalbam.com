@@ -4,6 +4,9 @@
     "league": "league",
     "season": "virtual-season-2020-05-tt",
     "models": [{
+      "name": "tt-sp-01-c2-c-14-18",
+      "best": ""
+    }, {
       "name": "tt-sp-01-c-ts-c-14-19",
       "best": ""
     }]
