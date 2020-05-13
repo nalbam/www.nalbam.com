@@ -30,10 +30,10 @@
     "league": "league",
     "season": "virtual-season-2020-05-h2h",
     "models": [{
-      "name": "h2h-bd-01",
+      "name": "oa-bd-01-c-c-15-17-cp",
       "best": ""
     }, {
-      "name": "h2h-bd-01-c",
+      "name": "oa-sola-03-c-c-c-14-17",
       "best": ""
     }]
   }, {
@@ -58,10 +58,10 @@
     "league": "summitLeague",
     "season": "summit-season-2020-05-h2h",
     "models": [{
-      "name": "oa-ch-03",
+      "name": "oa-bd-01-c-c-15-17-cp",
       "best": ""
     }, {
-      "name": "oa-ch-04",
+      "name": "oa-sola-03-c-c-c-14-17",
       "best": ""
     }]
   }
