@@ -24,6 +24,10 @@
       {
         "name": "tt-sp-01-c2-c-14-18",
         "best": ""
+      },
+      {
+        "name": "tt-sp-01-c2-c-14-19",
+        "best": ""
       }
     ]
   },
@@ -35,6 +39,10 @@
     "models": [
       {
         "name": "tt-sp-01-c2-c-14-18",
+        "best": ""
+      },
+      {
+        "name": "tt-sp-01-c2-c-14-19",
         "best": ""
       }
     ]
@@ -48,6 +56,10 @@
       {
         "name": "tt-ch-04-c3-17-23",
         "best": ""
+      },
+      {
+        "name": "tt-ch-04-c-16-22",
+        "best": ""
       }
     ]
   },
@@ -57,6 +69,10 @@
     "league": "summitLeague",
     "season": "summit-season-2020-08-h2h",
     "models": [
+      {
+        "name": "tt-ch-04-c3-17-23",
+        "best": ""
+      },
       {
         "name": "tt-ch-04-c-16-22",
         "best": ""
