@@ -14,7 +14,7 @@
 
     .bg {
       /* The image used */
-      background-image: url("images/01.png");
+      background-image: url("images/workshop-01.png");
 
       /* Full height */
       height: 100%;
@@ -25,13 +25,23 @@
       background-size: cover;
     }
   </style>
+  <script type="text/javascript">
+    var step = 0;
+
+    function next() {
+      if (step === 0) {
+        document.getElementsByClassName("bg")[0].style.backgroundImage = "url(images/workshop-02.png)";
+      } else {
+        document.location.href = "https://d2k9g1efyej86q.cloudfront.net/";
+      }
+      step++;
+    }
+  </script>
 </head>
 
 <body>
 
-  <a href="https://d2k9g1efyej86q.cloudfront.net/">
-    <div class="bg"></div>
-  </a>
+  <div class="bg" onclick="javascript:next();"></div>
 
 </body>
 
