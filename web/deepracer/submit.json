@@ -1,9 +1,11 @@
-[{
+[
+  {
     "enable": "true",
     "target": "tt",
     "league": "league",
     "season": "virtual-season-2020-09-tt",
-    "models": [{
+    "models": [
+      {
         "name": "tt-sp-01-c2-c-14-18",
         "best": ""
       },
@@ -18,7 +20,8 @@
     "target": "oa",
     "league": "league",
     "season": "virtual-season-2020-09-oa",
-    "models": [{
+    "models": [
+      {
         "name": "tt-sp-01-c2-c-14-18",
         "best": ""
       },
@@ -33,7 +36,8 @@
     "target": "h2h",
     "league": "league",
     "season": "virtual-season-2020-09-h2h",
-    "models": [{
+    "models": [
+      {
         "name": "tt-sp-01-c2-c-14-18",
         "best": ""
       },
@@ -48,7 +52,12 @@
     "target": "s-tt",
     "league": "summitLeague",
     "season": "summit-season-2020-09-tt",
-    "models": [{
+    "models": [
+      {
+        "name": "tt-ch-04-c5-17-23",
+        "best": ""
+      },
+      {
         "name": "tt-ch-04-c3-17-23",
         "best": ""
       },
@@ -63,7 +72,12 @@
     "target": "s-h2h",
     "league": "summitLeague",
     "season": "summit-season-2020-09-h2h",
-    "models": [{
+    "models": [
+      {
+        "name": "tt-ch-04-c5-17-23",
+        "best": ""
+      },
+      {
         "name": "tt-ch-04-c3-17-23",
         "best": ""
       },
