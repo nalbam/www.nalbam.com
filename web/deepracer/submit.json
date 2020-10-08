@@ -3,7 +3,7 @@
     "enable": "true",
     "target": "tt",
     "league": "league",
-    "season": "virtual-season-2020-10-tt",
+    "season": "55234c74-2c48-466d-9e66-242ddf05e04d",
     "models": [
       {
         "name": "tt-ag-01-c-c2-c",
@@ -19,7 +19,7 @@
     "enable": "true",
     "target": "oa",
     "league": "league",
-    "season": "virtual-season-2020-10-oa",
+    "season": "d542d266-ce95-4875-8bdb-670421c9394f",
     "models": [
       {
         "name": "tt-ag-01-c-c2-c",
@@ -35,7 +35,7 @@
     "enable": "true",
     "target": "h2h",
     "league": "league",
-    "season": "virtual-season-2020-10-h2h",
+    "season": "831218e6-ff91-4b11-b734-a2509d9b37fe",
     "models": [
       {
         "name": "tt-ag-01-c-c2-c",
