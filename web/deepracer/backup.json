@@ -46,5 +46,45 @@
         "best": ""
       }
     ]
+  },
+  {
+    "enable": "true",
+    "target": "s-tt",
+    "league": "summitLeague",
+    "season": "summit-season-2020-10-tt",
+    "models": [
+      {
+        "name": "tt-ch-04-c5-17-23",
+        "best": ""
+      },
+      {
+        "name": "tt-ch-04-c3-17-23",
+        "best": ""
+      },
+      {
+        "name": "tt-ch-04-c-16-22",
+        "best": ""
+      }
+    ]
+  },
+  {
+    "enable": "true",
+    "target": "s-h2h",
+    "league": "summitLeague",
+    "season": "summit-season-2020-10-h2h",
+    "models": [
+      {
+        "name": "tt-ch-04-c5-17-23",
+        "best": ""
+      },
+      {
+        "name": "tt-ch-04-c3-17-23",
+        "best": ""
+      },
+      {
+        "name": "tt-ch-04-c-16-22",
+        "best": ""
+      }
+    ]
   }
 ]
