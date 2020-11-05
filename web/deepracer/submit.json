@@ -1,42 +1,26 @@
 [
   {
-    "enable": "true",
-    "arn": "arn:aws:deepracer::586942740717:leaderboard/",
-    "target": "s-tt",
+    "enable": "false",
+    "arn": "arn:aws:deepracer::111416061082:leaderboard/",
+    "target": "c-tt",
     "league": "competition",
-    "season": "0270778c-082d-4e52-9f78-52ffca089c2d",
+    "season": "ecbbf82c-583d-42c2-8738-6159fd4c2fa2",
     "models": [
       {
-        "name": "ct-re-01-c-c",
-        "best": ""
-      },
-      {
-        "name": "ct-re-01-c-c-c",
-        "best": ""
-      },
-      {
-        "name": "ct-re-01-c-c-c-c",
-        "best": ""
-      },
-      {
-        "name": "MG-F-01-00",
-        "best": ""
-      },
-      {
-        "name": "MG-F-02-01",
+        "name": "ct-h2h-tt-02-c",
         "best": ""
       }
     ]
   },
   {
     "enable": "true",
-    "arn": "arn:aws:deepracer::111416061082:leaderboard/",
-    "target": "c-tt",
+    "arn": "arn:aws:deepracer::586942740717:leaderboard/",
+    "target": "s-tt",
     "league": "competition",
-    "season": "0f5383cf-c133-49f2-9c23-7c3b6e0bdf37",
+    "season": "5789796-48f5-4592-8d80-6fff5e2472fe",
     "models": [
       {
-        "name": "MG-F-02-01",
+        "name": "ct-h2h-tt-02-c",
         "best": ""
       }
     ]
