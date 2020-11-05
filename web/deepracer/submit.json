@@ -9,6 +9,10 @@
       {
         "name": "ct-re-01-c-c-c-c",
         "best": ""
+      },
+      {
+        "name": "MG-F-01-00",
+        "best": ""
       }
     ]
   },
@@ -21,6 +25,10 @@
     "models": [
       {
         "name": "ct-re-01-c-c-c-c",
+        "best": ""
+      },
+      {
+        "name": "MG-F-01-00",
         "best": ""
       }
     ]
