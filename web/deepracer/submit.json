@@ -21,6 +21,10 @@
       {
         "name": "MG-F-01-00",
         "best": ""
+      },
+      {
+        "name": "MG-F-02-01",
+        "best": ""
       }
     ]
   },
@@ -32,7 +36,7 @@
     "season": "0f5383cf-c133-49f2-9c23-7c3b6e0bdf37",
     "models": [
       {
-        "name": "MG-F-01-00",
+        "name": "MG-F-02-01",
         "best": ""
       }
     ]
