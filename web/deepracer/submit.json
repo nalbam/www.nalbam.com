@@ -7,6 +7,14 @@
     "season": "0270778c-082d-4e52-9f78-52ffca089c2d",
     "models": [
       {
+        "name": "ct-re-01-c-c",
+        "best": ""
+      },
+      {
+        "name": "ct-re-01-c-c-c",
+        "best": ""
+      },
+      {
         "name": "ct-re-01-c-c-c-c",
         "best": ""
       },
@@ -23,10 +31,6 @@
     "league": "competition",
     "season": "0f5383cf-c133-49f2-9c23-7c3b6e0bdf37",
     "models": [
-      {
-        "name": "ct-re-01-c-c-c-c",
-        "best": ""
-      },
       {
         "name": "MG-F-01-00",
         "best": ""
