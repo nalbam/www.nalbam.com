@@ -9,10 +9,6 @@
       {
         "name": "ct-h2h-tt-03-c",
         "best": ""
-      },
-      {
-        "name": "ct-h2h-tt-02-c",
-        "best": ""
       }
     ]
   },
@@ -21,14 +17,10 @@
     "arn": "arn:aws:deepracer::586942740717:leaderboard/",
     "target": "s-tt",
     "league": "competition",
-    "season": "5789796-48f5-4592-8d80-6fff5e2472fe",
+    "season": "85789796-48f5-4592-8d80-6fff5e2472fe",
     "models": [
       {
         "name": "ct-h2h-tt-03-c",
-        "best": ""
-      },
-      {
-        "name": "ct-h2h-tt-02-c",
         "best": ""
       }
     ]
