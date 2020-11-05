@@ -7,6 +7,10 @@
     "season": "ecbbf82c-583d-42c2-8738-6159fd4c2fa2",
     "models": [
       {
+        "name": "ct-h2h-tt-03-c",
+        "best": ""
+      },
+      {
         "name": "ct-h2h-tt-02-c",
         "best": ""
       }
@@ -19,6 +23,10 @@
     "league": "competition",
     "season": "5789796-48f5-4592-8d80-6fff5e2472fe",
     "models": [
+      {
+        "name": "ct-h2h-tt-03-c",
+        "best": ""
+      },
       {
         "name": "ct-h2h-tt-02-c",
         "best": ""
