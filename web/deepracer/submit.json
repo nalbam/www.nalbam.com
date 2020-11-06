@@ -9,6 +9,10 @@
       {
         "name": "ct-h2h-tt-03-c",
         "best": ""
+      },
+      {
+        "name": "ct-h2h-tt-03-c-c",
+        "best": ""
       }
     ]
   },
@@ -21,6 +25,10 @@
     "models": [
       {
         "name": "ct-h2h-tt-03-c",
+        "best": ""
+      },
+      {
+        "name": "ct-h2h-tt-03-c-c",
         "best": ""
       }
     ]
