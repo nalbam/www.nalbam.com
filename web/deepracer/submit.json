@@ -1,34 +1,17 @@
 [
   {
     "enable": "true",
-    "arn": "arn:aws:deepracer::111416061082:leaderboard/",
+    "arn": "arn:aws:deepracer::286355543962:leaderboard/",
     "target": "c-tt",
     "league": "competition",
-    "season": "ecbbf82c-583d-42c2-8738-6159fd4c2fa2",
+    "season": "7752b900-7732-4025-a544-81cb1d5dc234",
     "models": [
       {
-        "name": "ct-h2h-tt-03-c",
+        "name": "ct-re-01-c-c2-c",
         "best": ""
       },
       {
-        "name": "ct-h2h-tt-03-c-c",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "arn": "arn:aws:deepracer::586942740717:leaderboard/",
-    "target": "s-tt",
-    "league": "competition",
-    "season": "85789796-48f5-4592-8d80-6fff5e2472fe",
-    "models": [
-      {
-        "name": "ct-h2h-tt-03-c",
-        "best": ""
-      },
-      {
-        "name": "ct-h2h-tt-03-c-c",
+        "name": "ct-re-01-c-c-c-c",
         "best": ""
       }
     ]
