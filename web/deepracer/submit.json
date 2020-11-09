@@ -19,7 +19,7 @@
   {
     "enable": "true",
     "arn": "arn:aws:deepracer::286355543962:leaderboard/",
-    "target": "c-tt",
+    "target": "s-tt",
     "league": "competition",
     "season": "08734693-6e82-493b-88b1-2648776e1744",
     "models": [
