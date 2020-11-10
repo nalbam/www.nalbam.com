@@ -1,42 +1,13 @@
 [
   {
     "enable": "true",
-    "arn": "arn:aws:deepracer::286355543962:leaderboard/",
     "target": "c-tt",
-    "league": "competition",
-    "season": "7752b900-7732-4025-a544-81cb1d5dc234",
+    "league": "league",
+    "arn": "arn:aws:deepracer:::leaderboard/",
+    "season": "af925074-4aa8-4862-9c3b-ec5d518564f2",
     "models": [
       {
-        "name": "ct-re-01-c-c2-c",
-        "best": ""
-      },
-      {
-        "name": "ct-re-01-c-c-c-c",
-        "best": ""
-      },
-      {
-        "name": "MG-F-02-01",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "arn": "arn:aws:deepracer::286355543962:leaderboard/",
-    "target": "s-tt",
-    "league": "competition",
-    "season": "08734693-6e82-493b-88b1-2648776e1744",
-    "models": [
-      {
-        "name": "ct-re-01-c-c2-c",
-        "best": ""
-      },
-      {
-        "name": "ct-re-01-c-c-c-c",
-        "best": ""
-      },
-      {
-        "name": "MG-F-02-01",
+        "name": "tt-wu-03",
         "best": ""
       }
     ]
