@@ -1,6 +1,6 @@
 [
   {
-    "enable": "true",
+    "enable": "false",
     "target": "c-tt",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
