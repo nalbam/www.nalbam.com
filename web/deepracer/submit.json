@@ -1,7 +1,7 @@
 [
   {
     "enable": "true",
-    "target": "c-tt",
+    "target": "v-tt",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
     "season": "4f83061c-7fc5-418c-a280-6abac8576659",
@@ -14,7 +14,7 @@
   },
   {
     "enable": "true",
-    "target": "c-oa",
+    "target": "v-oa",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
     "season": "12c54b0a-e0bf-40ed-aa91-d1ae1dff10ac",
@@ -27,7 +27,7 @@
   },
   {
     "enable": "true",
-    "target": "c-hh",
+    "target": "v-hh",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
     "season": "aab4a00b-d2fb-43ab-88d9-7a8cd8ee2922",
