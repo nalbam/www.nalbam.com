@@ -4,14 +4,36 @@
     "target": "c-tt",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "af925074-4aa8-4862-9c3b-ec5d518564f2",
+    "season": "4f83061c-7fc5-418c-a280-6abac8576659",
     "models": [
       {
-        "name": "tt-au-02-c2-c-c",
+        "name": "oa-mo-002-c2-c-c",
         "best": ""
-      },
+      }
+    ]
+  },
+  {
+    "enable": "true",
+    "target": "c-oa",
+    "league": "league",
+    "arn": "arn:aws:deepracer:::leaderboard/",
+    "season": "12c54b0a-e0bf-40ed-aa91-d1ae1dff10ac",
+    "models": [
       {
-        "name": "tt-au-02-c2-c-c-c",
+        "name": "oa-mo-002-c2-c-c-c-c",
+        "best": ""
+      }
+    ]
+  },
+  {
+    "enable": "true",
+    "target": "c-hh",
+    "league": "league",
+    "arn": "arn:aws:deepracer:::leaderboard/",
+    "season": "aab4a00b-d2fb-43ab-88d9-7a8cd8ee2922",
+    "models": [
+      {
+        "name": "oa-mo-002-c2-c-c-c-c",
         "best": ""
       }
     ]
