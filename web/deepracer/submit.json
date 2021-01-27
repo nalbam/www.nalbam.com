@@ -3,6 +3,23 @@
     "enable": "true",
     "target": "tt",
     "league": "league",
+    "arn": "arn:aws:deepracer::968005369378:leaderboard/",
+    "season": "ecfefe33-8ff5-4aac-9ba9-1cf5f3d679f8",
+    "models": [
+      {
+        "name": "ct-ch-03-c3",
+        "best": ""
+      },
+      {
+        "name": "ct-ch-03-c3-c",
+        "best": ""
+      }
+    ]
+  },
+  {
+    "enable": "true",
+    "target": "tt-pre",
+    "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
     "season": "d4256a2d-8bb3-4727-817b-8be0b2e0e2ac",
     "models": [
