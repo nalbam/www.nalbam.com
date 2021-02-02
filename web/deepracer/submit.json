@@ -21,14 +21,18 @@
     "target": "tt-pre",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "d4256a2d-8bb3-4727-817b-8be0b2e0e2ac",
+    "season": "fcdb9ab2-5493-4a5f-950a-31859571de45",
     "models": [
       {
-        "name": "oa-sg-001-c-c",
+        "name": "oa-mo-002-c2-c-c-s",
         "best": ""
       },
       {
-        "name": "oa-sg-001-c-c-c2",
+        "name": "tt-mo-02-c-c2",
+        "best": ""
+      },
+      {
+        "name": "tt-mo-02-c-c2-c2",
         "best": ""
       }
     ]
