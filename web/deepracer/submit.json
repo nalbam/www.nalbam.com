@@ -21,7 +21,7 @@
     "target": "tt-pre",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "fcdb9ab2-5493-4a5f-950a-31859571de45",
+    "season": "86eb6d2e-72ad-4443-8b40-fb67514f5afe",
     "models": [
       {
         "name": "oa-mo-002-c2-c-c-s",
