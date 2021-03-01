@@ -36,26 +36,5 @@
         "best": ""
       }
     ]
-  },
-  {
-    "enable": "true",
-    "target": "tt-don",
-    "league": "league",
-    "arn": "arn:aws:deepracer::482629020447:leaderboard/",
-    "season": "6f5e2afa-92e1-4156-87ce-00ffc2013902",
-    "models": [
-      {
-        "name": "oa-mo-002-c2-c-c-s",
-        "best": ""
-      },
-      {
-        "name": "tt-mo-02-c-c2",
-        "best": ""
-      },
-      {
-        "name": "tt-mo-02-c-c2-c2",
-        "best": ""
-      }
-    ]
   }
 ]
