@@ -1,31 +1,10 @@
 [
   {
     "enable": "true",
-    "target": "tt-pre",
+    "target": "oa",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "86eb6d2e-72ad-4443-8b40-fb67514f5afe",
-    "models": [
-      {
-        "name": "tt-03-c-c",
-        "best": ""
-      },
-      {
-        "name": "tt-03-2-c",
-        "best": ""
-      },
-      {
-        "name": "tt-03-c",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "target": "tt-pre-back",
-    "league": "league",
-    "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "86eb6d2e-72ad-4443-8b40-fb67514f5afe",
+    "season": "765677a6-1423-41b2-aa54-02313d8466cd",
     "models": [
       {
         "name": "oa-mo-002-c2-c-c-s",
