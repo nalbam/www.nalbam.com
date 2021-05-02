@@ -4,7 +4,7 @@
     "target": "oa",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "765677a6-1423-41b2-aa54-02313d8466cd",
+    "season": "948918ed-a1a4-41fc-98bb-08bfa87dabd0",
     "models": [
       {
         "name": "oa-ppo-thunder-hill-5-c",
