@@ -7,19 +7,11 @@
     "season": "948918ed-a1a4-41fc-98bb-08bfa87dabd0",
     "models": [
       {
-        "name": "oa-ppo-thunder-hill-5-c",
+        "name": "oa-ppo-hamption-c1-c1",
         "best": ""
       },
       {
-        "name": "oa-ppo-thunder-hill-5-c-c2",
-        "best": ""
-      },
-      {
-        "name": "oa-ppo-thunder-hill-12-24-c-c",
-        "best": ""
-      },
-      {
-        "name": "oa-ppo-thunder-hill-12-24-c-c-c",
+        "name": "oa-ppo-hamption-c2",
         "best": ""
       }
     ]
