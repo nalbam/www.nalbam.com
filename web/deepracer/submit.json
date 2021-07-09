@@ -4,7 +4,7 @@
     "target": "oa",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "33816f04-2112-4664-9631-e758051de31e",
+    "season": "a5132954-b546-4ae6-89e0-3c9711ac6980",
     "models": [
       {
         "name": "oa-ppo-hamption-c1-c1",
