@@ -7,6 +7,10 @@
     "season": "08433c0d-01d6-4ded-aca8-675fab8292cf",
     "models": [
       {
+        "name": "td-arctic-c1",
+        "best": ""
+      },
+      {
         "name": "oa-arctic-c2-c",
         "best": ""
       },
