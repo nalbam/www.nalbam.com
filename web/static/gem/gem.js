@@ -24,7 +24,7 @@ function validate(q) {
 }
 
 function getGem() {
-  var q = getParam('q');
+  var q = getParam('v');
   if (validate(q)) {
     document.write('<div class="gem"></div>');
     document.write('<div class="val">'+q+'</div>');
