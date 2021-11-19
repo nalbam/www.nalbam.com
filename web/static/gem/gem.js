@@ -1,18 +1,34 @@
-function getParam(name) {
-  var result = null,
-      tmp = [];
+function getParam(n) {
+  var q = null,
+      t = [];
   location.search
       .substr(1)
       .split("&")
-      .forEach(function (item) {
-        tmp = item.split("=");
-        if (tmp[0] === name) result = decodeURIComponent(tmp[1]);
+      .forEach(function (v) {
+        t = v.split("=");
+        if (t[0] === n) q = decodeURIComponent(t[1]);
       });
-  return '#' + result.substr(0,6);
+  return '#' + q.substr(0,6);
 }
 
-function getCode() {
+function getHash() {
   return document.querySelector(".gem").style.backgroundColor = location.hash.substr(0,7);
 }
 
-document.querySelector(".gem").style.backgroundColor = getParam('q');
+function validate(q) {
+  if (/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(q)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function getGem() {
+  var q = getParam('q');
+  if (validate(q)) {
+    document.write('<div class="gem"></div>');
+    document.querySelector(".gem").style.backgroundColor = q;
+  }
+}
+
+getGem();
