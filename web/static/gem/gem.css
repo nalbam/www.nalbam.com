@@ -24,3 +24,9 @@
   background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15));
   background-image: -ms-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15));
 }
+
+.val {
+  margin: 10% auto;
+  text-align: center;
+  font: 2em 'Fixedsys';
+}

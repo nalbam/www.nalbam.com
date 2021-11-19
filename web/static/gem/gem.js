@@ -27,7 +27,9 @@ function getGem() {
   var q = getParam('q');
   if (validate(q)) {
     document.write('<div class="gem"></div>');
+    document.write('<div class="val">'+q+'</div>');
     document.querySelector(".gem").style.backgroundColor = q;
+    document.querySelector(".val").style.color = q;
   }
 }
 
