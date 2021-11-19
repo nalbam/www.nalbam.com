@@ -1,4 +1,5 @@
 function getParam(n) {
+  // console.log(location.search);
   var q = null,
       t = [];
   location.search
@@ -6,13 +7,9 @@ function getParam(n) {
       .split("&")
       .forEach(function (v) {
         t = v.split("=");
-        if (t[0] === n) q = decodeURIComponent(t[1]);
+        if (t[0] === n) q = decodeURIComponent(t[1]).substr(0,6);
       });
-  return '#' + q.substr(0,6);
-}
-
-function getHash() {
-  return document.querySelector(".gem").style.backgroundColor = location.hash.substr(0,7);
+  return '#' + q;
 }
 
 function validate(q) {
