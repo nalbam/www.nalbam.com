@@ -4,9 +4,9 @@ function getParam(n) {
     t = [];
   location.search
     .substr(1)
-    .split("&")
+    .split('&')
     .forEach(function (v) {
-      t = v.split("=");
+      t = v.split('=');
       if (t[0] === n) q = decodeURIComponent(t[1]).substr(0, 6);
     });
   return '#' + q;
@@ -21,19 +21,23 @@ function validate(q) {
 }
 
 function hexToRgbA(h, a) {
-  var c = h.substring(1).split('');
-  if (c.length == 3) {
-    c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-  }
-  c = '0x' + c.join('');
+  var c = '0x' + h.substring(1);
   return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')';
 }
 
 function getGem() {
   var q = getParam('v');
   if (validate(q)) {
-    document.querySelector(".elogo .u1").style.backgroundColor = hexToRgbA(q, 0.9);
+    document.querySelector('.val').innerText = q;
+    document.querySelector('.val').style.color = q;
+    document.querySelector('.u1').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.8);
+    document.querySelector('.u2').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.6);
+    document.querySelector('.u3').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.3);
+    document.querySelector('.u4').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.3);
+    document.querySelector('.ct').style.backgroundColor = q;
+    document.querySelector('.l1').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.85);
+    document.querySelector('.l4').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.45);
   }
 }
 
-// getGem();
+getGem();

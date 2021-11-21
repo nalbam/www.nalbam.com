@@ -4,9 +4,9 @@ function getParam(n) {
     t = [];
   location.search
     .substr(1)
-    .split("&")
+    .split('&')
     .forEach(function (v) {
-      t = v.split("=");
+      t = v.split('=');
       if (t[0] === n) q = decodeURIComponent(t[1]).substr(0, 6);
     });
   return '#' + q;
@@ -21,11 +21,7 @@ function validate(q) {
 }
 
 function hexToRgbA(h, a) {
-  var c = h.substring(1).split('');
-  if (c.length == 3) {
-    c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-  }
-  c = '0x' + c.join('');
+  var c = '0x' + h.substring(1);
   return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + a + ')';
 }
 

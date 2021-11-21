@@ -1,76 +1,68 @@
 h1 {
-  font-family: 'Roboto', sans-serif;
-  font-size: 110px;
-  font-weight:100;
-  letter-spacing: 30px;
+  margin: 4em auto;
+  font: 2em 'Roboto';
+  letter-spacing: 20px;
+  text-align: center;
 }
-#space{
+.elogo {
   margin: auto;
-  width: 800px;
-  height: 500px;
-  transform: perspective 400px;
-  transform-origin: 110px 110px;
-}
-.elogo{
-  margin: auto;
-  position: reative;
-  width: 400px;
+  width: 200px;
   height: 400px;
-  transform-style: preserve-3d;
+  position: reative;
   transform-origin: 110px 110px 0;
+  transform-style: preserve-3d;
   transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg);
 }
 .elogo:hover {
-    animation: aniether 6s infinite;
-    transform-style: preserve-3d;
-    transform-origin: 110px 110px 0;
-    transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg);
+  animation: aniether 10s infinite;
+  transform-origin: 110px 110px 0;
+  transform-style: preserve-3d;
+  transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg);
 }
-
-.trif {
-  position: absolute;
+.tf {
   width: 0px;
   height: 0px;
+  position: absolute;
   border-left: 100px solid transparent;
   border-right: 100px solid transparent;
 }
-.elogo .u1 {
-  transform: translateZ(50px) rotateX(23.5deg);
+.u1 {
   border-bottom: 250px solid rgba(50,50,50,0.8);
+  transform: translateZ(50px) rotateX(23.5deg);
 }
-.elogo .u2 {
-  transform: rotateY(90deg) translateZ(50px) rotateX(23.5deg);
+.u2 {
   border-bottom: 250px solid rgba(50,50,50,0.6);
+  transform: rotateY(90deg) translateZ(50px) rotateX(23.5deg);
 }
-.elogo .u3 {
+.u3 {
+  border-bottom: 250px solid rgba(50,50,50,0.3);
   transform: rotateY(180deg) translateZ(50px) rotateX(23.5deg);
-  border-bottom: 250px solid rgba(50,50,50,0.3);
 }
-.elogo .u4 {
+.u4 {
+  border-bottom: 250px solid rgba(50,50,50,0.3);
   transform: rotateY(-90deg) translateZ(50px) rotateX(23.5deg);
-  border-bottom: 250px solid rgba(50,50,50,0.3);
 }
-.elogo .ct {
+.ct {
   width: 200px;
   height: 200px;
   border: 0;
-  transform: rotateX(-90deg) translateZ(140px);
   background-color: rgba(60,60,60,1);
+  transform: rotateX(-90deg) translateZ(140px);
 }
-.elogo .l1 {
-  transform: translateY(55px) translateZ(50px) rotateX(156.5deg);
+.l1 {
   border-bottom: 250px solid rgba(50,50,50,0.85);
+  transform: translateY(55px) translateZ(50px) rotateX(156.5deg);
 }
-.elogo .l4 {
-  transform: translateY(55px) rotateY(-90deg) rotateZ(0deg) translateZ(50px) rotateX(156.5deg);
+.l4 {
   border-bottom: 250px solid rgba(50,50,50,0.45);
+  transform: translateY(55px) rotateY(-90deg) rotateZ(0deg) translateZ(50px) rotateX(156.5deg);
 }
 
 @keyframes aniether {
-    20%      {transform: perspective(400px) rotateY(46deg); }
-    30%      {transform: perspective(400px) rotateY(10deg); }
-    50%      {transform: perspective(400px) rotateY(46deg); }
-    60%      {transform: perspective(400px) rotateY(80deg); }
-    80%      {transform: perspective(400px) rotateY(46deg); }
-   100%      {transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg); }
+  20% {transform: perspective(400px) rotateY(46deg);}
+  30% {transform: perspective(400px) rotateY(10deg);}
+  50% {transform: perspective(400px) rotateY(46deg);}
+  60% {transform: perspective(400px) rotateY(80deg);}
+  80% {transform: perspective(400px) rotateY(46deg);}
+ 100% {transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg);}
 }
