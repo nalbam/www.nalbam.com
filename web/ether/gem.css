@@ -1,7 +1,7 @@
 .gem {
-  margin: 4em auto;
-  width: 100px;
-  height: 100px;
+  margin: 6em auto;
+  width: 300px;
+  height: 300px;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -15,10 +15,10 @@
   content: "";
   position: absolute;
   margin: 20% auto;
-  top: -20px;
-  width: 60px;
-  height: 60px;
-  border: 20px solid;
+  top: -60px;
+  width: 180px;
+  height: 180px;
+  border: 60px solid;
   border-color: rgba(0, 0, 0, 0.2) rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.25) rgba(255, 255, 255, 0.4);
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15));
   background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15));
