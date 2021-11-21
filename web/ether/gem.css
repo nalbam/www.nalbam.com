@@ -1,5 +1,5 @@
 .gem {
-  margin: 10% auto;
+  margin: 4em auto;
   width: 100px;
   height: 100px;
   -webkit-transform: rotate(45deg);
@@ -26,6 +26,8 @@
 }
 
 .val {
+  margin: 2em auto;
+  font: 2em 'Roboto';
+  letter-spacing: 5px;
   text-align: center;
-  font: 2em 'Fixedsys';
 }

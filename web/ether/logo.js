@@ -35,8 +35,8 @@ function getGem() {
     document.querySelector('.u3').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.3);
     document.querySelector('.u4').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.3);
     document.querySelector('.ct').style.backgroundColor = q;
-    document.querySelector('.l1').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.85);
-    document.querySelector('.l4').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.45);
+    document.querySelector('.l1').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.8);
+    document.querySelector('.l2').style.borderBottom = '250px solid ' + hexToRgbA(q, 0.6);
   }
 }
 
