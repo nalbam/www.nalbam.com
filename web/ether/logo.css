@@ -58,6 +58,9 @@ h1 {
 }
 
 @keyframes aniether {
-  30% {transform: perspective(400px) rotateY(10deg);}
-  70% {transform: perspective(400px) rotateY(80deg);}
+  20% {transform: perspective(400px) rotateY(46deg);}
+  40% {transform: perspective(400px) rotateY(10deg);}
+  60% {transform: perspective(400px) rotateY(80deg);}
+  80% {transform: perspective(400px) rotateY(46deg);}
+ 100% {transform: perspective(400px) rotateY(46deg) rotateX(-5deg) rotateZ(-5deg);}
 }
