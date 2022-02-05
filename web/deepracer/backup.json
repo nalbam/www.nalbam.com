@@ -1,88 +1,34 @@
 [
   {
     "enable": "true",
-    "target": "tt",
-    "league": "league",
-    "season": "virtual-season-2020-10-tt",
-    "models": [
-      {
-        "name": "tt-ag-01-c-c2-c",
-        "best": ""
-      },
-      {
-        "name": "tt-ag-01-c-c2",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
     "target": "oa",
     "league": "league",
-    "season": "virtual-season-2020-10-oa",
+    "arn": "arn:aws:deepracer:::leaderboard/",
+    "season": "463824f5-78a6-4184-8bea-379e7b4219a1",
     "models": [
       {
-        "name": "tt-ag-01-c-c2-c",
+        "name": "td-2202-01-c",
         "best": ""
       },
       {
-        "name": "tt-ag-01-c-c2",
+        "name": "ct-2202-02-c",
         "best": ""
       }
     ]
   },
   {
     "enable": "true",
-    "target": "h2h",
-    "league": "league",
-    "season": "virtual-season-2020-10-h2h",
+    "target": "co",
+    "league": "competition",
+    "arn": "arn:aws:deepracer:::leaderboard/",
+    "season": "9e799a23-849c-4b98-8000-60e97c0e51b5",
     "models": [
       {
-        "name": "tt-ag-01-c-c2-c",
+        "name": "td-2202-01",
         "best": ""
       },
       {
-        "name": "tt-ag-01-c-c2",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "target": "s-tt",
-    "league": "summitLeague",
-    "season": "summit-season-2020-10-tt",
-    "models": [
-      {
-        "name": "tt-ch-04-c5-17-23",
-        "best": ""
-      },
-      {
-        "name": "tt-ch-04-c3-17-23",
-        "best": ""
-      },
-      {
-        "name": "tt-ch-04-c-16-22",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "target": "s-h2h",
-    "league": "summitLeague",
-    "season": "summit-season-2020-10-h2h",
-    "models": [
-      {
-        "name": "tt-ch-04-c5-17-23",
-        "best": ""
-      },
-      {
-        "name": "tt-ch-04-c3-17-23",
-        "best": ""
-      },
-      {
-        "name": "tt-ch-04-c-16-22",
+        "name": "td-2202-01-c",
         "best": ""
       }
     ]

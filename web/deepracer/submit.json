@@ -7,28 +7,7 @@
     "season": "463824f5-78a6-4184-8bea-379e7b4219a1",
     "models": [
       {
-        "name": "td-2202-01-c",
-        "best": ""
-      },
-      {
         "name": "ct-2202-02-c",
-        "best": ""
-      }
-    ]
-  },
-  {
-    "enable": "true",
-    "target": "co",
-    "league": "competition",
-    "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "9e799a23-849c-4b98-8000-60e97c0e51b5",
-    "models": [
-      {
-        "name": "td-2202-01",
-        "best": ""
-      },
-      {
-        "name": "td-2202-01-c",
         "best": ""
       }
     ]
