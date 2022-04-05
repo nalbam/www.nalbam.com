@@ -4,7 +4,7 @@
     "target": "tt",
     "league": "league",
     "arn": "arn:aws:deepracer:::leaderboard/",
-    "season": "052b198b-e34a-43ba-9541-a194e8674e94",
+    "season": "9f6ca6de-ecfa-467a-a7d9-c899a811a206",
     "models": [
       {
         "name": "td-2022-02-clone",
