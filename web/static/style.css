@@ -90,42 +90,33 @@
   width: 100%;
 }
 
-.pop-logo .pop-container .pop-header {
-  height: 75%;
+.pop-logo .pop-container .pop-pic {
+  height: 30%;
   margin-top: 2%;
   padding: 1%;
 }
 
-.pop-logo .pop-container .pop-header img {
+.pop-logo .pop-container .pop-pic img {
   height: 100%;
 }
 
-.pop-logo .pop-container .pop-player {
-  height: 5%;
-  margin-top: 2%;
-  padding: 1%;
-}
-
-.pop-logo .pop-container .pop-equalizer {
-  height: 50%;
-  margin-top: 2%;
-  padding: 1%;
-}
-
-.pop-logo .pop-container .pop-equalizer img {
-  height: 100%;
-}
-
-.pop-logo .pop-container .pop-singer {
+.pop-logo .pop-container .pop-name {
   color: #aaa;
-  font-size: 4vw;
+  font-size: 2vw;
   font-weight: bold;
   padding: 1%;
 }
 
-.pop-logo .pop-container .pop-message {
+.pop-logo .pop-container .pop-bio {
   color: #aaa;
-  font-size: 5vw;
+  font-size: 1vw;
+  font-weight: bold;
+  padding: 1%;
+}
+
+.pop-logo .pop-container .pop-sns {
+  color: #aaa;
+  font-size: 1vw;
   font-weight: bold;
   padding: 1%;
 }
