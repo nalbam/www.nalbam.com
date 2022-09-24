@@ -60,3 +60,72 @@
 .text-center {
     text-align: center;
 }
+
+.pop-logo {
+  /* display: none; */
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 200;
+}
+
+.pop-logo .pop-bg {
+  background: #000;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.pop-logo .pop-container {
+  height: 100%;
+  left: 0;
+  position: relative;
+  text-align: center;
+  top: 0;
+  width: 100%;
+}
+
+.pop-logo .pop-container .pop-header {
+  height: 75%;
+  margin-top: 2%;
+  padding: 1%;
+}
+
+.pop-logo .pop-container .pop-header img {
+  height: 100%;
+}
+
+.pop-logo .pop-container .pop-player {
+  height: 5%;
+  margin-top: 2%;
+  padding: 1%;
+}
+
+.pop-logo .pop-container .pop-equalizer {
+  height: 50%;
+  margin-top: 2%;
+  padding: 1%;
+}
+
+.pop-logo .pop-container .pop-equalizer img {
+  height: 100%;
+}
+
+.pop-logo .pop-container .pop-singer {
+  color: #aaa;
+  font-size: 4vw;
+  font-weight: bold;
+  padding: 1%;
+}
+
+.pop-logo .pop-container .pop-message {
+  color: #aaa;
+  font-size: 5vw;
+  font-weight: bold;
+  padding: 1%;
+}
