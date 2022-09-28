@@ -4,7 +4,7 @@
     }
 }
 
-.pop-logo {
+.pop-box {
   height: 100%;
   left: 0;
   overflow: hidden;
@@ -14,7 +14,7 @@
   z-index: 200;
 }
 
-.pop-logo .pop-bg {
+.pop-box .pop-bg {
   background: #000;
   height: 100%;
   left: 0;
@@ -23,7 +23,7 @@
   width: 100%;
 }
 
-.pop-logo .pop-container {
+.pop-box .pop-container {
   height: 100%;
   left: 0;
   position: relative;
@@ -32,30 +32,30 @@
   width: 100%;
 }
 
-.pop-logo .pop-container .pop-pic {
+.pop-box .pop-container .pop-pic {
   height: 30%;
   margin-top: 10%;
   padding: 1%;
 }
 
-.pop-logo .pop-container .pop-pic img {
+.pop-box .pop-container .pop-pic img {
   height: 100%;
 }
 
-.pop-logo .pop-container .pop-name {
+.pop-box .pop-container .pop-name {
   color: #aaa;
   font-size: 2vw;
   font-weight: bold;
   padding: 1%;
 }
 
-.pop-logo .pop-container .pop-bio {
+.pop-box .pop-container .pop-bio {
   color: #aaa;
   font-size: 1vw;
   padding: 1%;
 }
 
-.pop-logo .pop-container .pop-sns {
+.pop-box .pop-container .pop-sns {
   color: #aaa;
   font-size: 2vw;
   font-weight: bold;
