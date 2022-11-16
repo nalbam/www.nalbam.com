@@ -34,23 +34,25 @@
 
 .pop-box .pop-container .pop-pic img {
   height: 100%;
+  border-radius: 100%;
+  border: 3px solid white;
 }
 
 .pop-box .pop-container .pop-name {
-  color: #aaa;
+  color: white;
   font-size: 2vw;
   font-weight: bold;
   padding: 1%;
 }
 
 .pop-box .pop-container .pop-bio {
-  color: #aaa;
+  color: white;
   font-size: 1vw;
   padding: 1%;
 }
 
 .pop-box .pop-container .pop-sns {
-  color: #aaa;
+  color: white;
   font-size: 2vw;
   font-weight: bold;
   padding: 1%;
