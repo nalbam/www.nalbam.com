@@ -8,13 +8,17 @@
   z-index: 200;
 }
 
-.pop-box .pop-bg {
-  background: #000;
-  height: 100%;
+.pop-box .pop-bg img {
+  display: block;
+  height: auto;
   left: 0;
-  position: absolute;
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0.8;
+  position: fixed;
   top: 0;
-  width: 100%;
+  width: auto;
+  z-index: -999;
 }
 
 .pop-box .pop-container {
@@ -54,22 +58,23 @@
 .pop-box .pop-container .pop-sns {
   color: white;
   font-size: 2vw;
-  font-weight: bold;
   padding: 1%;
 }
 
-a {
-  text-align: justify;
+.pop-box .pop-container .pop-sns a {
+  border-radius: 100%;
   color: white;
-  padding: 30px;
+  margin: 1%;
+  padding: 1%;
+  text-align: justify;
   width: 70%;
 }
 
-a:hover {
-  -webkit-transition: 500ms;
+.pop-box .pop-container .pop-sns a:hover {
   -moz-transition: 500ms;
-  transition: 500ms;
+  -webkit-transition: 500ms;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   text-decoration: none;
+  transition: 500ms;
 }
