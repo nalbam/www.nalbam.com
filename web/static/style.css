@@ -1,3 +1,18 @@
+.background-image {
+  background-image: url('https://nalbam.com/static/bg/nalbam-bg.png');
+  background-size: cover; /* 이미지를 화면 크기에 맞게 늘리기 */
+  background-position: center center; /* 이미지를 가운데 정렬 */
+  background-repeat: no-repeat; /* 이미지 반복을 막음 */
+  filter: blur(50%); /* 10% 블러 효과 적용 */
+  width: 100%; /* div 가 화면 전체 크기를 차지하도록 설정 */
+  height: 100%;
+  position: fixed; /* 고정 위치로 설정 */
+  top: 0;
+  left: 0;
+  z-index: -1; /* 맨 뒤에 위치하도록 설정 */
+  -webkit-filter: blur(10px);
+}
+
 .pop-box {
   height: 100%;
   left: 0;
@@ -6,21 +21,6 @@
   top: 0;
   width: 100%;
   z-index: 200;
-}
-
-.pop-box .pop-bg img {
-  -webkit-filter: blur(8px);
-  display: block;
-  filter: blur(8px);
-  height: auto;
-  left: 0;
-  min-height: 100%;
-  min-width: 100%;
-  opacity: 0.8;
-  position: fixed;
-  top: 0;
-  width: auto;
-  z-index: -999;
 }
 
 .pop-box .pop-container {
