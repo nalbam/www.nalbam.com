@@ -96,8 +96,8 @@ class Timer {
       this.limit[2] = 0
       this.limit[1] = 0
       this.limit[0] = 0
-      this.pause();
-      return;
+      // this.pause();
+      // return;
     }
 
     // times
