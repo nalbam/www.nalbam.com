@@ -74,6 +74,10 @@ html {
   padding: 2%;
 }
 
+.pop-box .pop-container .pop-bio img {
+  height: 25px;
+}
+
 .pop-box .pop-container .pop-sns {
   color: white;
   padding: 2%;
