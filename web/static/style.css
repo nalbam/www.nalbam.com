@@ -4,7 +4,7 @@
 }
 
 html {
-  background: #000;
+  background: #222;
   color: #eee;
   font-family: Menlo, Noto Mono;
 }
@@ -22,7 +22,7 @@ html {
 }
 
 .background-cover {
-  background: #000;
+  background: #222;
   filter: alpha(opacity=70);
   height: 100%;
   left: 0;
