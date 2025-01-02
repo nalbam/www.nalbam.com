@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/nalbam
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://nalbam.com
+  * I am nalbam (https://keybase.io/nalbam) on keybase.
+  * I have a public key ASBFNCu_1ZxZH8F-grGLJ0iUJmps7IHRZiP4uF9jUWESRwo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01201bc99f2269de6d35d47a5bf9d635da42031934e2f7b841530fecabf6d3acda110a",
+      "host": "keybase.io",
+      "kid": "012045342bbfd59c591fc17e82b18b274894266a6cec81d16623f8b85f63516112470a",
+      "uid": "9af83133cb50f8df4eca944088ea8e19",
+      "username": "nalbam"
+    },
+    "merkle_root": {
+      "ctime": 1552023588,
+      "hash": "6c149d3ed1e4d460db7ec7b898beeb4d4946709cabe949b24b9aaa9b9f28e7160783938538343971f286c4e7ea4bca315ea43472610d4da6699527c2bb48fe17",
+      "hash_meta": "642554b42dfe93256414ae8c4e5a7b84d093b70e66447ce08655d6c941acf797",
+      "seqno": 4899754
+    },
+    "service": {
+      "entropy": "TRHQcekrFLQ+rxt5kF9ueedL",
+      "hostname": "nalbam.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "3.0.0"
+  },
+  "ctime": 1552023613,
+  "expire_in": 504576000,
+  "prev": "d35794aa22d4a4e23e831658c408312646ba195be3d7f96cd6459cf3e78b177e",
+  "seqno": 16,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgRTQrv9WcWR/BfoKxiydIlCZqbOyB0WYj+LhfY1FhEkcKp3BheWxvYWTESpcCEMQg01eUqiLUpOI+gxZYxAgxJka6GVvj1/ls1kWc8+eLF37EIGVrdR72VKKuify4zLUaGhs2trHB0oVlm09OX6gksJJBAgHCo3NpZ8RAfixvbYItEI2ZBs93q6A0gf0P+Z2Qu4nA/0COtYr5akGZYv1agxXiOh3X4/TAirKxu4697CwaqSqW38klDiatCqhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEILpCB5j+JOoY/c+2IzJLjFhiqMbUR+BizcXNxbCwHb8do3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/nalbam
+
+==================================================================
