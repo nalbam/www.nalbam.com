@@ -2,4 +2,4 @@
 
 * <https://nalbam.com>
 
-![nalbam's cover](web/static/bg/nalbam-cover.png)
+![nalbam's cover](docs/static/bg/nalbam-cover.png)
