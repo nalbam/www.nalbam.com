@@ -9,30 +9,6 @@ html {
   font-family: Menlo, Noto Mono;
 }
 
-.background-image {
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -20;
-}
-
-.background-cover {
-  background: #222;
-  filter: alpha(opacity=70);
-  height: 100%;
-  left: 0;
-  opacity: .7;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: -10;
-}
-
 .pop-box {
   height: 100%;
   left: 0;
@@ -99,4 +75,34 @@ html {
   color: white;
   text-decoration: none;
   transition: 500ms;
+}
+
+.stars {
+  background: black url("bg/stars.png") repeat;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  z-index: 0;
+}
+
+.twinkling {
+  width: 10000px;
+  height: 100%;
+  background: transparent url("bg/twinkling.png") repeat;
+  background-size: 1000px 1000px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+
+  -moz-animation: move-background 70s linear infinite;
+  -ms-animation: move-background 70s linear infinite;
+  -o-animation: move-background 70s linear infinite;
+  -webkit-animation: move-background 70s linear infinite;
+  animation: move-background 70s linear infinite;
+
 }
