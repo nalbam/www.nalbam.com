@@ -4,9 +4,18 @@
 }
 
 html {
-  background: #222;
+  background: #0a192f;
   color: #eee;
-  font-family: Menlo, Noto Mono;
+  font-family: 'SF Mono', Menlo, Noto Mono;
+  scroll-behavior: smooth;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .pop-box {
@@ -32,22 +41,33 @@ html {
   height: 40%;
   margin-top: 7%;
   padding: 1%;
+  animation: fadeIn 1s ease-in;
 }
 
 .pop-box .pop-container .pop-pic img {
   height: 100%;
   border-radius: 100%;
-  border: 3px solid white;
+  border: 3px solid #64ffda;
+  box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.pop-box .pop-container .pop-pic img:hover {
+  transform: scale(1.05);
 }
 
 .pop-box .pop-container .pop-name {
-  color: white;
+  color: #ccd6f6;
   padding: 2%;
+  animation: slideUp 0.8s ease-out;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .pop-box .pop-container .pop-bio {
-  color: white;
+  color: #8892b0;
   padding: 2%;
+  animation: slideUp 1s ease-out;
+  font-weight: 500;
 }
 
 .pop-box .pop-container .pop-bio img {
@@ -55,26 +75,26 @@ html {
 }
 
 .pop-box .pop-container .pop-sns {
-  color: white;
+  color: #ccd6f6;
   padding: 2%;
+  animation: slideUp 1.2s ease-out;
 }
 
 .pop-box .pop-container .pop-sns a {
-  border-radius: 30%;
-  color: white;
-  margin: 1%;
-  padding: 1%;
-  text-align: justify;
-  width: 70%;
+  border-radius: 50%;
+  color: #64ffda;
+  margin: 0 15px;
+  padding: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
 .pop-box .pop-container .pop-sns a:hover {
-  -moz-transition: 500ms;
-  -webkit-transition: 500ms;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  transform: translateY(-3px);
+  color: #ccd6f6;
+  background-color: rgba(100, 255, 218, 0.1);
   text-decoration: none;
-  transition: 500ms;
 }
 
 .stars {
@@ -88,8 +108,47 @@ html {
   z-index: 0;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .pop-box .pop-container .pop-pic {
+    height: 30%;
+    margin-top: 15%;
+  }
+
+  .pop-box .pop-container .pop-name {
+    font-size: 1.5rem;
+  }
+
+  .pop-box .pop-container .pop-bio {
+    font-size: 1rem;
+  }
+
+  .pop-box .pop-container .pop-sns {
+    font-size: 1.5rem;
+  }
+}
+
 .twinkling {
-  width: 10000px;
+  width: 100%;
   height: 100%;
   background: transparent url("bg/twinkling.png") repeat;
   background-size: 1000px 1000px;
@@ -99,49 +158,36 @@ html {
   bottom: 0;
   z-index: 2;
 
-  -moz-animation: move-background 70s linear infinite;
-  -ms-animation: move-background 70s linear infinite;
-  -o-animation: move-background 70s linear infinite;
-  -webkit-animation: move-background 70s linear infinite;
-  animation: move-background 70s linear infinite;
+  -moz-animation: move-stars 70s linear infinite;
+  -ms-animation: move-stars 70s linear infinite;
+  -o-animation: move-stars 70s linear infinite;
+  -webkit-animation: move-stars 70s linear infinite;
+  animation: move-stars 70s linear infinite;
 }
 
-@keyframes move-background {
+@keyframes move-stars {
   from {
-    -webkit-transform: translate3d(0px, 0px, 0px);
+    background-position: 0 0;
   }
-
   to {
-    -webkit-transform: translate3d(1000px, 0px, 0px);
-  }
-}
-
-@-webkit-keyframes move-background {
-  from {
-    -webkit-transform: translate3d(0px, 0px, 0px);
-  }
-
-  to {
-    -webkit-transform: translate3d(1000px, 0px, 0px);
+    background-position: 1000px 0;
   }
 }
 
-@-moz-keyframes move-background {
+@-webkit-keyframes move-stars {
   from {
-    -webkit-transform: translate3d(0px, 0px, 0px);
+    background-position: 0 0;
   }
-
   to {
-    -webkit-transform: translate3d(1000px, 0px, 0px);
+    background-position: 1000px 0;
   }
 }
 
-@-webkit-keyframes move-background {
+@-moz-keyframes move-stars {
   from {
-    -webkit-transform: translate3d(0px, 0px, 0px);
+    background-position: 0 0;
   }
-
   to {
-    -webkit-transform: translate3d(1000px, 0px, 0px);
+    background-position: 1000px 0;
   }
 }
