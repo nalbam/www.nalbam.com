@@ -23,57 +23,57 @@ class MainScene extends Phaser.Scene {
     }
 
     createSpaceTextures() {
-        // Small stars - 더 부드러운 원형
+        // Small stars - 작고 은은한 별
         const starGraphics = this.add.graphics();
-        starGraphics.fillStyle(0xffffff, 1);
-        starGraphics.fillCircle(4, 4, 3);
-        starGraphics.fillStyle(0xffffff, 0.5);
-        starGraphics.fillCircle(4, 4, 4);
-        starGraphics.generateTexture('star', 8, 8);
+        starGraphics.fillStyle(0xccddff, 0.8);
+        starGraphics.fillCircle(3, 3, 1.5);
+        starGraphics.fillStyle(0xaabbee, 0.3);
+        starGraphics.fillCircle(3, 3, 2.5);
+        starGraphics.generateTexture('star', 6, 6);
         starGraphics.destroy();
 
-        // Medium stars with glow - 더 큰 원형
+        // Medium stars - 약간 큰 별
         const mediumStarGraphics = this.add.graphics();
-        mediumStarGraphics.fillStyle(0xffffff, 1);
-        mediumStarGraphics.fillCircle(8, 8, 4);
-        mediumStarGraphics.fillStyle(0xffffff, 0.6);
-        mediumStarGraphics.fillCircle(8, 8, 6);
-        mediumStarGraphics.fillStyle(0xffffff, 0.2);
-        mediumStarGraphics.fillCircle(8, 8, 8);
-        mediumStarGraphics.generateTexture('mediumStar', 16, 16);
+        mediumStarGraphics.fillStyle(0xddddff, 0.9);
+        mediumStarGraphics.fillCircle(4, 4, 2);
+        mediumStarGraphics.fillStyle(0xbbccff, 0.4);
+        mediumStarGraphics.fillCircle(4, 4, 3);
+        mediumStarGraphics.fillStyle(0x8899dd, 0.1);
+        mediumStarGraphics.fillCircle(4, 4, 4);
+        mediumStarGraphics.generateTexture('mediumStar', 8, 8);
         mediumStarGraphics.destroy();
 
-        // Large stars - 가장 부드러운 원형
+        // Large stars - 밝은 별
         const largeStarGraphics = this.add.graphics();
-        largeStarGraphics.fillStyle(0xffffff, 1);
-        largeStarGraphics.fillCircle(12, 12, 6);
-        largeStarGraphics.fillStyle(0x88aaff, 0.7);
-        largeStarGraphics.fillCircle(12, 12, 8);
-        largeStarGraphics.fillStyle(0x88aaff, 0.3);
-        largeStarGraphics.fillCircle(12, 12, 12);
-        largeStarGraphics.generateTexture('largeStar', 24, 24);
+        largeStarGraphics.fillStyle(0xeeeeff, 1);
+        largeStarGraphics.fillCircle(6, 6, 2.5);
+        largeStarGraphics.fillStyle(0xccddff, 0.5);
+        largeStarGraphics.fillCircle(6, 6, 4);
+        largeStarGraphics.fillStyle(0x8899cc, 0.15);
+        largeStarGraphics.fillCircle(6, 6, 6);
+        largeStarGraphics.generateTexture('largeStar', 12, 12);
         largeStarGraphics.destroy();
 
-        // Nebula particle - 더 큰 부드러운 원형
+        // Nebula particle - 작은 성운
         const nebulaGraphics = this.add.graphics();
-        nebulaGraphics.fillStyle(0x6644ff, 0.4);
-        nebulaGraphics.fillCircle(16, 16, 8);
-        nebulaGraphics.fillStyle(0x4466ff, 0.25);
-        nebulaGraphics.fillCircle(16, 16, 12);
-        nebulaGraphics.fillStyle(0x6644ff, 0.1);
-        nebulaGraphics.fillCircle(16, 16, 16);
-        nebulaGraphics.generateTexture('nebula', 32, 32);
+        nebulaGraphics.fillStyle(0x4455aa, 0.25);
+        nebulaGraphics.fillCircle(6, 6, 3);
+        nebulaGraphics.fillStyle(0x3344aa, 0.1);
+        nebulaGraphics.fillCircle(6, 6, 5);
+        nebulaGraphics.fillStyle(0x223388, 0.03);
+        nebulaGraphics.fillCircle(6, 6, 6);
+        nebulaGraphics.generateTexture('nebula', 12, 12);
         nebulaGraphics.destroy();
 
-        // Planet - 더 부드러운 원형
+        // Planet - 작은 행성
         const planetGraphics = this.add.graphics();
-        planetGraphics.fillStyle(0x64ffda, 0.9);
-        planetGraphics.fillCircle(16, 16, 8);
-        planetGraphics.fillStyle(0x64ffda, 0.5);
-        planetGraphics.fillCircle(16, 16, 12);
-        planetGraphics.fillStyle(0x64ffda, 0.2);
-        planetGraphics.fillCircle(16, 16, 16);
-        planetGraphics.generateTexture('planet', 32, 32);
+        planetGraphics.fillStyle(0x4488bb, 0.7);
+        planetGraphics.fillCircle(5, 5, 2.5);
+        planetGraphics.fillStyle(0x3377aa, 0.3);
+        planetGraphics.fillCircle(5, 5, 4);
+        planetGraphics.fillStyle(0x225588, 0.08);
+        planetGraphics.fillCircle(5, 5, 5);
+        planetGraphics.generateTexture('planet', 10, 10);
         planetGraphics.destroy();
     }
 
@@ -359,22 +359,24 @@ class MainScene extends Phaser.Scene {
             star.x += star.velocityX;
             star.y += star.velocityY;
             
-            // Twinkling effect
-            const twinkle = Math.sin(this.time * star.twinkleSpeed + index) * 0.3;
-            star.setAlpha(star.originalAlpha + twinkle);
-            
-            // Mouse interaction
+            // Mouse interaction - 커지면서 투명해지는 효과
             const distance = Phaser.Math.Distance.Between(
                 star.x, star.y, 
                 this.mouseX, this.mouseY
             );
             
-            if (distance < 150) {
-                const force = (150 - distance) / 150;
-                star.setAlpha(star.originalAlpha + force * 0.5);
-                star.setScale(star.scaleX + force * 0.5);
+            if (distance < 80) {
+                const force = (80 - distance) / 80;
+                const scaleIncrease = force * 2; // 더 크게 커지도록
+                const alphaDecrease = force * 0.8; // 투명해지도록
+                
+                star.setScale(1 + scaleIncrease);
+                star.setAlpha(Math.max(0, star.originalAlpha - alphaDecrease));
             } else {
-                star.setScale(star.scaleX * 0.99 + 0.01);
+                // Twinkling effect (마우스 효과가 없을 때만)
+                const twinkle = Math.sin(this.time * star.twinkleSpeed + index) * 0.2;
+                star.setAlpha(star.originalAlpha + twinkle);
+                star.setScale(1);
             }
             
             // Wrap around screen
