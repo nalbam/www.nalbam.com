@@ -10,6 +10,8 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.lastMeteorTime = 0;
         this.atmosphericDistortion = 0;
         this.blackHoles = [];
+        this.lastRandomBlackHoleTime = 0;
+        this.randomBlackHoleInterval = 45000 + Math.random() * 30000; // 45-75 seconds
     }
 
     create() {
@@ -420,11 +422,22 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.lastMeteorTime = currentTime;
         }
         
+        // Create random black holes very occasionally
+        if (currentTime - this.lastRandomBlackHoleTime > this.randomBlackHoleInterval) {
+            this.createRandomBlackHole();
+            this.lastRandomBlackHoleTime = currentTime;
+            // Set next random interval between 45-75 seconds
+            this.randomBlackHoleInterval = 45000 + Math.random() * 30000;
+        }
+        
         // Update meteors manually
         this.updateMeteors();
         
         // Update black holes
         this.updateBlackHoles();
+        
+        // Apply nebula gravity to meteors
+        this.applyNebulaGravity();
     }
 
     createMeteor() {
@@ -898,6 +911,74 @@ class RealisticSpaceScene extends Phaser.Scene {
 
 
     // Removed meteor absorption effect - meteors now disappear silently
+    
+    createRandomBlackHole() {
+        const { width, height } = this.scale;
+        
+        // Generate random position with some margin from edges
+        const margin = 100;
+        const x = margin + Math.random() * (width - margin * 2);
+        const y = margin + Math.random() * (height - margin * 2);
+        
+        // Avoid creating black holes too close to existing ones
+        let tooClose = false;
+        for (const existingBlackHole of this.blackHoles) {
+            const distance = Phaser.Math.Distance.Between(x, y, existingBlackHole.x, existingBlackHole.y);
+            if (distance < 200) {
+                tooClose = true;
+                break;
+            }
+        }
+        
+        // Only create if not too close to existing black holes
+        if (!tooClose) {
+            this.createBlackHole(x, y);
+        }
+    }
+    
+    applyNebulaGravity() {
+        // Apply moderate gravitational effects from nebulae to meteors
+        this.meteors.forEach(meteor => {
+            if (!meteor.isActive) return;
+            
+            this.nebulaClouds.forEach(nebula => {
+                const distance = Phaser.Math.Distance.Between(
+                    meteor.currentX, meteor.currentY, nebula.currentX, nebula.currentY
+                );
+                
+                // Nebula gravity range - larger area of influence
+                const gravityRange = nebula.size * 4;
+                
+                if (distance < gravityRange && distance > 5) {
+                    // Subtle gravitational pull - weaker than black holes
+                    const pullStrength = Math.pow((gravityRange - distance) / gravityRange, 1.2);
+                    const subtlePullStrength = pullStrength * 0.3; // Reduced from 0.8 to 0.3
+                    
+                    const angleToNebula = Phaser.Math.Angle.Between(
+                        meteor.currentX, meteor.currentY, nebula.currentX, nebula.currentY
+                    );
+                    
+                    // Calculate subtle deflection force
+                    const deflectionForce = subtlePullStrength * 80; // Reduced from 200 to 80
+                    const deflectAccelX = Math.cos(angleToNebula) * deflectionForce;
+                    const deflectAccelY = Math.sin(angleToNebula) * deflectionForce;
+                    
+                    // Apply moderate acceleration - enough to visibly curve the path
+                    const deltaTime = this.game.loop.delta / 1000;
+                    meteor.velocityX += deflectAccelX * deltaTime;
+                    meteor.velocityY += deflectAccelY * deltaTime;
+                    
+                    // Optional: Limit the total speed change to prevent too dramatic effects
+                    const currentSpeed = Math.sqrt(meteor.velocityX * meteor.velocityX + meteor.velocityY * meteor.velocityY);
+                    const maxSpeedIncrease = meteor.speed * 1.5; // Allow 50% speed increase
+                    if (currentSpeed > maxSpeedIncrease) {
+                        meteor.velocityX = (meteor.velocityX / currentSpeed) * maxSpeedIncrease;
+                        meteor.velocityY = (meteor.velocityY / currentSpeed) * maxSpeedIncrease;
+                    }
+                }
+            });
+        });
+    }
 
     destroyBlackHole(blackHole) {
         // Restore consumed stars first
