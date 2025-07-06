@@ -12,6 +12,14 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.blackHoles = [];
         this.lastRandomBlackHoleTime = 0;
         this.randomBlackHoleInterval = 45000 + Math.random() * 30000; // 45-75 seconds
+        this.ufos = [];
+        this.lastUfoTime = 0;
+        this.ufoInterval = 120000 + Math.random() * 180000; // 2-5 minutes
+    }
+
+    preload() {
+        // Load UFO image
+        this.load.image('ufo', 'static/images/ufo.png');
     }
 
     create() {
@@ -430,11 +438,22 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.randomBlackHoleInterval = 45000 + Math.random() * 30000;
         }
 
+        // Create UFOs very rarely (2-5 minutes)
+        if (currentTime - this.lastUfoTime > this.ufoInterval) {
+            this.createUfo();
+            this.lastUfoTime = currentTime;
+            // Set next random interval between 2-5 minutes
+            this.ufoInterval = 120000 + Math.random() * 180000;
+        }
+
         // Update meteors manually
         this.updateMeteors();
 
         // Update black holes
         this.updateBlackHoles();
+
+        // Update UFOs
+        this.updateUfos();
 
         // Apply nebula gravity to meteors
         this.applyNebulaGravity();
@@ -1108,6 +1127,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.stars = [];
         this.meteors = [];
         this.blackHoles = [];
+        this.ufos = [];
 
         // Recreate scene
         this.createDeepSpaceBackground(width, height);
@@ -1115,6 +1135,290 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.createNebulae(width, height);
         this.createForegroundStars(width, height);
         this.startAtmosphericEffects();
+    }
+
+    createUfo() {
+        const { width, height } = this.scale;
+
+        // Random entry and exit points on opposite sides
+        const side = Math.floor(Math.random() * 4);
+        let startX, startY, endX, endY;
+
+        switch (side) {
+            case 0: // Top to Bottom
+                startX = Math.random() * width;
+                startY = -100;
+                endX = Math.random() * width;
+                endY = height + 100;
+                break;
+            case 1: // Right to Left
+                startX = width + 100;
+                startY = Math.random() * height;
+                endX = -100;
+                endY = Math.random() * height;
+                break;
+            case 2: // Bottom to Top
+                startX = Math.random() * width;
+                startY = height + 100;
+                endX = Math.random() * width;
+                endY = -100;
+                break;
+            case 3: // Left to Right
+                startX = -100;
+                startY = Math.random() * height;
+                endX = width + 100;
+                endY = Math.random() * height;
+                break;
+        }
+
+        // Create UFO sprite
+        const ufoSprite = this.add.image(startX, startY, 'ufo');
+        
+        // Scale down from 300x300 to approximately 60x60
+        ufoSprite.setScale(0.2);
+        
+        // Add subtle glow effect
+        ufoSprite.setTint(0xffffff);
+        
+        // Store UFO data
+        const ufo = {
+            sprite: ufoSprite,
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            currentX: startX,
+            currentY: startY,
+            velocityX: 0,
+            velocityY: 0,
+            speed: 80, // Slower than meteors
+            isActive: true,
+            avoidanceRadius: 150, // Distance to start avoiding mouse
+            avoidanceForce: 500, // Increased strength of avoidance
+            captureRadius: 30, // Distance at which UFO gets "caught"
+            originalPath: { x: endX - startX, y: endY - startY },
+            wobbleTime: 0,
+            wobbleIntensity: 10,
+            hoverOffset: 0,
+            bobSpeed: 2
+        };
+
+        // Calculate initial velocity
+        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+        const duration = (distance / ufo.speed) * 1000;
+
+        ufo.velocityX = (endX - startX) / (duration / 1000);
+        ufo.velocityY = (endY - startY) / (duration / 1000);
+
+        this.ufos.push(ufo);
+
+        // Add floating animation
+        this.tweens.add({
+            targets: ufo,
+            hoverOffset: 5,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        // Add rotation animation
+        this.tweens.add({
+            targets: ufoSprite,
+            rotation: Math.PI * 2,
+            duration: 8000,
+            repeat: -1,
+            ease: 'Linear'
+        });
+    }
+
+    updateUfos() {
+        const mousePointer = this.input.activePointer;
+        
+        for (let i = this.ufos.length - 1; i >= 0; i--) {
+            const ufo = this.ufos[i];
+            if (!ufo.isActive) continue;
+
+            const deltaTime = this.game.loop.delta / 1000;
+            ufo.wobbleTime += deltaTime;
+
+            // Mouse avoidance and capture behavior
+            if (mousePointer) {
+                const mouseDistance = Phaser.Math.Distance.Between(
+                    ufo.currentX, ufo.currentY, mousePointer.x, mousePointer.y
+                );
+
+                // Check if UFO gets caught
+                if (mouseDistance < ufo.captureRadius) {
+                    // Warp to random location
+                    this.warpUfo(ufo);
+                    continue;
+                }
+
+                if (mouseDistance < ufo.avoidanceRadius) {
+                    // Calculate avoidance force - stronger when closer
+                    const avoidanceStrength = Math.pow((ufo.avoidanceRadius - mouseDistance) / ufo.avoidanceRadius, 2);
+                    const angleAwayFromMouse = Phaser.Math.Angle.Between(
+                        mousePointer.x, mousePointer.y, ufo.currentX, ufo.currentY
+                    );
+
+                    // Much stronger avoidance force when close
+                    const panicMultiplier = 1 + (1 - mouseDistance / ufo.avoidanceRadius) * 3; // Up to 4x faster when very close
+                    const avoidanceX = Math.cos(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
+                    const avoidanceY = Math.sin(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
+
+                    ufo.velocityX += avoidanceX * deltaTime;
+                    ufo.velocityY += avoidanceY * deltaTime;
+
+                    // More erratic movement when in panic mode
+                    const panicFactor = Math.max(0, 1 - mouseDistance / ufo.avoidanceRadius);
+                    const erraticForce = 300 * panicFactor; // Increased erratic movement
+                    ufo.velocityX += (Math.random() - 0.5) * erraticForce * deltaTime;
+                    ufo.velocityY += (Math.random() - 0.5) * erraticForce * deltaTime;
+
+                    // Limit max speed when panicking
+                    const maxPanicSpeed = 400; // Much faster max speed when avoiding
+                    const currentSpeed = Math.sqrt(ufo.velocityX * ufo.velocityX + ufo.velocityY * ufo.velocityY);
+                    if (currentSpeed > maxPanicSpeed) {
+                        ufo.velocityX = (ufo.velocityX / currentSpeed) * maxPanicSpeed;
+                        ufo.velocityY = (ufo.velocityY / currentSpeed) * maxPanicSpeed;
+                    }
+                }
+            }
+
+            // Apply gentle course correction back to original path
+            const progressToDestination = Phaser.Math.Distance.Between(ufo.startX, ufo.startY, ufo.currentX, ufo.currentY) / 
+                                         Phaser.Math.Distance.Between(ufo.startX, ufo.startY, ufo.endX, ufo.endY);
+            
+            if (progressToDestination < 0.9) { // Only correct course if not near the end
+                const targetX = ufo.startX + ufo.originalPath.x * progressToDestination;
+                const targetY = ufo.startY + ufo.originalPath.y * progressToDestination;
+                
+                const correctionX = (targetX - ufo.currentX) * 0.3 * deltaTime;
+                const correctionY = (targetY - ufo.currentY) * 0.3 * deltaTime;
+                
+                ufo.velocityX += correctionX;
+                ufo.velocityY += correctionY;
+            }
+
+            // Add subtle wobble movement
+            const wobbleX = Math.sin(ufo.wobbleTime * 1.5) * ufo.wobbleIntensity * deltaTime;
+            const wobbleY = Math.cos(ufo.wobbleTime * 2) * ufo.wobbleIntensity * 0.5 * deltaTime;
+
+            // Update position
+            ufo.currentX += ufo.velocityX * deltaTime + wobbleX;
+            ufo.currentY += ufo.velocityY * deltaTime + wobbleY + ufo.hoverOffset * Math.sin(ufo.wobbleTime * ufo.bobSpeed) * deltaTime;
+
+            // Update sprite position
+            ufo.sprite.setPosition(ufo.currentX, ufo.currentY + ufo.hoverOffset);
+
+            // Check if UFO is off screen
+            const { width, height } = this.scale;
+            if (ufo.currentX < -150 || ufo.currentX > width + 150 ||
+                ufo.currentY < -150 || ufo.currentY > height + 150) {
+                this.removeUfo(ufo);
+            }
+        }
+    }
+
+    removeUfo(ufo) {
+        // Remove UFO from tracking array
+        const index = this.ufos.indexOf(ufo);
+        if (index > -1) {
+            this.ufos.splice(index, 1);
+        }
+
+        // Destroy sprite
+        if (ufo.sprite && ufo.sprite.active) {
+            ufo.sprite.destroy();
+        }
+    }
+
+    warpUfo(ufo) {
+        const { width, height } = this.scale;
+        
+        // Find a safe warp location away from mouse
+        let newX, newY;
+        let attempts = 0;
+        const maxAttempts = 10;
+        const safeDistance = 200; // Minimum distance from mouse
+        
+        do {
+            newX = 100 + Math.random() * (width - 200);
+            newY = 100 + Math.random() * (height - 200);
+            attempts++;
+            
+            if (attempts >= maxAttempts) {
+                // If can't find safe spot, warp to corners
+                const corners = [
+                    { x: 100, y: 100 },
+                    { x: width - 100, y: 100 },
+                    { x: 100, y: height - 100 },
+                    { x: width - 100, y: height - 100 }
+                ];
+                const corner = corners[Math.floor(Math.random() * corners.length)];
+                newX = corner.x;
+                newY = corner.y;
+                break;
+            }
+        } while (this.input.activePointer && 
+                 Phaser.Math.Distance.Between(newX, newY, this.input.activePointer.x, this.input.activePointer.y) < safeDistance);
+        
+        // Create warp effect
+        this.createWarpEffect(ufo.currentX, ufo.currentY, newX, newY);
+        
+        // Update UFO position
+        ufo.currentX = newX;
+        ufo.currentY = newY;
+        ufo.sprite.setPosition(newX, newY);
+        
+        // Reset velocity to prevent carrying momentum
+        ufo.velocityX *= 0.3;
+        ufo.velocityY *= 0.3;
+        
+        // Add some random velocity to escape
+        const escapeAngle = Math.random() * Math.PI * 2;
+        const escapeSpeed = 100;
+        ufo.velocityX += Math.cos(escapeAngle) * escapeSpeed;
+        ufo.velocityY += Math.sin(escapeAngle) * escapeSpeed;
+    }
+
+    createWarpEffect(startX, startY, endX, endY) {
+        // Create sparkle effect for warp
+        const warpGraphics = this.add.graphics();
+        
+        // Draw warp out effect at original position
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const distance = 20;
+            const sparkleX = startX + Math.cos(angle) * distance;
+            const sparkleY = startY + Math.sin(angle) * distance;
+            
+            warpGraphics.fillStyle(0x00ffff, 0.8);
+            warpGraphics.fillCircle(sparkleX, sparkleY, 3);
+        }
+        
+        // Draw warp in effect at new position
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const distance = 20;
+            const sparkleX = endX + Math.cos(angle) * distance;
+            const sparkleY = endY + Math.sin(angle) * distance;
+            
+            warpGraphics.fillStyle(0xff00ff, 0.8);
+            warpGraphics.fillCircle(sparkleX, sparkleY, 3);
+        }
+        
+        // Fade out effect
+        this.tweens.add({
+            targets: warpGraphics,
+            alpha: 0,
+            duration: 800,
+            ease: 'Power2',
+            onComplete: () => {
+                warpGraphics.destroy();
+            }
+        });
     }
 }
 
