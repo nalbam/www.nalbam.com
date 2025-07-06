@@ -496,6 +496,9 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Update asteroids
         this.updateAsteroids();
 
+        // Check for collisions between asteroids and meteors
+        this.checkCollisions();
+
         // Update black holes
         this.updateBlackHoles();
 
@@ -1321,6 +1324,127 @@ class RealisticSpaceScene extends Phaser.Scene {
                 }
             });
         });
+    }
+
+    checkCollisions() {
+        // Check asteroid-asteroid collisions
+        for (let i = 0; i < this.asteroids.length; i++) {
+            const asteroid1 = this.asteroids[i];
+            if (!asteroid1.isActive) continue;
+
+            for (let j = i + 1; j < this.asteroids.length; j++) {
+                const asteroid2 = this.asteroids[j];
+                if (!asteroid2.isActive) continue;
+
+                const distance = Phaser.Math.Distance.Between(
+                    asteroid1.currentX, asteroid1.currentY,
+                    asteroid2.currentX, asteroid2.currentY
+                );
+
+                // Check if asteroids are colliding (considering their sizes)
+                const collisionDistance = (asteroid1.size + asteroid2.size) / 2;
+                if (distance < collisionDistance) {
+                    this.handleAsteroidCollision(asteroid1, asteroid2);
+                }
+            }
+        }
+
+        // Check asteroid-meteor collisions
+        for (let i = 0; i < this.asteroids.length; i++) {
+            const asteroid = this.asteroids[i];
+            if (!asteroid.isActive) continue;
+
+            for (let j = 0; j < this.meteors.length; j++) {
+                const meteor = this.meteors[j];
+                if (!meteor.isActive) continue;
+
+                const distance = Phaser.Math.Distance.Between(
+                    asteroid.currentX, asteroid.currentY,
+                    meteor.currentX, meteor.currentY
+                );
+
+                // Check if asteroid and meteor are colliding
+                const collisionDistance = (asteroid.size + meteor.size) / 2;
+                if (distance < collisionDistance) {
+                    this.handleAsteroidMeteorCollision(asteroid, meteor);
+                }
+            }
+        }
+    }
+
+    handleAsteroidCollision(asteroid1, asteroid2) {
+        // Calculate collision angle
+        const angle = Phaser.Math.Angle.Between(
+            asteroid1.currentX, asteroid1.currentY,
+            asteroid2.currentX, asteroid2.currentY
+        );
+
+        // Calculate masses (proportional to size)
+        const mass1 = asteroid1.size * asteroid1.size;
+        const mass2 = asteroid2.size * asteroid2.size;
+        const totalMass = mass1 + mass2;
+
+        // Calculate velocities along collision axis
+        const v1 = asteroid1.velocityX * Math.cos(angle) + asteroid1.velocityY * Math.sin(angle);
+        const v2 = asteroid2.velocityX * Math.cos(angle) + asteroid2.velocityY * Math.sin(angle);
+
+        // Calculate velocities perpendicular to collision axis
+        const u1 = -asteroid1.velocityX * Math.sin(angle) + asteroid1.velocityY * Math.cos(angle);
+        const u2 = -asteroid2.velocityX * Math.sin(angle) + asteroid2.velocityY * Math.cos(angle);
+
+        // Elastic collision formulas
+        const newV1 = (v1 * (mass1 - mass2) + 2 * mass2 * v2) / totalMass;
+        const newV2 = (v2 * (mass2 - mass1) + 2 * mass1 * v1) / totalMass;
+
+        // Convert back to x,y coordinates
+        asteroid1.velocityX = newV1 * Math.cos(angle) - u1 * Math.sin(angle);
+        asteroid1.velocityY = newV1 * Math.sin(angle) + u1 * Math.cos(angle);
+        asteroid2.velocityX = newV2 * Math.cos(angle) - u2 * Math.sin(angle);
+        asteroid2.velocityY = newV2 * Math.sin(angle) + u2 * Math.cos(angle);
+
+        // Separate asteroids to prevent overlap
+        const separationDistance = (asteroid1.size + asteroid2.size) / 2 + 5;
+        const currentDistance = Phaser.Math.Distance.Between(
+            asteroid1.currentX, asteroid1.currentY,
+            asteroid2.currentX, asteroid2.currentY
+        );
+        
+        if (currentDistance < separationDistance) {
+            const separationRatio = (separationDistance - currentDistance) / 2;
+            const separationX = Math.cos(angle) * separationRatio;
+            const separationY = Math.sin(angle) * separationRatio;
+            
+            asteroid1.currentX -= separationX;
+            asteroid1.currentY -= separationY;
+            asteroid2.currentX += separationX;
+            asteroid2.currentY += separationY;
+        }
+
+        // Add some rotation change due to collision
+        asteroid1.rotationSpeed += (Math.random() - 0.5) * 0.02;
+        asteroid2.rotationSpeed += (Math.random() - 0.5) * 0.02;
+    }
+
+    handleAsteroidMeteorCollision(asteroid, meteor) {
+        // Meteor explodes
+        this.createMeteorExplosion(meteor.currentX, meteor.currentY);
+        this.removeMeteor(meteor);
+
+        // Asteroid bounces off
+        const angle = Phaser.Math.Angle.Between(
+            asteroid.currentX, asteroid.currentY,
+            meteor.currentX, meteor.currentY
+        );
+
+        // Calculate bounce velocity (asteroid gets knocked back)
+        const bounceSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + 
+                                     asteroid.velocityY * asteroid.velocityY) * 1.3;
+        
+        asteroid.velocityX = Math.cos(angle) * bounceSpeed;
+        asteroid.velocityY = Math.sin(angle) * bounceSpeed;
+
+        // Add rotation change due to impact
+        asteroid.rotationSpeed += (Math.random() - 0.5) * 0.03;
     }
 
     destroyBlackHole(blackHole) {
