@@ -1088,9 +1088,9 @@ class RealisticSpaceScene extends Phaser.Scene {
                     this.blackHoles.splice(index, 1);
                 }
 
-                // Chance for UFO to appear and investigate the black hole site
+                // UFO always appears to investigate randomly created black holes
                 // Only if no other UFOs are currently active AND only for randomly created black holes
-                if (Math.random() < 0.7 && this.ufos.length === 0 && !blackHole.isManuallyCreated) { // 70% chance, no existing UFOs, and not manually created
+                if (this.ufos.length === 0 && !blackHole.isManuallyCreated) { // 100% chance, no existing UFOs, and not manually created
                     this.time.delayedCall(1000 + Math.random() * 2000, () => {
                         this.createInvestigationUfo(blackHoleX, blackHoleY);
                     });
@@ -1215,94 +1215,9 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     createUfo() {
-        const { width, height } = this.scale;
-
-        // Random entry and exit points on opposite sides
-        const side = Math.floor(Math.random() * 4);
-        let startX, startY, endX, endY;
-
-        switch (side) {
-            case 0: // Top to Bottom
-                startX = Math.random() * width;
-                startY = -100;
-                endX = Math.random() * width;
-                endY = height + 100;
-                break;
-            case 1: // Right to Left
-                startX = width + 100;
-                startY = Math.random() * height;
-                endX = -100;
-                endY = Math.random() * height;
-                break;
-            case 2: // Bottom to Top
-                startX = Math.random() * width;
-                startY = height + 100;
-                endX = Math.random() * width;
-                endY = -100;
-                break;
-            case 3: // Left to Right
-                startX = -100;
-                startY = Math.random() * height;
-                endX = width + 100;
-                endY = Math.random() * height;
-                break;
-        }
-
-        // Create UFO sprite
-        const ufoSprite = this.add.image(startX, startY, 'ufo');
-
-        // Scale down
-        ufoSprite.setScale(0.3);
-
-        // Add subtle glow effect
-        ufoSprite.setTint(0xffffff);
-
-        // Store UFO data
-        const ufo = {
-            sprite: ufoSprite,
-            startX: startX,
-            startY: startY,
-            endX: endX,
-            endY: endY,
-            currentX: startX,
-            currentY: startY,
-            velocityX: 0,
-            velocityY: 0,
-            speed: 150, // Faster movement
-            isActive: true,
-            avoidanceRadius: 150, // Distance to start avoiding mouse
-            avoidanceForce: 500, // Increased strength of avoidance
-            captureRadius: 30, // Distance at which UFO gets "caught"
-            laserRange: 200, // Range to detect meteors
-            lastLaserTime: 0,
-            laserCooldown: 1000, // 1 second cooldown between laser shots
-            originalPath: { x: endX - startX, y: endY - startY },
-            wobbleTime: 0,
-            wobbleIntensity: 10,
-            hoverOffset: 0,
-            bobSpeed: 2
-        };
-
-        // Calculate initial velocity
-        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
-        const duration = (distance / ufo.speed) * 1000;
-
-        ufo.velocityX = (endX - startX) / (duration / 1000);
-        ufo.velocityY = (endY - startY) / (duration / 1000);
-
-        this.ufos.push(ufo);
-
-        // Add floating animation
-        this.tweens.add({
-            targets: ufo,
-            hoverOffset: 5,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.easeInOut'
-        });
-
-        // No rotation animation for UFO
+        // UFOs now use warp travel instead of linear movement
+        // This method is kept for compatibility but won't be used for investigation UFOs
+        console.log("Regular UFO creation - deprecated in favor of warp travel");
     }
 
     updateUfos() {
@@ -1315,65 +1230,69 @@ class RealisticSpaceScene extends Phaser.Scene {
             const deltaTime = this.game.loop.delta / 1000;
             ufo.wobbleTime += deltaTime;
 
-            // Investigation behavior
+            // Warp-based investigation behavior
             if (ufo.isInvestigating) {
                 const distanceToTarget = Phaser.Math.Distance.Between(
                     ufo.currentX, ufo.currentY, ufo.targetX, ufo.targetY
                 );
 
-                if (!ufo.hasReachedTarget && distanceToTarget < ufo.investigationRadius) {
-                    ufo.hasReachedTarget = true;
-                    ufo.investigationTime = 0;
+                if (ufo.investigationPhase === 'approaching') {
+                    // Fast movement toward target
+                    const angleToTarget = Phaser.Math.Angle.Between(
+                        ufo.currentX, ufo.currentY, ufo.targetX, ufo.targetY
+                    );
+                    ufo.velocityX = Math.cos(angleToTarget) * ufo.speed;
+                    ufo.velocityY = Math.sin(angleToTarget) * ufo.speed;
 
-                    // Slow down when reaching investigation site
-                    ufo.velocityX *= 0.3;
-                    ufo.velocityY *= 0.3;
+                    if (distanceToTarget < ufo.investigationRadius) {
+                        ufo.investigationPhase = 'investigating';
+                        ufo.investigationTime = 0;
+                        // Rapid deceleration
+                        ufo.velocityX *= 0.1;
+                        ufo.velocityY *= 0.1;
+                    }
                 }
 
-                if (ufo.hasReachedTarget) {
+                if (ufo.investigationPhase === 'investigating') {
                     ufo.investigationTime += deltaTime * 1000;
 
                     // Orbit around the investigation site
-                    const orbitAngle = ufo.investigationTime * 0.001;
-                    const orbitRadius = 60;
+                    const orbitAngle = ufo.investigationTime * 0.002;
+                    const orbitRadius = 50;
                     const orbitCenterX = ufo.targetX + Math.cos(orbitAngle) * orbitRadius;
                     const orbitCenterY = ufo.targetY + Math.sin(orbitAngle) * orbitRadius;
 
-                    // Gentle movement toward orbit position
-                    const orbitX = (orbitCenterX - ufo.currentX) * 2 * deltaTime;
-                    const orbitY = (orbitCenterY - ufo.currentY) * 2 * deltaTime;
+                    // Fast movement toward orbit position
+                    const orbitX = (orbitCenterX - ufo.currentX) * 4 * deltaTime;
+                    const orbitY = (orbitCenterY - ufo.currentY) * 4 * deltaTime;
 
                     ufo.velocityX = orbitX;
                     ufo.velocityY = orbitY;
 
-                    // Leave after investigation is complete
+                    // Finish investigation and prepare to leave
                     if (ufo.investigationTime > ufo.investigationDuration) {
-                        // Set exit velocity toward nearest edge
-                        const { width, height } = this.scale;
-                        const edges = [
-                            { x: -100, y: ufo.currentY }, // Left
-                            { x: width + 100, y: ufo.currentY }, // Right
-                            { x: ufo.currentX, y: -100 }, // Top
-                            { x: ufo.currentX, y: height + 100 } // Bottom
-                        ];
+                        ufo.investigationPhase = 'leaving';
+                        // Choose random leave direction
+                        const leaveAngle = Math.random() * Math.PI * 2;
+                        ufo.leaveDirection = {
+                            x: Math.cos(leaveAngle),
+                            y: Math.sin(leaveAngle)
+                        };
+                    }
+                }
 
-                        let nearestExit = edges[0];
-                        let minDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edges[0].x, edges[0].y);
+                if (ufo.investigationPhase === 'leaving') {
+                    // Move in chosen direction for a longer distance before warping out
+                    ufo.velocityX = ufo.leaveDirection.x * ufo.speed * 0.7;
+                    ufo.velocityY = ufo.leaveDirection.y * ufo.speed * 0.7;
 
-                        edges.forEach(edge => {
-                            const distance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edge.x, edge.y);
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                nearestExit = edge;
-                            }
-                        });
-
-                        const exitDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, nearestExit.x, nearestExit.y);
-                        const exitDuration = (exitDistance / (ufo.speed * 2)) * 1000;
-
-                        ufo.velocityX = (nearestExit.x - ufo.currentX) / (exitDuration / 1000);
-                        ufo.velocityY = (nearestExit.y - ufo.currentY) / (exitDuration / 1000);
-                        ufo.isInvestigating = false;
+                    // After moving 200-250 pixels, warp out
+                    const moveDistance = Phaser.Math.Distance.Between(
+                        ufo.targetX, ufo.targetY, ufo.currentX, ufo.currentY
+                    );
+                    if (moveDistance > 200 + Math.random() * 50) {
+                        ufo.investigationPhase = 'warping-out';
+                        this.warpOutUfo(ufo);
                     }
                 }
             }
@@ -1392,28 +1311,28 @@ class RealisticSpaceScene extends Phaser.Scene {
                 }
 
                 if (mouseDistance < ufo.avoidanceRadius) {
-                    // Calculate avoidance force - stronger when closer
+                    // Calculate avoidance force - much stronger for warp-capable UFOs
                     const avoidanceStrength = Math.pow((ufo.avoidanceRadius - mouseDistance) / ufo.avoidanceRadius, 2);
                     const angleAwayFromMouse = Phaser.Math.Angle.Between(
                         mousePointer.x, mousePointer.y, ufo.currentX, ufo.currentY
                     );
 
-                    // Much stronger avoidance force when close
-                    const panicMultiplier = 1 + (1 - mouseDistance / ufo.avoidanceRadius) * 3;
+                    // Extremely strong avoidance force - warp-level speed
+                    const panicMultiplier = 2 + (1 - mouseDistance / ufo.avoidanceRadius) * 6; // Up to 8x faster
                     const avoidanceX = Math.cos(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
                     const avoidanceY = Math.sin(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
 
                     ufo.velocityX += avoidanceX * deltaTime;
                     ufo.velocityY += avoidanceY * deltaTime;
 
-                    // More erratic movement when in panic mode
+                    // Extreme erratic movement when in panic mode
                     const panicFactor = Math.max(0, 1 - mouseDistance / ufo.avoidanceRadius);
-                    const erraticForce = 300 * panicFactor;
+                    const erraticForce = 600 * panicFactor; // Doubled erratic force
                     ufo.velocityX += (Math.random() - 0.5) * erraticForce * deltaTime;
                     ufo.velocityY += (Math.random() - 0.5) * erraticForce * deltaTime;
 
-                    // Limit max speed when panicking
-                    const maxPanicSpeed = 400;
+                    // Much higher max speed when panicking - warp speed
+                    const maxPanicSpeed = 800; // Doubled max panic speed
                     const currentSpeed = Math.sqrt(ufo.velocityX * ufo.velocityX + ufo.velocityY * ufo.velocityY);
                     if (currentSpeed > maxPanicSpeed) {
                         ufo.velocityX = (ufo.velocityX / currentSpeed) * maxPanicSpeed;
@@ -1565,72 +1484,55 @@ class RealisticSpaceScene extends Phaser.Scene {
     createInvestigationUfo(targetX, targetY) {
         const { width, height } = this.scale;
 
-        // UFO appears from a random edge, heads toward the black hole investigation site
-        const side = Math.floor(Math.random() * 4);
-        let startX, startY;
+        // UFO warps in from much farther distance
+        const warpDistance = 300 + Math.random() * 200; // 300-500 pixels away from target
+        const warpAngle = Math.random() * Math.PI * 2;
+        const startX = targetX + Math.cos(warpAngle) * warpDistance;
+        const startY = targetY + Math.sin(warpAngle) * warpDistance;
 
-        switch (side) {
-            case 0: // Top
-                startX = Math.random() * width;
-                startY = -100;
-                break;
-            case 1: // Right
-                startX = width + 100;
-                startY = Math.random() * height;
-                break;
-            case 2: // Bottom
-                startX = Math.random() * width;
-                startY = height + 100;
-                break;
-            case 3: // Left
-                startX = -100;
-                startY = Math.random() * height;
-                break;
-        }
+        // Ensure UFO warps within screen bounds
+        const clampedX = Math.max(100, Math.min(width - 100, startX));
+        const clampedY = Math.max(100, Math.min(height - 100, startY));
 
-        // Create UFO sprite
-        const ufoSprite = this.add.image(startX, startY, 'ufo');
-
-        // Scale down from 300x158 to approximately 60x32
+        // Create UFO sprite at warp location
+        const ufoSprite = this.add.image(clampedX, clampedY, 'ufo');
         ufoSprite.setScale(0.2);
         ufoSprite.setTint(0xffffff);
 
         // Store UFO data with investigation behavior
         const ufo = {
             sprite: ufoSprite,
-            startX: startX,
-            startY: startY,
             targetX: targetX, // Black hole investigation site
             targetY: targetY,
-            currentX: startX,
-            currentY: startY,
+            currentX: clampedX,
+            currentY: clampedY,
             velocityX: 0,
             velocityY: 0,
-            speed: 120, // Faster movement
+            speed: 300, // Much faster warp-capable speed
             isActive: true,
             avoidanceRadius: 150,
-            avoidanceForce: 500,
-            captureRadius: 30,
+            avoidanceForce: 800, // Stronger avoidance for warp-capable UFO
+            captureRadius: 25, // Smaller capture radius - harder to catch
             wobbleTime: 0,
             wobbleIntensity: 8,
             hoverOffset: 0,
             bobSpeed: 2,
             isInvestigating: true,
             investigationTime: 0,
-            investigationDuration: 5000 + Math.random() * 5000, // 5-10 seconds
+            investigationDuration: 3000 + Math.random() * 4000, // 3-7 seconds
             hasReachedTarget: false,
             investigationRadius: 80,
-            laserRange: 200, // Range to detect meteors
+            laserRange: 200,
             lastLaserTime: 0,
-            laserCooldown: 1000 // 1 second cooldown between laser shots
+            laserCooldown: 800, // Faster laser cooldown
+            investigationPhase: 'approaching', // approaching, investigating, leaving, warping-out
+            leaveDirection: null
         };
 
-        // Calculate initial velocity toward investigation site
-        const distance = Phaser.Math.Distance.Between(startX, startY, targetX, targetY);
-        const duration = (distance / ufo.speed) * 1000;
-
-        ufo.velocityX = (targetX - startX) / (duration / 1000);
-        ufo.velocityY = (targetY - startY) / (duration / 1000);
+        // Create warp-in effect from farther away
+        const warpFromX = clampedX + Math.cos(warpAngle + Math.PI) * 100;
+        const warpFromY = clampedY + Math.sin(warpAngle + Math.PI) * 100;
+        this.createWarpEffect(warpFromX, warpFromY, clampedX, clampedY);
 
         this.ufos.push(ufo);
 
@@ -1643,8 +1545,6 @@ class RealisticSpaceScene extends Phaser.Scene {
             repeat: -1,
             ease: 'Sine.easeInOut'
         });
-
-        // No rotation animation for UFO
 
         // Create investigation scanning effect
         this.createScanningEffect(targetX, targetY);
@@ -1754,6 +1654,21 @@ class RealisticSpaceScene extends Phaser.Scene {
             onComplete: () => {
                 explosionGraphics.destroy();
             }
+        });
+    }
+
+    warpOutUfo(ufo) {
+        // Calculate warp-out destination farther away
+        const warpOutAngle = Math.atan2(ufo.velocityY, ufo.velocityX);
+        const warpToX = ufo.currentX + Math.cos(warpOutAngle) * 150;
+        const warpToY = ufo.currentY + Math.sin(warpOutAngle) * 150;
+
+        // Create warp-out effect to farther destination
+        this.createWarpEffect(ufo.currentX, ufo.currentY, warpToX, warpToY);
+
+        // Remove UFO immediately after warp effect
+        this.time.delayedCall(200, () => {
+            this.removeUfo(ufo);
         });
     }
 }
