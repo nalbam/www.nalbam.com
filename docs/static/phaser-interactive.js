@@ -177,7 +177,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         const nebulaeData = [
             { x: width * 0.2, y: height * 0.3, color: 0xff6b6b, alpha: 0.15, size: 150, driftX: 0.1, driftY: 0.05 }, // Red nebula
             { x: width * 0.8, y: height * 0.6, color: 0x4ecdc4, alpha: 0.12, size: 120, driftX: -0.08, driftY: 0.12 }, // Cyan nebula
-            { x: width * 0.5, y: height * 0.4, color: 0x45b7d1, alpha: 0.1, size: 100, driftX: 0.06, driftY: -0.04 },  // Blue nebula
+            { x: width * 0.5, y: height * 0.5, color: 0x45b7d1, alpha: 0.1, size: 100, driftX: 0.06, driftY: -0.04 },  // Blue nebula
             { x: width * 0.1, y: height * 0.8, color: 0x9b59b6, alpha: 0.08, size: 80, driftX: -0.04, driftY: 0.08 },  // Purple nebula
             { x: width * 0.9, y: height * 0.2, color: 0xf39c12, alpha: 0.06, size: 90, driftX: 0.03, driftY: 0.06 }   // Orange nebula
         ];
