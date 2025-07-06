@@ -16,40 +16,40 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     create() {
         const { width, height } = this.scale;
-        
+
         // Create layers in order
         this.createDeepSpaceBackground(width, height);
         this.createDistantStars(width, height);
         this.createNebulae(width, height);
         this.createForegroundStars(width, height);
-        
+
         // Start atmospheric effects
         this.startAtmosphericEffects();
-        
+
         // Enable mouse interaction - multiple methods
         this.input.on('pointerdown', this.onPointerDown, this);
         this.input.on('pointerup', (pointer) => {
             this.createBlackHole(pointer.x, pointer.y);
         });
-        
+
         // Create invisible interactive zone
         const zone = this.add.zone(width/2, height/2, width, height);
         zone.setInteractive();
         zone.on('pointerdown', (pointer) => {
             this.createBlackHole(pointer.x, pointer.y);
         });
-        
+
         // Alternative click detection
         this.input.setDefaultCursor('pointer');
         this.input.topOnly = false;
-        
+
         // Handle resize
         this.scale.on('resize', this.handleResize, this);
     }
 
     createDeepSpaceBackground(width, height) {
         this.backgroundGraphics = this.add.graphics();
-        
+
         // Create deep space gradient with multiple layers
         const gradientSteps = 50;
         const colors = [
@@ -59,24 +59,24 @@ class RealisticSpaceScene extends Phaser.Scene {
             { r: 8, g: 8, b: 20 },    // Back to darker
             { r: 4, g: 4, b: 12 }     // Deepest space
         ];
-        
+
         for (let i = 0; i < gradientSteps; i++) {
             const progress = i / gradientSteps;
             const colorIndex = Math.floor(progress * (colors.length - 1));
             const localProgress = (progress * (colors.length - 1)) - colorIndex;
-            
+
             const color1 = colors[colorIndex];
             const color2 = colors[Math.min(colorIndex + 1, colors.length - 1)];
-            
+
             const r = Math.floor(color1.r + (color2.r - color1.r) * localProgress);
             const g = Math.floor(color1.g + (color2.g - color1.g) * localProgress);
             const b = Math.floor(color1.b + (color2.b - color1.b) * localProgress);
-            
+
             const color = (r << 16) + (g << 8) + b;
             this.backgroundGraphics.fillStyle(color, 1);
             this.backgroundGraphics.fillRect(0, i * height / gradientSteps, width, height / gradientSteps + 1);
         }
-        
+
         // Add subtle color variations for depth
         this.addColorVariations(width, height);
     }
@@ -88,13 +88,13 @@ class RealisticSpaceScene extends Phaser.Scene {
             { color: 0x1a2e2e, alpha: 0.15, count: 6 },
             { color: 0x2e2e1a, alpha: 0.1, count: 4 }
         ];
-        
+
         variations.forEach(variation => {
             for (let i = 0; i < variation.count; i++) {
                 const x = Math.random() * width;
                 const y = Math.random() * height;
                 const radius = 80 + Math.random() * 200;
-                
+
                 this.backgroundGraphics.fillStyle(variation.color, variation.alpha);
                 this.backgroundGraphics.fillCircle(x, y, radius);
             }
@@ -103,14 +103,14 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     createDistantStars(width, height) {
         const distantStars = this.add.graphics();
-        
+
         // Create tiny distant stars
         for (let i = 0; i < 800; i++) {
             const x = Math.random() * width;
             const y = Math.random() * height;
             const size = 0.3 + Math.random() * 0.7;
             const brightness = 0.3 + Math.random() * 0.4;
-            
+
             // Slightly different colors for realism
             const colorVariation = Math.random();
             let color;
@@ -123,7 +123,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             } else {
                 color = 0xffeaa7; // Slightly yellow
             }
-            
+
             distantStars.fillStyle(color, brightness);
             distantStars.fillCircle(x, y, size);
         }
@@ -131,39 +131,39 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     createMilkyWay(width, height) {
         this.milkyWayGraphics = this.add.graphics();
-        
+
         // Create Milky Way band across the sky
         const bandHeight = height * 0.4;
         const bandY = height * 0.3;
-        
+
         // Create the main galactic band
         const cloudDensity = 200;
         for (let i = 0; i < cloudDensity; i++) {
             const x = (i / cloudDensity) * width * 1.5 - width * 0.25;
             const y = bandY + Math.sin(i * 0.1) * bandHeight * 0.2;
-            
+
             // Create organic cloud shapes
             const cloudSize = 40 + Math.random() * 120;
             const alpha = 0.08 + Math.random() * 0.12;
-            
+
             // Vary the galactic colors
             const colors = [0xffffff, 0xfff8e1, 0xe8e8ff, 0xf0f0ff];
             const color = colors[Math.floor(Math.random() * colors.length)];
-            
+
             this.milkyWayGraphics.fillStyle(color, alpha);
             this.milkyWayGraphics.fillCircle(x, y, cloudSize);
         }
-        
+
         // Add dust lanes (darker areas)
         for (let i = 0; i < 50; i++) {
             const x = Math.random() * width;
             const y = bandY + (Math.random() - 0.5) * bandHeight;
             const size = 20 + Math.random() * 60;
-            
+
             this.milkyWayGraphics.fillStyle(0x000000, 0.3);
             this.milkyWayGraphics.fillCircle(x, y, size);
         }
-        
+
         // Add bright galactic center
         const centerX = width * 0.7;
         const centerY = bandY;
@@ -177,14 +177,14 @@ class RealisticSpaceScene extends Phaser.Scene {
         const nebulaeData = [
             { x: width * 0.2, y: height * 0.3, color: 0xff6b6b, alpha: 0.15, size: 150, driftX: 0.1, driftY: 0.05 }, // Red nebula
             { x: width * 0.8, y: height * 0.6, color: 0x4ecdc4, alpha: 0.12, size: 120, driftX: -0.08, driftY: 0.12 }, // Cyan nebula
-            { x: width * 0.5, y: height * 0.7, color: 0x45b7d1, alpha: 0.1, size: 100, driftX: 0.06, driftY: -0.04 },  // Blue nebula
+            { x: width * 0.5, y: height * 0.4, color: 0x45b7d1, alpha: 0.1, size: 100, driftX: 0.06, driftY: -0.04 },  // Blue nebula
             { x: width * 0.1, y: height * 0.8, color: 0x9b59b6, alpha: 0.08, size: 80, driftX: -0.04, driftY: 0.08 },  // Purple nebula
             { x: width * 0.9, y: height * 0.2, color: 0xf39c12, alpha: 0.06, size: 90, driftX: 0.03, driftY: 0.06 }   // Orange nebula
         ];
-        
+
         nebulaeData.forEach((nebula, index) => {
             const nebulaGraphics = this.add.graphics();
-            
+
             // Store nebula object with movement properties
             const nebulaObj = {
                 graphics: nebulaGraphics,
@@ -204,18 +204,18 @@ class RealisticSpaceScene extends Phaser.Scene {
                 currentRotation: 0,
                 layers: []
             };
-            
+
             // Generate layer data
             for (let layer = 0; layer < 5; layer++) {
                 const layerSize = nebula.size * (1 - layer * 0.15);
                 const layerAlpha = nebula.alpha * (1 - layer * 0.3);
                 const layerData = [];
-                
+
                 for (let i = 0; i < 8; i++) {
                     const angle = (i / 8) * Math.PI * 2;
                     const distance = Math.random() * layerSize * 0.5;
                     const size = layerSize * (0.3 + Math.random() * 0.4);
-                    
+
                     layerData.push({
                         angle: angle,
                         distance: distance,
@@ -233,17 +233,17 @@ class RealisticSpaceScene extends Phaser.Scene {
                         spiralSpeed: (Math.random() - 0.5) * 0.002 // Spiral speed
                     });
                 }
-                
+
                 nebulaObj.layers.push(layerData);
             }
-            
+
             this.nebulaClouds.push(nebulaObj);
         });
     }
 
     createForegroundStars(width, height) {
         this.twinkleGraphics = this.add.graphics();
-        
+
         // Create prominent foreground stars
         const starTypes = [
             { count: 150, size: 1, brightness: 0.8, twinkle: 0.7 },
@@ -252,12 +252,12 @@ class RealisticSpaceScene extends Phaser.Scene {
             { count: 20, size: 2.5, brightness: 1.0, twinkle: 1.0 },
             { count: 10, size: 3, brightness: 1.0, twinkle: 1.0 }
         ];
-        
+
         starTypes.forEach(type => {
             for (let i = 0; i < type.count; i++) {
                 const x = Math.random() * width;
                 const y = Math.random() * height;
-                
+
                 // Star color based on temperature
                 const temp = Math.random();
                 let color;
@@ -272,7 +272,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 } else {
                     color = 0xb8e6ff; // Blue
                 }
-                
+
                 this.stars.push({
                     x: x,
                     y: y,
@@ -304,36 +304,36 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     updateStarTwinkle() {
         if (!this.twinkleGraphics) return;
-        
+
         this.twinkleGraphics.clear();
         const time = this.time.now * 0.001;
-        
+
         this.stars.forEach(star => {
             // Calculate atmospheric twinkle
             const distortion = Math.sin(this.atmosphericDistortion + star.twinklePhase) * 0.1;
             const twinkle = 0.6 + 0.4 * Math.sin(time * star.twinkleSpeed + star.twinklePhase);
             const finalBrightness = star.brightness * twinkle * star.twinkleIntensity;
             const finalSize = star.size * (1 + distortion);
-            
+
             // Draw star (use visual position if distorted by black hole)
             const drawX = star.visualX !== undefined ? star.visualX : star.x;
             const drawY = star.visualY !== undefined ? star.visualY : star.y;
-            
+
             this.twinkleGraphics.fillStyle(star.color, finalBrightness);
             this.twinkleGraphics.fillCircle(drawX, drawY, finalSize);
-            
+
             // Add diffraction spikes for brighter stars
             if (star.size > 1.5) {
                 const spikeLength = star.size * 3;
                 const spikeAlpha = finalBrightness * 0.6;
                 this.twinkleGraphics.lineStyle(0.5, star.color, spikeAlpha);
-                
+
                 // Vertical spike
                 this.twinkleGraphics.lineBetween(
                     drawX, drawY - spikeLength,
                     drawX, drawY + spikeLength
                 );
-                
+
                 // Horizontal spike
                 this.twinkleGraphics.lineBetween(
                     drawX - spikeLength, drawY,
@@ -342,70 +342,70 @@ class RealisticSpaceScene extends Phaser.Scene {
             }
         });
     }
-    
+
     updateNebulae() {
         const time = this.time.now * 0.001;
-        
+
         this.nebulaClouds.forEach(nebula => {
             // Update nebula time
             nebula.time += 0.016;
-            
+
             // Calculate smooth drift movement
             const driftPhase = nebula.time * 0.3 + nebula.phaseOffset;
             const driftX = Math.sin(driftPhase) * nebula.driftX;
             const driftY = Math.cos(driftPhase * 0.7) * nebula.driftY;
-            
+
             // Update position
             nebula.currentX = nebula.baseX + driftX * 100;
             nebula.currentY = nebula.baseY + driftY * 100;
-            
+
             // Update rotation
             nebula.currentRotation += nebula.rotationSpeed * nebula.rotationDirection;
-            
+
             // Redraw nebula
             nebula.graphics.clear();
-            
+
             // Draw each layer with nebula-like flowing movement
             nebula.layers.forEach((layerData, layerIndex) => {
                 const layerDrift = nebula.time * 0.003 + layerIndex * 0.008; // Very slow layer drift
                 const layerRotation = nebula.currentRotation + layerIndex * 0.003; // Gentle rotation per layer
-                
+
                 layerData.forEach(cloudlet => {
                     // Nebula-like flowing movement
                     const individualTime = nebula.time * cloudlet.individualSpeed;
-                    
+
                     // Create flowing turbulence like real nebulae
                     const turbulenceX = Math.sin(individualTime * cloudlet.turbulenceScale + cloudlet.flowPhaseX) * cloudlet.flowAmplitudeX;
                     const turbulenceY = Math.cos(individualTime * cloudlet.turbulenceScale * 0.7 + cloudlet.flowPhaseY) * cloudlet.flowAmplitudeY;
-                    
+
                     // Add secondary turbulence for more complex flow
                     const turbulence2X = Math.sin(individualTime * cloudlet.turbulenceScale * 2.3 + cloudlet.flowPhaseX + 1) * cloudlet.flowAmplitudeX * 0.4;
                     const turbulence2Y = Math.cos(individualTime * cloudlet.turbulenceScale * 1.7 + cloudlet.flowPhaseY + 2) * cloudlet.flowAmplitudeY * 0.4;
-                    
+
                     // Gentle spiral motion
                     const spiralAngle = individualTime * cloudlet.spiralSpeed + cloudlet.angle;
                     const spiralX = Math.cos(spiralAngle) * cloudlet.spiralRadius * Math.sin(individualTime * 0.001);
                     const spiralY = Math.sin(spiralAngle) * cloudlet.spiralRadius * 0.6 * Math.cos(individualTime * 0.0008);
-                    
+
                     // Base position with gentle rotation
                     const angle = cloudlet.angle + layerDrift + layerRotation;
                     const distance = cloudlet.distance + Math.sin(individualTime * 0.002 + cloudlet.driftPhase) * 8;
                     const baseX = Math.cos(angle) * distance;
                     const baseY = Math.sin(angle) * distance;
-                    
+
                     // Combine all movements for nebula-like flow
                     const x = nebula.currentX + baseX + turbulenceX + turbulence2X + spiralX;
                     const y = nebula.currentY + baseY + turbulenceY + turbulence2Y + spiralY;
-                    
+
                     // Gentle size pulsing like gas clouds
                     const sizePulse1 = Math.sin(individualTime * 0.004 + cloudlet.driftPhase) * 3;
                     const sizePulse2 = Math.cos(individualTime * 0.007 + cloudlet.driftPhase + 1) * 2;
                     const size = cloudlet.size * cloudlet.sizeVariation + sizePulse1 + sizePulse2;
-                    
+
                     // Gentle alpha variation like flowing gas
                     const alphaFlow = 0.85 + Math.sin(individualTime * 0.003 + cloudlet.driftPhase) * 0.15;
                     const alphaFlow2 = 0.9 + Math.cos(individualTime * 0.005 + cloudlet.driftPhase + 1) * 0.1;
-                    
+
                     nebula.graphics.fillStyle(nebula.color, cloudlet.alpha * alphaFlow * alphaFlow2);
                     nebula.graphics.fillCircle(x, y, Math.max(1, size));
                 });
@@ -415,13 +415,13 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     update() {
         const currentTime = this.time.now;
-        
+
         // Create meteors occasionally - one at a time, every 10 seconds
         if (currentTime - this.lastMeteorTime > 10000 && this.meteors.length === 0) {
             this.createMeteor();
             this.lastMeteorTime = currentTime;
         }
-        
+
         // Create random black holes very occasionally
         if (currentTime - this.lastRandomBlackHoleTime > this.randomBlackHoleInterval) {
             this.createRandomBlackHole();
@@ -429,25 +429,25 @@ class RealisticSpaceScene extends Phaser.Scene {
             // Set next random interval between 45-75 seconds
             this.randomBlackHoleInterval = 45000 + Math.random() * 30000;
         }
-        
+
         // Update meteors manually
         this.updateMeteors();
-        
+
         // Update black holes
         this.updateBlackHoles();
-        
+
         // Apply nebula gravity to meteors
         this.applyNebulaGravity();
     }
 
     createMeteor() {
         const { width, height } = this.scale;
-        
-        
+
+
         // Random entry and exit points on opposite sides
         const side = Math.floor(Math.random() * 4);
         let startX, startY, endX, endY;
-        
+
         switch (side) {
             case 0: // Top to Bottom
                 startX = Math.random() * width;
@@ -474,32 +474,32 @@ class RealisticSpaceScene extends Phaser.Scene {
                 endY = Math.random() * height;
                 break;
         }
-        
-        
+
+
         const meteorGraphics = this.add.graphics();
         const meteorTrail = this.add.graphics();
-        
+
         // Create meteor head - appropriate size
         meteorGraphics.fillStyle(0xffeaa7, 0.9);
         meteorGraphics.fillCircle(0, 0, 4);
         meteorGraphics.fillStyle(0xffffff, 1);
         meteorGraphics.fillCircle(0, 0, 2);
-        
+
         // Create meteor trail - will be drawn dynamically
         // meteorTrail will be redrawn each frame based on position history
-        
+
         meteorGraphics.setPosition(startX, startY);
         meteorTrail.setPosition(0, 0); // Trail uses absolute coordinates
-        
+
         // Make sure graphics are visible
         meteorGraphics.setVisible(true);
         meteorTrail.setVisible(true);
-        
-        
+
+
         const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
         meteorGraphics.setRotation(angle);
         // Don't rotate trail - it will draw its own path
-        
+
         // Store meteor data for black hole interaction
         const meteor = {
             graphics: meteorGraphics,
@@ -524,47 +524,47 @@ class RealisticSpaceScene extends Phaser.Scene {
             alpha: 1.0,
             originalSize: 4
         };
-        
+
         this.meteors.push(meteor);
-        
-        
+
+
         // Calculate initial velocity
         const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
         const duration = (distance / meteor.speed) * 1000;
-        
+
         meteor.velocityX = (endX - startX) / (duration / 1000);
         meteor.velocityY = (endY - startY) / (duration / 1000);
-        
+
     }
 
     updateMeteors() {
         for (let i = this.meteors.length - 1; i >= 0; i--) {
             const meteor = this.meteors[i];
             if (!meteor.isActive) continue;
-            
+
             const deltaTime = this.game.loop.delta / 1000;
-            
+
             // Update position based on velocity
             meteor.currentX += meteor.velocityX * deltaTime;
             meteor.currentY += meteor.velocityY * deltaTime;
-            
+
             // Update graphics position
             meteor.graphics.x = meteor.currentX;
             meteor.graphics.y = meteor.currentY;
-            
+
             // Update angle based on velocity
             meteor.angle = Math.atan2(meteor.velocityY, meteor.velocityX);
             meteor.graphics.setRotation(meteor.angle);
-            
+
             // Update scale and alpha
             meteor.graphics.setScale(meteor.scale);
             meteor.graphics.setAlpha(meteor.alpha);
             meteor.trail.setAlpha(meteor.alpha);
-            
+
             // Update trail
             this.updateMeteorTrail(meteor);
-            
-            
+
+
             // Check if meteor is off screen
             const { width, height } = this.scale;
             if (meteor.currentX < -100 || meteor.currentX > width + 100 ||
@@ -580,31 +580,31 @@ class RealisticSpaceScene extends Phaser.Scene {
             x: meteor.currentX,
             y: meteor.currentY
         });
-        
+
         // Keep only the last N positions
         if (meteor.positionHistory.length > meteor.maxTrailLength) {
             meteor.positionHistory.pop();
         }
-        
+
         // Redraw trail based on position history
         meteor.trail.clear();
-        
+
         if (meteor.positionHistory.length > 1) {
             for (let i = 1; i < meteor.positionHistory.length; i++) {
                 const pos = meteor.positionHistory[i];
                 const progress = i / meteor.positionHistory.length;
                 const alpha = Math.max(0, 1 - progress);
                 const size = Math.max(0.8, 4 * alpha);
-                
+
                 if (alpha > 0.1) {
                     // Orange glow (background)
                     meteor.trail.fillStyle(0xffeaa7, alpha * 0.7);
                     meteor.trail.fillCircle(pos.x, pos.y, size * 1.8);
-                    
+
                     // Yellow middle
                     meteor.trail.fillStyle(0xffff88, alpha * 0.8);
                     meteor.trail.fillCircle(pos.x, pos.y, size * 1.2);
-                    
+
                     // White core (bright center)
                     meteor.trail.fillStyle(0xffffff, alpha * 0.95);
                     meteor.trail.fillCircle(pos.x, pos.y, size * 0.6);
@@ -619,7 +619,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         if (index > -1) {
             this.meteors.splice(index, 1);
         }
-        
+
         // Destroy graphics immediately
         if (meteor.graphics && meteor.graphics.active) {
             meteor.graphics.destroy();
@@ -647,7 +647,7 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Add swirling effect around black hole
         blackHole.accretionDisk = this.add.graphics();
-        
+
         this.blackHoles.push(blackHole);
 
         // Animate black hole creation
@@ -686,10 +686,10 @@ class RealisticSpaceScene extends Phaser.Scene {
                 const radius = blackHole.size * 1.2 + Math.sin(angle * 3) * 20;
                 const x = blackHole.x + Math.cos(angle) * radius;
                 const y = blackHole.y + Math.sin(angle) * radius;
-                
+
                 const alpha = 0.3 + Math.sin(angle * 2 + blackHole.rotation) * 0.2;
                 const size = 1 + Math.sin(angle * 4) * 0.5;
-                
+
                 // Color varies from orange to red
                 const colorIntensity = Math.sin(angle + blackHole.rotation * 2) * 0.5 + 0.5;
                 const color = Phaser.Display.Color.Interpolate.ColorWithColor(
@@ -698,9 +698,9 @@ class RealisticSpaceScene extends Phaser.Scene {
                     1,
                     colorIntensity
                 );
-                
+
                 blackHole.accretionDisk.fillStyle(
-                    Phaser.Display.Color.GetColor(color.r, color.g, color.b), 
+                    Phaser.Display.Color.GetColor(color.r, color.g, color.b),
                     alpha
                 );
                 blackHole.accretionDisk.fillCircle(x, y, size);
@@ -709,19 +709,19 @@ class RealisticSpaceScene extends Phaser.Scene {
             // Draw event horizon (black center)
             blackHole.graphics.fillStyle(0x000000, 1);
             blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.size * 0.8);
-            
+
             // Draw gravitational lensing effect
             const lensRadius = blackHole.size * 1.5;
             blackHole.graphics.lineStyle(2, 0x666666, 0.3);
             blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius);
-            
+
             // Subtle outer glow
             blackHole.graphics.lineStyle(1, 0x333333, 0.2);
             blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius * 1.3);
 
             // Distort and consume nearby stars
             this.distortAndConsumeStars(blackHole);
-            
+
             // Affect nearby meteors
             this.affectMeteors(blackHole);
         });
@@ -730,13 +730,13 @@ class RealisticSpaceScene extends Phaser.Scene {
     distortAndConsumeStars(blackHole) {
         const maxDistance = blackHole.size * 4;
         const consumeDistance = blackHole.size * 1.2;
-        
+
         for (let i = this.stars.length - 1; i >= 0; i--) {
             const star = this.stars[i];
             const distance = Phaser.Math.Distance.Between(
                 star.x, star.y, blackHole.x, blackHole.y
             );
-            
+
             if (distance < consumeDistance) {
                 // Star gets consumed by black hole
                 blackHole.consumedStars.push({
@@ -749,25 +749,25 @@ class RealisticSpaceScene extends Phaser.Scene {
                     twinkleSpeed: star.twinkleSpeed,
                     twinklePhase: star.twinklePhase
                 });
-                
+
                 // Remove star from array
                 this.stars.splice(i, 1);
-                
+
                 // Create absorption effect
                 this.createAbsorptionEffect(star.x, star.y, blackHole.x, blackHole.y);
-                
+
             } else if (distance < maxDistance) {
                 // Gravitational pull effect
                 const pullStrength = (maxDistance - distance) / maxDistance;
                 const angle = Phaser.Math.Angle.Between(
                     star.x, star.y, blackHole.x, blackHole.y
                 );
-                
+
                 // Pull star towards black hole
                 const pullDistance = pullStrength * 3;
                 star.x += Math.cos(angle) * pullDistance;
                 star.y += Math.sin(angle) * pullDistance;
-                
+
                 // Gravitational lensing effect
                 const bendAngle = angle + pullStrength * 0.3;
                 star.visualX = star.x + Math.cos(bendAngle) * pullStrength * 8;
@@ -783,7 +783,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Create particle trail effect when star gets absorbed
         const graphics = this.add.graphics();
         const particles = [];
-        
+
         for (let i = 0; i < 8; i++) {
             particles.push({
                 x: starX,
@@ -792,33 +792,33 @@ class RealisticSpaceScene extends Phaser.Scene {
                 speed: 2 + Math.random() * 3
             });
         }
-        
+
         const updateParticles = () => {
             graphics.clear();
-            
+
             particles.forEach((particle, index) => {
                 // Move particle towards black hole
                 const angle = Phaser.Math.Angle.Between(particle.x, particle.y, blackHoleX, blackHoleY);
                 particle.x += Math.cos(angle) * particle.speed;
                 particle.y += Math.sin(angle) * particle.speed;
-                
+
                 // Fade particle
                 const alpha = 1 - (index * 0.1);
                 graphics.fillStyle(0xffffff, alpha);
                 graphics.fillCircle(particle.x, particle.y, 1);
-                
+
                 // Remove if close to black hole
                 const distance = Phaser.Math.Distance.Between(particle.x, particle.y, blackHoleX, blackHoleY);
                 if (distance < 10) {
                     particles.splice(index, 1);
                 }
             });
-            
+
             if (particles.length === 0) {
                 graphics.destroy();
             }
         };
-        
+
         this.tweens.add({
             targets: {},
             duration: 100,
@@ -832,39 +832,39 @@ class RealisticSpaceScene extends Phaser.Scene {
         const maxDistance = blackHole.size * 15; // Increased gravitational range
         const disappearDistance = blackHole.size * 0.8; // Disappear very close to center
         const strongPullDistance = blackHole.size * 8; // Increased strong pull range
-        
+
         for (let i = this.meteors.length - 1; i >= 0; i--) {
             const meteor = this.meteors[i];
             if (!meteor.isActive) continue;
-            
+
             const distance = Phaser.Math.Distance.Between(
                 meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
             );
-            
+
             if (distance < disappearDistance) {
                 // Silently disappear when very close to black hole center
                 meteor.isActive = false;
                 this.removeMeteor(meteor);
                 continue;
             }
-            
+
             if (distance < strongPullDistance) {
                 // Much stronger gravitational pull
                 const pullStrength = Math.pow((strongPullDistance - distance) / strongPullDistance, 3); // Cubic falloff for stronger effect
                 const angleToBlackHole = Phaser.Math.Angle.Between(
                     meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
                 );
-                
+
                 // Calculate much stronger pull force
                 const pullForce = pullStrength * 3000; // Increased from 1200 to 3000
                 const pullAccelX = Math.cos(angleToBlackHole) * pullForce;
                 const pullAccelY = Math.sin(angleToBlackHole) * pullForce;
-                
+
                 // Apply acceleration to velocity
                 const deltaTime = this.game.loop.delta / 1000;
                 meteor.velocityX += pullAccelX * deltaTime;
                 meteor.velocityY += pullAccelY * deltaTime;
-                
+
                 // Increase max speed for dramatic effect when close
                 const maxSpeed = 1500; // Increased max speed
                 const currentSpeed = Math.sqrt(meteor.velocityX * meteor.velocityX + meteor.velocityY * meteor.velocityY);
@@ -872,7 +872,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                     meteor.velocityX = (meteor.velocityX / currentSpeed) * maxSpeed;
                     meteor.velocityY = (meteor.velocityY / currentSpeed) * maxSpeed;
                 }
-                
+
                 // Gradual fading as it gets closer
                 const fadeStart = strongPullDistance * 0.5;
                 if (distance < fadeStart) {
@@ -880,24 +880,24 @@ class RealisticSpaceScene extends Phaser.Scene {
                     meteor.scale = Math.max(0.1, 1 - fadeProgress * 0.7);
                     meteor.alpha = Math.max(0.2, 1 - fadeProgress * 0.6);
                 }
-                
+
             } else if (distance < maxDistance) {
                 // Medium gravitational influence - stronger than before
                 const pullStrength = (maxDistance - distance) / maxDistance;
                 const angleToBlackHole = Phaser.Math.Angle.Between(
                     meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
                 );
-                
+
                 // Stronger deflection force
                 const deflectionForce = pullStrength * 600; // Increased from 200 to 600
                 const deflectAccelX = Math.cos(angleToBlackHole) * deflectionForce;
                 const deflectAccelY = Math.sin(angleToBlackHole) * deflectionForce;
-                
+
                 // Apply gradual acceleration
                 const deltaTime = this.game.loop.delta / 1000;
                 meteor.velocityX += deflectAccelX * deltaTime;
                 meteor.velocityY += deflectAccelY * deltaTime;
-                
+
                 // Reset scale and alpha when at medium distance
                 meteor.scale = 1.0;
                 meteor.alpha = 1.0;
@@ -911,15 +911,15 @@ class RealisticSpaceScene extends Phaser.Scene {
 
 
     // Removed meteor absorption effect - meteors now disappear silently
-    
+
     createRandomBlackHole() {
         const { width, height } = this.scale;
-        
+
         // Generate random position with some margin from edges
         const margin = 100;
         const x = margin + Math.random() * (width - margin * 2);
         const y = margin + Math.random() * (height - margin * 2);
-        
+
         // Avoid creating black holes too close to existing ones
         let tooClose = false;
         for (const existingBlackHole of this.blackHoles) {
@@ -929,45 +929,45 @@ class RealisticSpaceScene extends Phaser.Scene {
                 break;
             }
         }
-        
+
         // Only create if not too close to existing black holes
         if (!tooClose) {
             this.createBlackHole(x, y);
         }
     }
-    
+
     applyNebulaGravity() {
         // Apply moderate gravitational effects from nebulae to meteors
         this.meteors.forEach(meteor => {
             if (!meteor.isActive) return;
-            
+
             this.nebulaClouds.forEach(nebula => {
                 const distance = Phaser.Math.Distance.Between(
                     meteor.currentX, meteor.currentY, nebula.currentX, nebula.currentY
                 );
-                
+
                 // Nebula gravity range - larger area of influence
                 const gravityRange = nebula.size * 4;
-                
+
                 if (distance < gravityRange && distance > 5) {
                     // Subtle gravitational pull - weaker than black holes
                     const pullStrength = Math.pow((gravityRange - distance) / gravityRange, 1.2);
                     const subtlePullStrength = pullStrength * 0.3; // Reduced from 0.8 to 0.3
-                    
+
                     const angleToNebula = Phaser.Math.Angle.Between(
                         meteor.currentX, meteor.currentY, nebula.currentX, nebula.currentY
                     );
-                    
+
                     // Calculate subtle deflection force
                     const deflectionForce = subtlePullStrength * 80; // Reduced from 200 to 80
                     const deflectAccelX = Math.cos(angleToNebula) * deflectionForce;
                     const deflectAccelY = Math.sin(angleToNebula) * deflectionForce;
-                    
+
                     // Apply moderate acceleration - enough to visibly curve the path
                     const deltaTime = this.game.loop.delta / 1000;
                     meteor.velocityX += deflectAccelX * deltaTime;
                     meteor.velocityY += deflectAccelY * deltaTime;
-                    
+
                     // Optional: Limit the total speed change to prevent too dramatic effects
                     const currentSpeed = Math.sqrt(meteor.velocityX * meteor.velocityX + meteor.velocityY * meteor.velocityY);
                     const maxSpeedIncrease = meteor.speed * 1.5; // Allow 50% speed increase
@@ -983,7 +983,7 @@ class RealisticSpaceScene extends Phaser.Scene {
     destroyBlackHole(blackHole) {
         // Restore consumed stars first
         this.restoreConsumedStars(blackHole);
-        
+
         // Animate destruction
         this.tweens.add({
             targets: blackHole,
@@ -993,7 +993,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             onComplete: () => {
                 blackHole.graphics.destroy();
                 blackHole.accretionDisk.destroy();
-                
+
                 // Remove from array
                 const index = this.blackHoles.indexOf(blackHole);
                 if (index > -1) {
@@ -1007,7 +1007,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Create explosion effect and restore stars
         const explosionGraphics = this.add.graphics();
         let explosionRadius = 0;
-        
+
         // Animate explosion
         this.tweens.add({
             targets: { radius: 0 },
@@ -1017,7 +1017,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             onUpdate: (tween) => {
                 explosionRadius = tween.targets[0].radius;
                 explosionGraphics.clear();
-                
+
                 // Draw explosion ring
                 explosionGraphics.lineStyle(3, 0xffffff, 1 - tween.progress);
                 explosionGraphics.strokeCircle(blackHole.x, blackHole.y, explosionRadius);
@@ -1028,7 +1028,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 explosionGraphics.destroy();
             }
         });
-        
+
         // Restore consumed stars with scatter effect
         blackHole.consumedStars.forEach((starData, index) => {
             this.time.delayedCall(index * 100, () => {
@@ -1037,7 +1037,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 const distance = 50 + Math.random() * 100;
                 const newX = blackHole.x + Math.cos(angle) * distance;
                 const newY = blackHole.y + Math.sin(angle) * distance;
-                
+
                 // Restore star with new position
                 const restoredStar = {
                     x: newX,
@@ -1049,9 +1049,9 @@ class RealisticSpaceScene extends Phaser.Scene {
                     twinkleSpeed: starData.twinkleSpeed,
                     twinklePhase: starData.twinklePhase
                 };
-                
+
                 this.stars.push(restoredStar);
-                
+
                 // Create restoration effect
                 this.createRestorationEffect(blackHole.x, blackHole.y, newX, newY);
             });
@@ -1062,7 +1062,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Create sparkle effect for star restoration
         const graphics = this.add.graphics();
         let progress = 0;
-        
+
         this.tweens.add({
             targets: { value: 0 },
             value: 1,
@@ -1071,16 +1071,16 @@ class RealisticSpaceScene extends Phaser.Scene {
             onUpdate: (tween) => {
                 progress = tween.targets[0].value;
                 graphics.clear();
-                
+
                 // Draw moving sparkle
                 const currentX = startX + (endX - startX) * progress;
                 const currentY = startY + (endY - startY) * progress;
-                
+
                 graphics.fillStyle(0xffffff, 1 - progress * 0.5);
                 graphics.fillCircle(currentX, currentY, 2);
                 graphics.fillStyle(0xffd700, 1 - progress * 0.3);
                 graphics.fillCircle(currentX, currentY, 4);
-                
+
                 // Add sparkle trail
                 for (let i = 0; i < 5; i++) {
                     const trailProgress = Math.max(0, progress - i * 0.1);
@@ -1088,7 +1088,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                         const trailX = startX + (endX - startX) * trailProgress;
                         const trailY = startY + (endY - startY) * trailProgress;
                         const alpha = (1 - progress) * (1 - i * 0.2);
-                        
+
                         graphics.fillStyle(0xffffff, alpha);
                         graphics.fillCircle(trailX, trailY, 1);
                     }
@@ -1102,13 +1102,13 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     handleResize(gameSize) {
         const { width, height } = gameSize;
-        
+
         // Clear all graphics
         this.children.removeAll(true);
         this.stars = [];
         this.meteors = [];
         this.blackHoles = [];
-        
+
         // Recreate scene
         this.createDeepSpaceBackground(width, height);
         this.createDistantStars(width, height);
