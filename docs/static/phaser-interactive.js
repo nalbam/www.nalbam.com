@@ -232,7 +232,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 isCore: true
             }];
             nebulaObj.layers.push(coreLayer);
-            
+
             // Layers 1-4: Surrounding cloud layers (more transparent)
             for (let layer = 1; layer < 5; layer++) {
                 const layerSize = nebula.size * (1.2 - layer * 0.2);
@@ -411,11 +411,11 @@ class RealisticSpaceScene extends Phaser.Scene {
                         // Core stays centered with minimal movement
                         x = nebula.currentX + Math.sin(individualTime * 0.001) * cloudlet.flowAmplitudeX;
                         y = nebula.currentY + Math.cos(individualTime * 0.001) * cloudlet.flowAmplitudeY;
-                        
+
                         // Steady size with subtle pulsing
                         const corePulse = Math.sin(individualTime * 0.002) * 2;
                         size = cloudlet.size + corePulse;
-                        
+
                         // More stable alpha for core
                         const coreAlphaFlow = 0.95 + Math.sin(individualTime * 0.001) * 0.05;
                         finalAlpha = cloudlet.alpha * coreAlphaFlow;
@@ -1250,13 +1250,13 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Create UFO sprite
         const ufoSprite = this.add.image(startX, startY, 'ufo');
-        
-        // Scale down from 300x158 to approximately 60x32
-        ufoSprite.setScale(0.2);
-        
+
+        // Scale down
+        ufoSprite.setScale(0.3);
+
         // Add subtle glow effect
         ufoSprite.setTint(0xffffff);
-        
+
         // Store UFO data
         const ufo = {
             sprite: ufoSprite,
@@ -1307,7 +1307,7 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     updateUfos() {
         const mousePointer = this.input.activePointer;
-        
+
         for (let i = this.ufos.length - 1; i >= 0; i--) {
             const ufo = this.ufos[i];
             if (!ufo.isActive) continue;
@@ -1324,7 +1324,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 if (!ufo.hasReachedTarget && distanceToTarget < ufo.investigationRadius) {
                     ufo.hasReachedTarget = true;
                     ufo.investigationTime = 0;
-                    
+
                     // Slow down when reaching investigation site
                     ufo.velocityX *= 0.3;
                     ufo.velocityY *= 0.3;
@@ -1332,20 +1332,20 @@ class RealisticSpaceScene extends Phaser.Scene {
 
                 if (ufo.hasReachedTarget) {
                     ufo.investigationTime += deltaTime * 1000;
-                    
+
                     // Orbit around the investigation site
                     const orbitAngle = ufo.investigationTime * 0.001;
                     const orbitRadius = 60;
                     const orbitCenterX = ufo.targetX + Math.cos(orbitAngle) * orbitRadius;
                     const orbitCenterY = ufo.targetY + Math.sin(orbitAngle) * orbitRadius;
-                    
+
                     // Gentle movement toward orbit position
                     const orbitX = (orbitCenterX - ufo.currentX) * 2 * deltaTime;
                     const orbitY = (orbitCenterY - ufo.currentY) * 2 * deltaTime;
-                    
+
                     ufo.velocityX = orbitX;
                     ufo.velocityY = orbitY;
-                    
+
                     // Leave after investigation is complete
                     if (ufo.investigationTime > ufo.investigationDuration) {
                         // Set exit velocity toward nearest edge
@@ -1356,10 +1356,10 @@ class RealisticSpaceScene extends Phaser.Scene {
                             { x: ufo.currentX, y: -100 }, // Top
                             { x: ufo.currentX, y: height + 100 } // Bottom
                         ];
-                        
+
                         let nearestExit = edges[0];
                         let minDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edges[0].x, edges[0].y);
-                        
+
                         edges.forEach(edge => {
                             const distance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edge.x, edge.y);
                             if (distance < minDistance) {
@@ -1367,10 +1367,10 @@ class RealisticSpaceScene extends Phaser.Scene {
                                 nearestExit = edge;
                             }
                         });
-                        
+
                         const exitDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, nearestExit.x, nearestExit.y);
                         const exitDuration = (exitDistance / (ufo.speed * 2)) * 1000;
-                        
+
                         ufo.velocityX = (nearestExit.x - ufo.currentX) / (exitDuration / 1000);
                         ufo.velocityY = (nearestExit.y - ufo.currentY) / (exitDuration / 1000);
                         ufo.isInvestigating = false;
@@ -1477,18 +1477,18 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     warpUfo(ufo) {
         const { width, height } = this.scale;
-        
+
         // Find a safe warp location away from mouse
         let newX, newY;
         let attempts = 0;
         const maxAttempts = 10;
         const safeDistance = 200; // Minimum distance from mouse
-        
+
         do {
             newX = 100 + Math.random() * (width - 200);
             newY = 100 + Math.random() * (height - 200);
             attempts++;
-            
+
             if (attempts >= maxAttempts) {
                 // If can't find safe spot, warp to corners
                 const corners = [
@@ -1502,21 +1502,21 @@ class RealisticSpaceScene extends Phaser.Scene {
                 newY = corner.y;
                 break;
             }
-        } while (this.input.activePointer && 
+        } while (this.input.activePointer &&
                  Phaser.Math.Distance.Between(newX, newY, this.input.activePointer.x, this.input.activePointer.y) < safeDistance);
-        
+
         // Create warp effect
         this.createWarpEffect(ufo.currentX, ufo.currentY, newX, newY);
-        
+
         // Update UFO position
         ufo.currentX = newX;
         ufo.currentY = newY;
         ufo.sprite.setPosition(newX, newY);
-        
+
         // Reset velocity to prevent carrying momentum
         ufo.velocityX *= 0.3;
         ufo.velocityY *= 0.3;
-        
+
         // Add some random velocity to escape
         const escapeAngle = Math.random() * Math.PI * 2;
         const escapeSpeed = 100;
@@ -1527,29 +1527,29 @@ class RealisticSpaceScene extends Phaser.Scene {
     createWarpEffect(startX, startY, endX, endY) {
         // Create sparkle effect for warp
         const warpGraphics = this.add.graphics();
-        
+
         // Draw warp out effect at original position
         for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const distance = 20;
             const sparkleX = startX + Math.cos(angle) * distance;
             const sparkleY = startY + Math.sin(angle) * distance;
-            
+
             warpGraphics.fillStyle(0x00ffff, 0.8);
             warpGraphics.fillCircle(sparkleX, sparkleY, 3);
         }
-        
+
         // Draw warp in effect at new position
         for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const distance = 20;
             const sparkleX = endX + Math.cos(angle) * distance;
             const sparkleY = endY + Math.sin(angle) * distance;
-            
+
             warpGraphics.fillStyle(0xff00ff, 0.8);
             warpGraphics.fillCircle(sparkleX, sparkleY, 3);
         }
-        
+
         // Fade out effect
         this.tweens.add({
             targets: warpGraphics,
@@ -1590,11 +1590,11 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Create UFO sprite
         const ufoSprite = this.add.image(startX, startY, 'ufo');
-        
+
         // Scale down from 300x158 to approximately 60x32
         ufoSprite.setScale(0.2);
         ufoSprite.setTint(0xffffff);
-        
+
         // Store UFO data with investigation behavior
         const ufo = {
             sprite: ufoSprite,
@@ -1666,7 +1666,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             onUpdate: (tween) => {
                 scanRadius = tween.targets[0].radius;
                 scanAlpha = tween.targets[0].alpha;
-                
+
                 scanGraphics.clear();
                 scanGraphics.lineStyle(2, 0x00ff00, scanAlpha);
                 scanGraphics.strokeCircle(x, y, scanRadius);
@@ -1682,28 +1682,28 @@ class RealisticSpaceScene extends Phaser.Scene {
     fireLaser(ufo, meteor) {
         // Create laser beam visual effect
         const laserGraphics = this.add.graphics();
-        
+
         // Calculate laser path
         const startX = ufo.currentX;
         const startY = ufo.currentY;
         const endX = meteor.currentX;
         const endY = meteor.currentY;
-        
+
         // Draw bright laser beam
         laserGraphics.lineStyle(3, 0x00ff00, 1); // Green laser
         laserGraphics.lineBetween(startX, startY, endX, endY);
-        
+
         // Add laser glow effect
         laserGraphics.lineStyle(6, 0x00ff00, 0.3);
         laserGraphics.lineBetween(startX, startY, endX, endY);
-        
+
         // Destroy meteor immediately
         meteor.isActive = false;
         this.removeMeteor(meteor);
-        
+
         // Create explosion effect at meteor location
         this.createMeteorExplosion(endX, endY);
-        
+
         // Remove laser after short duration
         this.tweens.add({
             targets: laserGraphics,
@@ -1720,7 +1720,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Create explosion effect when meteor is destroyed
         const explosionGraphics = this.add.graphics();
         let explosionSize = 0;
-        
+
         this.tweens.add({
             targets: { size: 0 },
             size: 30,
@@ -1729,24 +1729,24 @@ class RealisticSpaceScene extends Phaser.Scene {
             onUpdate: (tween) => {
                 explosionSize = tween.targets[0].size;
                 explosionGraphics.clear();
-                
+
                 // Draw explosion with multiple layers
                 explosionGraphics.fillStyle(0xffffff, 1 - tween.progress);
                 explosionGraphics.fillCircle(x, y, explosionSize * 0.3);
-                
+
                 explosionGraphics.fillStyle(0xffff00, (1 - tween.progress) * 0.8);
                 explosionGraphics.fillCircle(x, y, explosionSize * 0.6);
-                
+
                 explosionGraphics.fillStyle(0xff6600, (1 - tween.progress) * 0.6);
                 explosionGraphics.fillCircle(x, y, explosionSize);
-                
+
                 // Add sparkle effects
                 for (let i = 0; i < 6; i++) {
                     const angle = (i / 6) * Math.PI * 2;
                     const sparkleDistance = explosionSize * 1.2;
                     const sparkleX = x + Math.cos(angle) * sparkleDistance;
                     const sparkleY = y + Math.sin(angle) * sparkleDistance;
-                    
+
                     explosionGraphics.fillStyle(0xffffff, (1 - tween.progress) * 0.8);
                     explosionGraphics.fillCircle(sparkleX, sparkleY, 2);
                 }
