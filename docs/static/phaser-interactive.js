@@ -479,11 +479,11 @@ class RealisticSpaceScene extends Phaser.Scene {
         const meteorGraphics = this.add.graphics();
         const meteorTrail = this.add.graphics();
 
-        // Create meteor head - appropriate size
+        // Create meteor head - smaller size
         meteorGraphics.fillStyle(0xffeaa7, 0.9);
-        meteorGraphics.fillCircle(0, 0, 4);
-        meteorGraphics.fillStyle(0xffffff, 1);
         meteorGraphics.fillCircle(0, 0, 2);
+        meteorGraphics.fillStyle(0xffffff, 1);
+        meteorGraphics.fillCircle(0, 0, 1);
 
         // Create meteor trail - will be drawn dynamically
         // meteorTrail will be redrawn each frame based on position history
@@ -519,10 +519,10 @@ class RealisticSpaceScene extends Phaser.Scene {
             isBeingPulled: false,
             originalTween: null,
             positionHistory: [],
-            maxTrailLength: 20,
+            maxTrailLength: 15,
             scale: 1.0,
             alpha: 1.0,
-            originalSize: 4
+            originalSize: 2
         };
 
         this.meteors.push(meteor);
@@ -594,20 +594,20 @@ class RealisticSpaceScene extends Phaser.Scene {
                 const pos = meteor.positionHistory[i];
                 const progress = i / meteor.positionHistory.length;
                 const alpha = Math.max(0, 1 - progress);
-                const size = Math.max(0.8, 4 * alpha);
+                const size = Math.max(0.5, 2 * alpha);
 
                 if (alpha > 0.1) {
                     // Orange glow (background)
                     meteor.trail.fillStyle(0xffeaa7, alpha * 0.7);
-                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.8);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.5);
 
                     // Yellow middle
                     meteor.trail.fillStyle(0xffff88, alpha * 0.8);
-                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.2);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.0);
 
                     // White core (bright center)
                     meteor.trail.fillStyle(0xffffff, alpha * 0.95);
-                    meteor.trail.fillCircle(pos.x, pos.y, size * 0.6);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 0.5);
                 }
             }
         }
