@@ -45,8 +45,8 @@
   <div id="phaser-game"></div>
 
   <!-- Profile Toggle Button -->
-  <button id="profile-toggle" class="profile-toggle-btn" aria-label="Toggle profile visibility">
-    <i class="fa-solid fa-eye-slash"></i>
+  <button id="profile-toggle" class="profile-toggle-btn" aria-label="Hide profile">
+    <i class="fa-solid fa-eye"></i>
   </button>
 
   <div class="pop-box" id="profile-box">
@@ -80,18 +80,20 @@
       const profileBox = document.getElementById('profile-box');
       const toggleIcon = toggleBtn.querySelector('i');
       
-      let isProfileVisible = true;
+      let isProfileVisible = true; // Profile is visible by default
       
       toggleBtn.addEventListener('click', function() {
         isProfileVisible = !isProfileVisible;
         
         if (isProfileVisible) {
+          // Show profile
           profileBox.style.display = 'flex';
-          toggleIcon.className = 'fa-solid fa-eye-slash';
+          toggleIcon.className = 'fa-solid fa-eye';
           toggleBtn.setAttribute('aria-label', 'Hide profile');
         } else {
+          // Hide profile
           profileBox.style.display = 'none';
-          toggleIcon.className = 'fa-solid fa-eye';
+          toggleIcon.className = 'fa-solid fa-eye-slash';
           toggleBtn.setAttribute('aria-label', 'Show profile');
         }
       });
