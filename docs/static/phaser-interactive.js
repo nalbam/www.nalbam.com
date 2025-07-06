@@ -27,7 +27,6 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Enable mouse interaction - multiple methods
         this.input.on('pointerdown', this.onPointerDown, this);
         this.input.on('pointerup', (pointer) => {
-            console.log('Pointer up at:', pointer.x, pointer.y);
             this.createBlackHole(pointer.x, pointer.y);
         });
         
@@ -35,16 +34,12 @@ class RealisticSpaceScene extends Phaser.Scene {
         const zone = this.add.zone(width/2, height/2, width, height);
         zone.setInteractive();
         zone.on('pointerdown', (pointer) => {
-            console.log('Zone clicked at:', pointer.x, pointer.y);
             this.createBlackHole(pointer.x, pointer.y);
         });
         
         // Alternative click detection
         this.input.setDefaultCursor('pointer');
         this.input.topOnly = false;
-        
-        // Debug log
-        console.log('Mouse interaction enabled with zone');
         
         // Handle resize
         this.scale.on('resize', this.handleResize, this);
@@ -311,13 +306,14 @@ class RealisticSpaceScene extends Phaser.Scene {
     update() {
         const currentTime = this.time.now;
         
-        // Create meteors occasionally
-        if (currentTime - this.lastMeteorTime > 5000) {
-            if (Math.random() < 0.3) {
-                this.createMeteor();
-                this.lastMeteorTime = currentTime;
-            }
+        // Create meteors occasionally - one at a time, every 10 seconds
+        if (currentTime - this.lastMeteorTime > 10000 && this.meteors.length === 0) {
+            this.createMeteor();
+            this.lastMeteorTime = currentTime;
         }
+        
+        // Update meteors manually
+        this.updateMeteors();
         
         // Update black holes
         this.updateBlackHoles();
@@ -325,6 +321,7 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     createMeteor() {
         const { width, height } = this.scale;
+        
         
         // Random entry and exit points on opposite sides
         const side = Math.floor(Math.random() * 4);
@@ -357,32 +354,30 @@ class RealisticSpaceScene extends Phaser.Scene {
                 break;
         }
         
+        
         const meteorGraphics = this.add.graphics();
         const meteorTrail = this.add.graphics();
         
-        // Create meteor head
+        // Create meteor head - appropriate size
+        meteorGraphics.fillStyle(0xffeaa7, 0.9);
+        meteorGraphics.fillCircle(0, 0, 4);
         meteorGraphics.fillStyle(0xffffff, 1);
         meteorGraphics.fillCircle(0, 0, 2);
-        meteorGraphics.fillStyle(0xffeaa7, 0.8);
-        meteorGraphics.fillCircle(0, 0, 4);
         
-        // Create meteor trail
-        const trailLength = 60;
-        for (let i = 0; i < trailLength; i++) {
-            const alpha = 1 - (i / trailLength);
-            const size = 2 * alpha;
-            meteorTrail.fillStyle(0xffffff, alpha * 0.8);
-            meteorTrail.fillCircle(-i * 2, 0, size);
-            meteorTrail.fillStyle(0xffeaa7, alpha * 0.6);
-            meteorTrail.fillCircle(-i * 2, 0, size * 1.5);
-        }
+        // Create meteor trail - will be drawn dynamically
+        // meteorTrail will be redrawn each frame based on position history
         
         meteorGraphics.setPosition(startX, startY);
-        meteorTrail.setPosition(startX, startY);
+        meteorTrail.setPosition(0, 0); // Trail uses absolute coordinates
+        
+        // Make sure graphics are visible
+        meteorGraphics.setVisible(true);
+        meteorTrail.setVisible(true);
+        
         
         const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
         meteorGraphics.setRotation(angle);
-        meteorTrail.setRotation(angle);
+        // Don't rotate trail - it will draw its own path
         
         // Store meteor data for black hole interaction
         const meteor = {
@@ -394,33 +389,107 @@ class RealisticSpaceScene extends Phaser.Scene {
             endY: endY,
             currentX: startX,
             currentY: startY,
+            velocityX: 0,
+            velocityY: 0,
             isActive: true,
-            speed: 2.5,
-            angle: angle
+            speed: 220,
+            angle: angle,
+            targetAngle: angle,
+            isBeingPulled: false,
+            originalTween: null,
+            positionHistory: [],
+            maxTrailLength: 20,
+            scale: 1.0,
+            alpha: 1.0,
+            originalSize: 4
         };
         
         this.meteors.push(meteor);
         
-        // Calculate duration based on distance for consistent speed
-        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
-        const speed = 200; // pixels per second
-        const duration = (distance / speed) * 1000;
         
-        // Animate meteor
-        this.tweens.add({
-            targets: [meteorGraphics, meteorTrail],
-            x: endX,
-            y: endY,
-            duration: duration,
-            ease: 'Linear',
-            onUpdate: () => {
-                meteor.currentX = meteorGraphics.x;
-                meteor.currentY = meteorGraphics.y;
-            },
-            onComplete: () => {
+        // Calculate initial velocity
+        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+        const duration = (distance / meteor.speed) * 1000;
+        
+        meteor.velocityX = (endX - startX) / (duration / 1000);
+        meteor.velocityY = (endY - startY) / (duration / 1000);
+        
+    }
+
+    updateMeteors() {
+        for (let i = this.meteors.length - 1; i >= 0; i--) {
+            const meteor = this.meteors[i];
+            if (!meteor.isActive) continue;
+            
+            const deltaTime = this.game.loop.delta / 1000;
+            
+            // Update position based on velocity
+            meteor.currentX += meteor.velocityX * deltaTime;
+            meteor.currentY += meteor.velocityY * deltaTime;
+            
+            // Update graphics position
+            meteor.graphics.x = meteor.currentX;
+            meteor.graphics.y = meteor.currentY;
+            
+            // Update angle based on velocity
+            meteor.angle = Math.atan2(meteor.velocityY, meteor.velocityX);
+            meteor.graphics.setRotation(meteor.angle);
+            
+            // Update scale and alpha
+            meteor.graphics.setScale(meteor.scale);
+            meteor.graphics.setAlpha(meteor.alpha);
+            meteor.trail.setAlpha(meteor.alpha);
+            
+            // Update trail
+            this.updateMeteorTrail(meteor);
+            
+            
+            // Check if meteor is off screen
+            const { width, height } = this.scale;
+            if (meteor.currentX < -100 || meteor.currentX > width + 100 ||
+                meteor.currentY < -100 || meteor.currentY > height + 100) {
                 this.removeMeteor(meteor);
             }
+        }
+    }
+
+    updateMeteorTrail(meteor) {
+        // Add current position to history
+        meteor.positionHistory.unshift({
+            x: meteor.currentX,
+            y: meteor.currentY
         });
+        
+        // Keep only the last N positions
+        if (meteor.positionHistory.length > meteor.maxTrailLength) {
+            meteor.positionHistory.pop();
+        }
+        
+        // Redraw trail based on position history
+        meteor.trail.clear();
+        
+        if (meteor.positionHistory.length > 1) {
+            for (let i = 1; i < meteor.positionHistory.length; i++) {
+                const pos = meteor.positionHistory[i];
+                const progress = i / meteor.positionHistory.length;
+                const alpha = Math.max(0, 1 - progress);
+                const size = Math.max(0.8, 4 * alpha);
+                
+                if (alpha > 0.1) {
+                    // Orange glow (background)
+                    meteor.trail.fillStyle(0xffeaa7, alpha * 0.7);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.8);
+                    
+                    // Yellow middle
+                    meteor.trail.fillStyle(0xffff88, alpha * 0.8);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 1.2);
+                    
+                    // White core (bright center)
+                    meteor.trail.fillStyle(0xffffff, alpha * 0.95);
+                    meteor.trail.fillCircle(pos.x, pos.y, size * 0.6);
+                }
+            }
+        }
     }
 
     removeMeteor(meteor) {
@@ -430,29 +499,20 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.meteors.splice(index, 1);
         }
         
-        // Fade out and destroy
-        this.tweens.add({
-            targets: [meteor.graphics, meteor.trail],
-            alpha: 0,
-            duration: 200,
-            onComplete: () => {
-                meteor.graphics.destroy();
-                meteor.trail.destroy();
-            }
-        });
+        // Destroy graphics immediately
+        if (meteor.graphics && meteor.graphics.active) {
+            meteor.graphics.destroy();
+        }
+        if (meteor.trail && meteor.trail.active) {
+            meteor.trail.destroy();
+        }
     }
 
     onPointerDown(pointer) {
-        // Debug log
-        console.log('Clicked at:', pointer.x, pointer.y);
-        
-        // Create black hole at click position
         this.createBlackHole(pointer.x, pointer.y);
     }
 
     createBlackHole(x, y) {
-        console.log('Creating black hole at:', x, y);
-        
         const blackHole = {
             x: x,
             y: y,
@@ -468,8 +528,6 @@ class RealisticSpaceScene extends Phaser.Scene {
         blackHole.accretionDisk = this.add.graphics();
         
         this.blackHoles.push(blackHole);
-        
-        console.log('Black holes count:', this.blackHoles.length);
 
         // Animate black hole creation
         this.tweens.add({
@@ -650,9 +708,9 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     affectMeteors(blackHole) {
-        const maxDistance = blackHole.size * 6;
-        const consumeDistance = blackHole.size * 2.5;
-        const strongPullDistance = blackHole.size * 4;
+        const maxDistance = blackHole.size * 10;
+        const fadeDistance = blackHole.size * 3;
+        const strongPullDistance = blackHole.size * 5;
         
         for (let i = this.meteors.length - 1; i >= 0; i--) {
             const meteor = this.meteors[i];
@@ -662,127 +720,70 @@ class RealisticSpaceScene extends Phaser.Scene {
                 meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
             );
             
-            if (distance < consumeDistance) {
-                // Meteor gets consumed by black hole
-                console.log('Meteor consumed by black hole! Distance:', distance);
+            if (distance < fadeDistance) {
+                // Start fading and shrinking as meteor approaches black hole
+                const fadeProgress = 1 - (distance / fadeDistance);
+                meteor.scale = Math.max(0.1, 1 - fadeProgress * 0.9);
+                meteor.alpha = Math.max(0, 1 - fadeProgress);
                 
-                // Create spectacular absorption effect
-                this.createMeteorAbsorptionEffect(meteor.currentX, meteor.currentY, blackHole.x, blackHole.y);
-                
-                // Stop the original tween
-                this.tweens.killTweensOf([meteor.graphics, meteor.trail]);
-                
-                // Remove meteor
-                meteor.isActive = false;
-                this.removeMeteor(meteor);
-                
-            } else if (distance < strongPullDistance) {
-                // Strong gravitational pull - redirect meteor towards black hole
-                const pullStrength = (strongPullDistance - distance) / strongPullDistance;
-                
-                // Stop current tween
-                this.tweens.killTweensOf([meteor.graphics, meteor.trail]);
-                
-                // Calculate direct path to black hole with some spiral
+                // Remove when very close and almost invisible
+                if (meteor.alpha < 0.1 || meteor.scale < 0.2) {
+                    this.createMeteorAbsorptionEffect(meteor.currentX, meteor.currentY, blackHole.x, blackHole.y);
+                    meteor.isActive = false;
+                    this.removeMeteor(meteor);
+                    continue;
+                }
+            } else {
+                // Reset scale and alpha when far from black hole
+                meteor.scale = 1.0;
+                meteor.alpha = 1.0;
+            }
+            
+            if (distance < strongPullDistance) {
+                // Strong gravitational pull
+                const pullStrength = Math.pow((strongPullDistance - distance) / strongPullDistance, 2);
                 const angleToBlackHole = Phaser.Math.Angle.Between(
                     meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
                 );
                 
-                // Add spiral effect based on pull strength
-                const spiralOffset = pullStrength * 0.5;
-                const newAngle = angleToBlackHole + spiralOffset;
+                // Calculate strong pull force
+                const pullForce = pullStrength * 1200;
+                const pullAccelX = Math.cos(angleToBlackHole) * pullForce;
+                const pullAccelY = Math.sin(angleToBlackHole) * pullForce;
                 
-                // Calculate new target - closer to black hole
-                const pullDistance = distance * (1 - pullStrength * 0.8);
-                const newEndX = blackHole.x + Math.cos(angleToBlackHole) * pullDistance;
-                const newEndY = blackHole.y + Math.sin(angleToBlackHole) * pullDistance;
+                // Apply acceleration to velocity
+                const deltaTime = this.game.loop.delta / 1000;
+                meteor.velocityX += pullAccelX * deltaTime;
+                meteor.velocityY += pullAccelY * deltaTime;
                 
-                meteor.angle = newAngle;
-                meteor.endX = newEndX;
-                meteor.endY = newEndY;
-                
-                // Update rotation
-                meteor.graphics.setRotation(newAngle);
-                meteor.trail.setRotation(newAngle);
-                
-                // Accelerate towards black hole
-                const newDuration = Math.max(300, 1000 * (1 - pullStrength));
-                
-                this.tweens.add({
-                    targets: [meteor.graphics, meteor.trail],
-                    x: newEndX,
-                    y: newEndY,
-                    duration: newDuration,
-                    ease: 'Power2',
-                    onUpdate: () => {
-                        meteor.currentX = meteor.graphics.x;
-                        meteor.currentY = meteor.graphics.y;
-                    },
-                    onComplete: () => {
-                        // Check if still active after tween
-                        if (meteor.isActive) {
-                            this.removeMeteor(meteor);
-                        }
-                    }
-                });
+                // Increase max speed for dramatic effect when close
+                const maxSpeed = 800;
+                const currentSpeed = Math.sqrt(meteor.velocityX * meteor.velocityX + meteor.velocityY * meteor.velocityY);
+                if (currentSpeed > maxSpeed) {
+                    meteor.velocityX = (meteor.velocityX / currentSpeed) * maxSpeed;
+                    meteor.velocityY = (meteor.velocityY / currentSpeed) * maxSpeed;
+                }
                 
             } else if (distance < maxDistance) {
-                // Light gravitational deflection
+                // Light gravitational influence - gradual deflection
                 const pullStrength = (maxDistance - distance) / maxDistance;
                 const angleToBlackHole = Phaser.Math.Angle.Between(
                     meteor.currentX, meteor.currentY, blackHole.x, blackHole.y
                 );
                 
-                // Slight deflection
-                const deflectionStrength = pullStrength * 0.3;
-                const newAngle = meteor.angle + deflectionStrength;
+                // Gentle deflection force
+                const deflectionForce = pullStrength * 200;
+                const deflectAccelX = Math.cos(angleToBlackHole) * deflectionForce;
+                const deflectAccelY = Math.sin(angleToBlackHole) * deflectionForce;
                 
-                // Update meteor direction - continue to screen edge
-                const { width, height } = this.scale;
-                const directionDistance = 1000; // Far enough to reach screen edge
-                let newEndX = meteor.currentX + Math.cos(newAngle) * directionDistance;
-                let newEndY = meteor.currentY + Math.sin(newAngle) * directionDistance;
-                
-                // Clamp to screen boundaries with buffer
-                if (newEndX < -50) newEndX = -50;
-                if (newEndX > width + 50) newEndX = width + 50;
-                if (newEndY < -50) newEndY = -50;
-                if (newEndY > height + 50) newEndY = height + 50;
-                
-                // Stop current tween and start new one with deflected path
-                this.tweens.killTweensOf([meteor.graphics, meteor.trail]);
-                
-                meteor.angle = newAngle;
-                meteor.endX = newEndX;
-                meteor.endY = newEndY;
-                
-                // Apply visual bend to the meteor
-                meteor.graphics.setRotation(newAngle);
-                meteor.trail.setRotation(newAngle);
-                
-                // Continue with new trajectory - calculate proper duration
-                const newDistance = Phaser.Math.Distance.Between(
-                    meteor.currentX, meteor.currentY, newEndX, newEndY
-                );
-                const newDuration = (newDistance / 200) * 1000; // 200 pixels per second
-                
-                this.tweens.add({
-                    targets: [meteor.graphics, meteor.trail],
-                    x: newEndX,
-                    y: newEndY,
-                    duration: Math.max(500, newDuration),
-                    ease: 'Linear',
-                    onUpdate: () => {
-                        meteor.currentX = meteor.graphics.x;
-                        meteor.currentY = meteor.graphics.y;
-                    },
-                    onComplete: () => {
-                        this.removeMeteor(meteor);
-                    }
-                });
+                // Apply gradual acceleration
+                const deltaTime = this.game.loop.delta / 1000;
+                meteor.velocityX += deflectAccelX * deltaTime;
+                meteor.velocityY += deflectAccelY * deltaTime;
             }
         }
     }
+
 
     createMeteorAbsorptionEffect(meteorX, meteorY, blackHoleX, blackHoleY) {
         // Create dramatic absorption effect for meteors
