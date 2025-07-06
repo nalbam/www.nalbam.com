@@ -173,32 +173,66 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     createNebulae(width, height) {
         const nebulaeData = [
-            { x: width * 0.2, y: height * 0.3, color: 0xff6b6b, alpha: 0.15, size: 150 }, // Red nebula
-            { x: width * 0.8, y: height * 0.6, color: 0x4ecdc4, alpha: 0.12, size: 120 }, // Cyan nebula
-            { x: width * 0.5, y: height * 0.7, color: 0x45b7d1, alpha: 0.1, size: 100 },  // Blue nebula
-            { x: width * 0.1, y: height * 0.8, color: 0x9b59b6, alpha: 0.08, size: 80 },  // Purple nebula
-            { x: width * 0.9, y: height * 0.2, color: 0xf39c12, alpha: 0.06, size: 90 }   // Orange nebula
+            { x: width * 0.2, y: height * 0.3, color: 0xff6b6b, alpha: 0.15, size: 150, driftX: 0.1, driftY: 0.05 }, // Red nebula
+            { x: width * 0.8, y: height * 0.6, color: 0x4ecdc4, alpha: 0.12, size: 120, driftX: -0.08, driftY: 0.12 }, // Cyan nebula
+            { x: width * 0.5, y: height * 0.7, color: 0x45b7d1, alpha: 0.1, size: 100, driftX: 0.06, driftY: -0.04 },  // Blue nebula
+            { x: width * 0.1, y: height * 0.8, color: 0x9b59b6, alpha: 0.08, size: 80, driftX: -0.04, driftY: 0.08 },  // Purple nebula
+            { x: width * 0.9, y: height * 0.2, color: 0xf39c12, alpha: 0.06, size: 90, driftX: 0.03, driftY: 0.06 }   // Orange nebula
         ];
         
-        nebulaeData.forEach(nebula => {
+        nebulaeData.forEach((nebula, index) => {
             const nebulaGraphics = this.add.graphics();
             
-            // Create organic nebula shape with multiple layers
+            // Store nebula object with movement properties
+            const nebulaObj = {
+                graphics: nebulaGraphics,
+                baseX: nebula.x,
+                baseY: nebula.y,
+                currentX: nebula.x,
+                currentY: nebula.y,
+                color: nebula.color,
+                alpha: nebula.alpha,
+                size: nebula.size,
+                driftX: nebula.driftX,
+                driftY: nebula.driftY,
+                time: 0,
+                phaseOffset: index * 0.7,
+                rotationSpeed: 0.001 + Math.random() * 0.003, // Even slower rotation speed between 0.001 and 0.004
+                rotationDirection: Math.random() < 0.5 ? 1 : -1, // Random direction (clockwise or counterclockwise)
+                currentRotation: 0,
+                layers: []
+            };
+            
+            // Generate layer data
             for (let layer = 0; layer < 5; layer++) {
                 const layerSize = nebula.size * (1 - layer * 0.15);
                 const layerAlpha = nebula.alpha * (1 - layer * 0.3);
+                const layerData = [];
                 
                 for (let i = 0; i < 8; i++) {
                     const angle = (i / 8) * Math.PI * 2;
                     const distance = Math.random() * layerSize * 0.5;
-                    const x = nebula.x + Math.cos(angle) * distance;
-                    const y = nebula.y + Math.sin(angle) * distance;
                     const size = layerSize * (0.3 + Math.random() * 0.4);
                     
-                    nebulaGraphics.fillStyle(nebula.color, layerAlpha);
-                    nebulaGraphics.fillCircle(x, y, size);
+                    layerData.push({
+                        angle: angle,
+                        distance: distance,
+                        size: size,
+                        alpha: layerAlpha,
+                        individualSpeed: 0.2 + Math.random() * 1.0, // Slower individual speed multiplier
+                        driftPhase: Math.random() * Math.PI * 2, // Random phase offset
+                        sizeVariation: 0.6 + Math.random() * 0.8, // More size variation
+                        randomOffset: Math.random() * 20 - 10, // Random position offset
+                        randomAngleOffset: Math.random() * Math.PI * 2, // Random angle offset
+                        orbitRadius: Math.random() * 15 + 5, // Random orbit radius
+                        orbitSpeed: 0.001 + Math.random() * 0.002 // Individual orbit speed
+                    });
                 }
+                
+                nebulaObj.layers.push(layerData);
             }
+            
+            this.nebulaClouds.push(nebulaObj);
         });
     }
 
@@ -258,6 +292,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             onUpdate: (tween) => {
                 this.atmosphericDistortion = tween.targets[0].value;
                 this.updateStarTwinkle();
+                this.updateNebulae();
             }
         });
     }
@@ -300,6 +335,66 @@ class RealisticSpaceScene extends Phaser.Scene {
                     drawX + spikeLength, drawY
                 );
             }
+        });
+    }
+    
+    updateNebulae() {
+        const time = this.time.now * 0.001;
+        
+        this.nebulaClouds.forEach(nebula => {
+            // Update nebula time
+            nebula.time += 0.016;
+            
+            // Calculate smooth drift movement
+            const driftPhase = nebula.time * 0.3 + nebula.phaseOffset;
+            const driftX = Math.sin(driftPhase) * nebula.driftX;
+            const driftY = Math.cos(driftPhase * 0.7) * nebula.driftY;
+            
+            // Update position
+            nebula.currentX = nebula.baseX + driftX * 100;
+            nebula.currentY = nebula.baseY + driftY * 100;
+            
+            // Update rotation
+            nebula.currentRotation += nebula.rotationSpeed * nebula.rotationDirection;
+            
+            // Redraw nebula
+            nebula.graphics.clear();
+            
+            // Draw each layer with very slow rotation and highly random movement
+            nebula.layers.forEach((layerData, layerIndex) => {
+                const layerDrift = nebula.time * 0.005 + layerIndex * 0.01; // Even slower layer drift
+                const layerRotation = nebula.currentRotation + layerIndex * 0.005; // Much slower layer rotation offset
+                
+                layerData.forEach(cloudlet => {
+                    // Highly random individual movement for each cloudlet
+                    const individualTime = nebula.time * cloudlet.individualSpeed;
+                    const randomDrift1 = Math.sin(individualTime * 0.3 + cloudlet.driftPhase) * cloudlet.randomOffset;
+                    const randomDrift2 = Math.cos(individualTime * 0.7 + cloudlet.driftPhase + 1) * cloudlet.randomOffset * 0.7;
+                    const randomDrift3 = Math.sin(individualTime * 0.1 + cloudlet.driftPhase + 2) * cloudlet.randomOffset * 0.5;
+                    
+                    // Multiple random orbit patterns
+                    const orbitAngle = individualTime * cloudlet.orbitSpeed + cloudlet.randomAngleOffset;
+                    const orbitX = Math.cos(orbitAngle) * cloudlet.orbitRadius;
+                    const orbitY = Math.sin(orbitAngle * 0.8) * cloudlet.orbitRadius * 0.6;
+                    
+                    // Combine all movements
+                    const angle = cloudlet.angle + layerDrift + layerRotation + randomDrift1 * 0.01;
+                    const distance = cloudlet.distance + randomDrift2 + Math.sin(individualTime * 0.02 + cloudlet.driftPhase) * 5;
+                    const x = nebula.currentX + Math.cos(angle) * distance + orbitX + randomDrift3;
+                    const y = nebula.currentY + Math.sin(angle) * distance + orbitY + randomDrift2 * 0.5;
+                    
+                    // Random size variation
+                    const sizeWave1 = Math.sin(individualTime * 0.08 + cloudlet.driftPhase) * 2;
+                    const sizeWave2 = Math.cos(individualTime * 0.15 + cloudlet.driftPhase + 1) * 1.5;
+                    const size = cloudlet.size * cloudlet.sizeVariation + sizeWave1 + sizeWave2;
+                    
+                    // Random alpha variation
+                    const alphaVariation = 0.8 + Math.sin(individualTime * 0.05 + cloudlet.driftPhase) * 0.2;
+                    
+                    nebula.graphics.fillStyle(nebula.color, cloudlet.alpha * alphaVariation);
+                    nebula.graphics.fillCircle(x, y, Math.max(0.5, size));
+                });
+            });
         });
     }
 
