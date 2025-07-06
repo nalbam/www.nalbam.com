@@ -30,18 +30,7 @@ docs/
 ├── index.html         # Main homepage with interactive space scene
 ├── resume.html        # Resume redirect page
 ├── timer.html         # Timer utility
-├── ether/             # Ether project demo
-│   ├── gem.html
-│   ├── logo.html
-│   └── associated CSS/JS files
-├── spickr/            # Spickr project showcase
-│   ├── cloudbrain.html
-│   └── image gallery
 └── static/            # Static assets
-    ├── fonts/         # SF Mono font files
-    ├── profiles/      # Profile pictures
-    ├── logo/          # Company/technology logos
-    ├── bg/            # Background images
     ├── style.css      # Main stylesheet
     ├── phaser-interactive.js  # Interactive space scene
     └── analytics/     # Analytics scripts
@@ -55,12 +44,6 @@ docs/
 - **Fonts**: SF Mono (custom web fonts)
 - **Icons**: Font Awesome
 - **Hosting**: GitHub Pages
-
-## Local Development
-
-1. Clone the repository
-2. Serve the `docs/` directory using a local web server
-3. Open `index.html` in your browser
 
 ## Connect
 
