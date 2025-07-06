@@ -14,7 +14,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.randomBlackHoleInterval = 45000 + Math.random() * 30000; // 45-75 seconds
         this.ufos = [];
         this.lastUfoTime = 0;
-        this.ufoInterval = 120000 + Math.random() * 180000; // 2-5 minutes
+        this.ufoInterval = 3000; // 3 seconds for testing
     }
 
     preload() {
@@ -479,13 +479,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.randomBlackHoleInterval = 45000 + Math.random() * 30000;
         }
 
-        // Create UFOs very rarely (2-5 minutes)
-        if (currentTime - this.lastUfoTime > this.ufoInterval) {
-            this.createUfo();
-            this.lastUfoTime = currentTime;
-            // Set next random interval between 2-5 minutes
-            this.ufoInterval = 120000 + Math.random() * 180000;
-        }
+        // UFOs appear after black holes disappear - handled in destroyBlackHole method
 
         // Update meteors manually
         this.updateMeteors();
@@ -1044,6 +1038,10 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Restore consumed stars first
         this.restoreConsumedStars(blackHole);
 
+        // Store black hole position for UFO investigation
+        const blackHoleX = blackHole.x;
+        const blackHoleY = blackHole.y;
+
         // Animate destruction
         this.tweens.add({
             targets: blackHole,
@@ -1058,6 +1056,13 @@ class RealisticSpaceScene extends Phaser.Scene {
                 const index = this.blackHoles.indexOf(blackHole);
                 if (index > -1) {
                     this.blackHoles.splice(index, 1);
+                }
+
+                // Chance for UFO to appear and investigate the black hole site
+                if (Math.random() < 0.7) { // 70% chance
+                    this.time.delayedCall(1000 + Math.random() * 2000, () => {
+                        this.createInvestigationUfo(blackHoleX, blackHoleY);
+                    });
                 }
             }
         });
@@ -1263,14 +1268,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             ease: 'Sine.easeInOut'
         });
 
-        // Add rotation animation
-        this.tweens.add({
-            targets: ufoSprite,
-            rotation: Math.PI * 2,
-            duration: 8000,
-            repeat: -1,
-            ease: 'Linear'
-        });
+        // No rotation animation for UFO
     }
 
     updateUfos() {
@@ -1283,7 +1281,70 @@ class RealisticSpaceScene extends Phaser.Scene {
             const deltaTime = this.game.loop.delta / 1000;
             ufo.wobbleTime += deltaTime;
 
-            // Mouse avoidance and capture behavior
+            // Investigation behavior
+            if (ufo.isInvestigating) {
+                const distanceToTarget = Phaser.Math.Distance.Between(
+                    ufo.currentX, ufo.currentY, ufo.targetX, ufo.targetY
+                );
+
+                if (!ufo.hasReachedTarget && distanceToTarget < ufo.investigationRadius) {
+                    ufo.hasReachedTarget = true;
+                    ufo.investigationTime = 0;
+                    
+                    // Slow down when reaching investigation site
+                    ufo.velocityX *= 0.3;
+                    ufo.velocityY *= 0.3;
+                }
+
+                if (ufo.hasReachedTarget) {
+                    ufo.investigationTime += deltaTime * 1000;
+                    
+                    // Orbit around the investigation site
+                    const orbitAngle = ufo.investigationTime * 0.001;
+                    const orbitRadius = 60;
+                    const orbitCenterX = ufo.targetX + Math.cos(orbitAngle) * orbitRadius;
+                    const orbitCenterY = ufo.targetY + Math.sin(orbitAngle) * orbitRadius;
+                    
+                    // Gentle movement toward orbit position
+                    const orbitX = (orbitCenterX - ufo.currentX) * 2 * deltaTime;
+                    const orbitY = (orbitCenterY - ufo.currentY) * 2 * deltaTime;
+                    
+                    ufo.velocityX = orbitX;
+                    ufo.velocityY = orbitY;
+                    
+                    // Leave after investigation is complete
+                    if (ufo.investigationTime > ufo.investigationDuration) {
+                        // Set exit velocity toward nearest edge
+                        const { width, height } = this.scale;
+                        const edges = [
+                            { x: -100, y: ufo.currentY }, // Left
+                            { x: width + 100, y: ufo.currentY }, // Right
+                            { x: ufo.currentX, y: -100 }, // Top
+                            { x: ufo.currentX, y: height + 100 } // Bottom
+                        ];
+                        
+                        let nearestExit = edges[0];
+                        let minDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edges[0].x, edges[0].y);
+                        
+                        edges.forEach(edge => {
+                            const distance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, edge.x, edge.y);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                nearestExit = edge;
+                            }
+                        });
+                        
+                        const exitDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, nearestExit.x, nearestExit.y);
+                        const exitDuration = (exitDistance / (ufo.speed * 1.5)) * 1000;
+                        
+                        ufo.velocityX = (nearestExit.x - ufo.currentX) / (exitDuration / 1000);
+                        ufo.velocityY = (nearestExit.y - ufo.currentY) / (exitDuration / 1000);
+                        ufo.isInvestigating = false;
+                    }
+                }
+            }
+
+            // Mouse avoidance and capture behavior (works during all phases)
             if (mousePointer) {
                 const mouseDistance = Phaser.Math.Distance.Between(
                     ufo.currentX, ufo.currentY, mousePointer.x, mousePointer.y
@@ -1304,7 +1365,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                     );
 
                     // Much stronger avoidance force when close
-                    const panicMultiplier = 1 + (1 - mouseDistance / ufo.avoidanceRadius) * 3; // Up to 4x faster when very close
+                    const panicMultiplier = 1 + (1 - mouseDistance / ufo.avoidanceRadius) * 3;
                     const avoidanceX = Math.cos(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
                     const avoidanceY = Math.sin(angleAwayFromMouse) * ufo.avoidanceForce * avoidanceStrength * panicMultiplier;
 
@@ -1313,33 +1374,18 @@ class RealisticSpaceScene extends Phaser.Scene {
 
                     // More erratic movement when in panic mode
                     const panicFactor = Math.max(0, 1 - mouseDistance / ufo.avoidanceRadius);
-                    const erraticForce = 300 * panicFactor; // Increased erratic movement
+                    const erraticForce = 300 * panicFactor;
                     ufo.velocityX += (Math.random() - 0.5) * erraticForce * deltaTime;
                     ufo.velocityY += (Math.random() - 0.5) * erraticForce * deltaTime;
 
                     // Limit max speed when panicking
-                    const maxPanicSpeed = 400; // Much faster max speed when avoiding
+                    const maxPanicSpeed = 400;
                     const currentSpeed = Math.sqrt(ufo.velocityX * ufo.velocityX + ufo.velocityY * ufo.velocityY);
                     if (currentSpeed > maxPanicSpeed) {
                         ufo.velocityX = (ufo.velocityX / currentSpeed) * maxPanicSpeed;
                         ufo.velocityY = (ufo.velocityY / currentSpeed) * maxPanicSpeed;
                     }
                 }
-            }
-
-            // Apply gentle course correction back to original path
-            const progressToDestination = Phaser.Math.Distance.Between(ufo.startX, ufo.startY, ufo.currentX, ufo.currentY) / 
-                                         Phaser.Math.Distance.Between(ufo.startX, ufo.startY, ufo.endX, ufo.endY);
-            
-            if (progressToDestination < 0.9) { // Only correct course if not near the end
-                const targetX = ufo.startX + ufo.originalPath.x * progressToDestination;
-                const targetY = ufo.startY + ufo.originalPath.y * progressToDestination;
-                
-                const correctionX = (targetX - ufo.currentX) * 0.3 * deltaTime;
-                const correctionY = (targetY - ufo.currentY) * 0.3 * deltaTime;
-                
-                ufo.velocityX += correctionX;
-                ufo.velocityY += correctionY;
             }
 
             // Add subtle wobble movement
@@ -1461,7 +1507,121 @@ class RealisticSpaceScene extends Phaser.Scene {
             }
         });
     }
+
+    createInvestigationUfo(targetX, targetY) {
+        const { width, height } = this.scale;
+
+        // UFO appears from a random edge, heads toward the black hole investigation site
+        const side = Math.floor(Math.random() * 4);
+        let startX, startY;
+
+        switch (side) {
+            case 0: // Top
+                startX = Math.random() * width;
+                startY = -100;
+                break;
+            case 1: // Right
+                startX = width + 100;
+                startY = Math.random() * height;
+                break;
+            case 2: // Bottom
+                startX = Math.random() * width;
+                startY = height + 100;
+                break;
+            case 3: // Left
+                startX = -100;
+                startY = Math.random() * height;
+                break;
+        }
+
+        // Create UFO sprite
+        const ufoSprite = this.add.image(startX, startY, 'ufo');
+        ufoSprite.setScale(0.2);
+        ufoSprite.setTint(0xffffff);
+        
+        // Store UFO data with investigation behavior
+        const ufo = {
+            sprite: ufoSprite,
+            startX: startX,
+            startY: startY,
+            targetX: targetX, // Black hole investigation site
+            targetY: targetY,
+            currentX: startX,
+            currentY: startY,
+            velocityX: 0,
+            velocityY: 0,
+            speed: 60, // Slower, more cautious approach
+            isActive: true,
+            avoidanceRadius: 150,
+            avoidanceForce: 500,
+            captureRadius: 30,
+            wobbleTime: 0,
+            wobbleIntensity: 8,
+            hoverOffset: 0,
+            bobSpeed: 2,
+            isInvestigating: true,
+            investigationTime: 0,
+            investigationDuration: 5000 + Math.random() * 5000, // 5-10 seconds
+            hasReachedTarget: false,
+            investigationRadius: 80
+        };
+
+        // Calculate initial velocity toward investigation site
+        const distance = Phaser.Math.Distance.Between(startX, startY, targetX, targetY);
+        const duration = (distance / ufo.speed) * 1000;
+
+        ufo.velocityX = (targetX - startX) / (duration / 1000);
+        ufo.velocityY = (targetY - startY) / (duration / 1000);
+
+        this.ufos.push(ufo);
+
+        // Add floating animation
+        this.tweens.add({
+            targets: ufo,
+            hoverOffset: 5,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        // No rotation animation for UFO
+
+        // Create investigation scanning effect
+        this.createScanningEffect(targetX, targetY);
+    }
+
+    createScanningEffect(x, y) {
+        // Create scanning beam effect at the investigation site
+        const scanGraphics = this.add.graphics();
+        let scanRadius = 0;
+        let scanAlpha = 0.8;
+
+        const scanAnimation = this.tweens.add({
+            targets: { radius: 0, alpha: 0.8 },
+            radius: 100,
+            alpha: 0,
+            duration: 3000,
+            repeat: 2,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                scanRadius = tween.targets[0].radius;
+                scanAlpha = tween.targets[0].alpha;
+                
+                scanGraphics.clear();
+                scanGraphics.lineStyle(2, 0x00ff00, scanAlpha);
+                scanGraphics.strokeCircle(x, y, scanRadius);
+                scanGraphics.lineStyle(1, 0x00ff00, scanAlpha * 0.5);
+                scanGraphics.strokeCircle(x, y, scanRadius * 0.7);
+            },
+            onComplete: () => {
+                scanGraphics.destroy();
+            }
+        });
+    }
 }
+
+// Update UFO behavior to handle investigation
 
 // Game configuration
 const config = {
