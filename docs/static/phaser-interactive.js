@@ -15,11 +15,14 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.ufos = [];
         this.lastUfoTime = 0;
         this.ufoInterval = 3000; // 3 seconds for testing
+        this.asteroids = [];
+        this.lastAsteroidTime = 0;
     }
 
     preload() {
-        // Load UFO image
+        // Load UFO and asteroid images
         this.load.image('ufo', 'static/images/ufo.png');
+        this.load.image('asteroid', 'static/images/asteroid.png');
     }
 
     create() {
@@ -471,6 +474,12 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.lastMeteorTime = currentTime;
         }
 
+        // Create asteroids occasionally - every 15 seconds
+        if (currentTime - this.lastAsteroidTime > 15000) {
+            this.createAsteroid();
+            this.lastAsteroidTime = currentTime;
+        }
+
         // Create random black holes very occasionally
         if (currentTime - this.lastRandomBlackHoleTime > this.randomBlackHoleInterval) {
             this.createRandomBlackHole();
@@ -484,13 +493,16 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Update meteors manually
         this.updateMeteors();
 
+        // Update asteroids
+        this.updateAsteroids();
+
         // Update black holes
         this.updateBlackHoles();
 
         // Update UFOs
         this.updateUfos();
 
-        // Apply nebula gravity to meteors
+        // Apply nebula gravity to meteors and asteroids
         this.applyNebulaGravity();
     }
 
@@ -591,6 +603,78 @@ class RealisticSpaceScene extends Phaser.Scene {
 
     }
 
+    createAsteroid() {
+        const { width, height } = this.scale;
+
+        // Random entry and exit points on opposite sides
+        const side = Math.floor(Math.random() * 4);
+        let startX, startY, endX, endY;
+
+        switch (side) {
+            case 0: // Top to Bottom
+                startX = Math.random() * width;
+                startY = -50;
+                endX = Math.random() * width;
+                endY = height + 50;
+                break;
+            case 1: // Right to Left
+                startX = width + 50;
+                startY = Math.random() * height;
+                endX = -50;
+                endY = Math.random() * height;
+                break;
+            case 2: // Bottom to Top
+                startX = Math.random() * width;
+                startY = height + 50;
+                endX = Math.random() * width;
+                endY = -50;
+                break;
+            case 3: // Left to Right
+                startX = -50;
+                startY = Math.random() * height;
+                endX = width + 50;
+                endY = Math.random() * height;
+                break;
+        }
+
+        // Create asteroid sprite
+        const asteroidSprite = this.add.image(startX, startY, 'asteroid');
+        
+        // Scale down from 300x300 to approximately 40x40
+        asteroidSprite.setScale(0.13);
+        
+        const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
+        asteroidSprite.setRotation(angle);
+
+        // Store asteroid data for black hole interaction
+        const asteroid = {
+            sprite: asteroidSprite,
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            currentX: startX,
+            currentY: startY,
+            velocityX: 0,
+            velocityY: 0,
+            isActive: true,
+            speed: 60, // Slower than meteors
+            angle: angle,
+            rotationSpeed: (Math.random() - 0.5) * 0.02, // Random rotation
+            scale: 0.13,
+            alpha: 1.0
+        };
+
+        this.asteroids.push(asteroid);
+
+        // Calculate initial velocity
+        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+        const duration = (distance / asteroid.speed) * 1000;
+
+        asteroid.velocityX = (endX - startX) / (duration / 1000);
+        asteroid.velocityY = (endY - startY) / (duration / 1000);
+    }
+
     updateMeteors() {
         for (let i = this.meteors.length - 1; i >= 0; i--) {
             const meteor = this.meteors[i];
@@ -664,6 +748,51 @@ class RealisticSpaceScene extends Phaser.Scene {
                     meteor.trail.fillCircle(pos.x, pos.y, size * 0.5);
                 }
             }
+        }
+    }
+
+    updateAsteroids() {
+        for (let i = this.asteroids.length - 1; i >= 0; i--) {
+            const asteroid = this.asteroids[i];
+            if (!asteroid.isActive) continue;
+
+            const deltaTime = this.game.loop.delta / 1000;
+
+            // Update position based on velocity
+            asteroid.currentX += asteroid.velocityX * deltaTime;
+            asteroid.currentY += asteroid.velocityY * deltaTime;
+
+            // Update sprite position
+            asteroid.sprite.x = asteroid.currentX;
+            asteroid.sprite.y = asteroid.currentY;
+
+            // Update rotation
+            asteroid.angle += asteroid.rotationSpeed;
+            asteroid.sprite.setRotation(asteroid.angle);
+
+            // Update scale and alpha
+            asteroid.sprite.setScale(asteroid.scale);
+            asteroid.sprite.setAlpha(asteroid.alpha);
+
+            // Check if asteroid is off screen
+            const { width, height } = this.scale;
+            if (asteroid.currentX < -100 || asteroid.currentX > width + 100 ||
+                asteroid.currentY < -100 || asteroid.currentY > height + 100) {
+                this.removeAsteroid(asteroid);
+            }
+        }
+    }
+
+    removeAsteroid(asteroid) {
+        // Remove asteroid from tracking array
+        const index = this.asteroids.indexOf(asteroid);
+        if (index > -1) {
+            this.asteroids.splice(index, 1);
+        }
+
+        // Destroy sprite immediately
+        if (asteroid.sprite && asteroid.sprite.active) {
+            asteroid.sprite.destroy();
         }
     }
 
@@ -777,8 +906,9 @@ class RealisticSpaceScene extends Phaser.Scene {
             // Distort and consume nearby stars
             this.distortAndConsumeStars(blackHole);
 
-            // Affect nearby meteors
+            // Affect nearby meteors and asteroids
             this.affectMeteors(blackHole);
+            this.affectAsteroids(blackHole);
         });
     }
 
@@ -964,6 +1094,90 @@ class RealisticSpaceScene extends Phaser.Scene {
         }
     }
 
+    affectAsteroids(blackHole) {
+        const maxDistance = blackHole.size * 15; // Same gravitational range as meteors
+        const disappearDistance = blackHole.size * 0.8; // Disappear very close to center
+        const strongPullDistance = blackHole.size * 8; // Strong pull range
+
+        for (let i = this.asteroids.length - 1; i >= 0; i--) {
+            const asteroid = this.asteroids[i];
+            if (!asteroid.isActive) continue;
+
+            const distance = Phaser.Math.Distance.Between(
+                asteroid.currentX, asteroid.currentY, blackHole.x, blackHole.y
+            );
+
+            if (distance < disappearDistance) {
+                // Silently disappear when very close to black hole center
+                asteroid.isActive = false;
+                this.removeAsteroid(asteroid);
+                continue;
+            }
+
+            if (distance < strongPullDistance) {
+                // Much stronger gravitational pull
+                const pullStrength = Math.pow((strongPullDistance - distance) / strongPullDistance, 3);
+                const angleToBlackHole = Phaser.Math.Angle.Between(
+                    asteroid.currentX, asteroid.currentY, blackHole.x, blackHole.y
+                );
+
+                // Calculate strong pull force (asteroids are heavier, so slightly less affected)
+                const pullForce = pullStrength * 2500; // Slightly less than meteors (3000)
+                const pullAccelX = Math.cos(angleToBlackHole) * pullForce;
+                const pullAccelY = Math.sin(angleToBlackHole) * pullForce;
+
+                // Apply acceleration to velocity
+                const deltaTime = this.game.loop.delta / 1000;
+                asteroid.velocityX += pullAccelX * deltaTime;
+                asteroid.velocityY += pullAccelY * deltaTime;
+
+                // Limit max speed
+                const maxSpeed = 1200; // Slightly slower than meteors
+                const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + asteroid.velocityY * asteroid.velocityY);
+                if (currentSpeed > maxSpeed) {
+                    asteroid.velocityX = (asteroid.velocityX / currentSpeed) * maxSpeed;
+                    asteroid.velocityY = (asteroid.velocityY / currentSpeed) * maxSpeed;
+                }
+
+                // Gradual fading and size reduction as it gets closer
+                const fadeStart = strongPullDistance * 0.5;
+                if (distance < fadeStart) {
+                    const fadeProgress = 1 - (distance / fadeStart);
+                    asteroid.scale = Math.max(0.05, 0.13 - fadeProgress * 0.08);
+                    asteroid.alpha = Math.max(0.3, 1 - fadeProgress * 0.5);
+                }
+
+                // Increase rotation speed when being pulled
+                asteroid.rotationSpeed += pullStrength * 0.01;
+
+            } else if (distance < maxDistance) {
+                // Medium gravitational influence
+                const pullStrength = (maxDistance - distance) / maxDistance;
+                const angleToBlackHole = Phaser.Math.Angle.Between(
+                    asteroid.currentX, asteroid.currentY, blackHole.x, blackHole.y
+                );
+
+                // Moderate deflection force
+                const deflectionForce = pullStrength * 500; // Slightly less than meteors
+                const deflectAccelX = Math.cos(angleToBlackHole) * deflectionForce;
+                const deflectAccelY = Math.sin(angleToBlackHole) * deflectionForce;
+
+                // Apply gradual acceleration
+                const deltaTime = this.game.loop.delta / 1000;
+                asteroid.velocityX += deflectAccelX * deltaTime;
+                asteroid.velocityY += deflectAccelY * deltaTime;
+
+                // Reset scale and alpha when at medium distance
+                asteroid.scale = 0.13;
+                asteroid.alpha = 1.0;
+            } else {
+                // Reset scale and alpha when far from black hole
+                asteroid.scale = 0.13;
+                asteroid.alpha = 1.0;
+            }
+        }
+    }
+
 
     // Removed meteor absorption effect - meteors now disappear silently
 
@@ -1021,7 +1235,7 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     applyNebulaGravity() {
-        // Apply moderate gravitational effects from nebulae to meteors
+        // Apply moderate gravitational effects from nebulae to meteors and asteroids
         this.meteors.forEach(meteor => {
             if (!meteor.isActive) return;
 
@@ -1059,6 +1273,51 @@ class RealisticSpaceScene extends Phaser.Scene {
                         meteor.velocityX = (meteor.velocityX / currentSpeed) * maxSpeedIncrease;
                         meteor.velocityY = (meteor.velocityY / currentSpeed) * maxSpeedIncrease;
                     }
+                }
+            });
+        });
+
+        // Apply same nebula gravity to asteroids
+        this.asteroids.forEach(asteroid => {
+            if (!asteroid.isActive) return;
+
+            this.nebulaClouds.forEach(nebula => {
+                const distance = Phaser.Math.Distance.Between(
+                    asteroid.currentX, asteroid.currentY, nebula.currentX, nebula.currentY
+                );
+
+                // Nebula gravity range - larger area of influence
+                const gravityRange = nebula.size * 4;
+
+                if (distance < gravityRange && distance > 5) {
+                    // Subtle gravitational pull - asteroids are heavier so slightly less affected
+                    const pullStrength = Math.pow((gravityRange - distance) / gravityRange, 1.2);
+                    const subtlePullStrength = pullStrength * 0.25; // Slightly less than meteors
+
+                    const angleToNebula = Phaser.Math.Angle.Between(
+                        asteroid.currentX, asteroid.currentY, nebula.currentX, nebula.currentY
+                    );
+
+                    // Calculate subtle deflection force
+                    const deflectionForce = subtlePullStrength * 70; // Slightly less than meteors
+                    const deflectAccelX = Math.cos(angleToNebula) * deflectionForce;
+                    const deflectAccelY = Math.sin(angleToNebula) * deflectionForce;
+
+                    // Apply moderate acceleration
+                    const deltaTime = this.game.loop.delta / 1000;
+                    asteroid.velocityX += deflectAccelX * deltaTime;
+                    asteroid.velocityY += deflectAccelY * deltaTime;
+
+                    // Limit the total speed change
+                    const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + asteroid.velocityY * asteroid.velocityY);
+                    const maxSpeedIncrease = asteroid.speed * 1.4; // Slightly less speed increase than meteors
+                    if (currentSpeed > maxSpeedIncrease) {
+                        asteroid.velocityX = (asteroid.velocityX / currentSpeed) * maxSpeedIncrease;
+                        asteroid.velocityY = (asteroid.velocityY / currentSpeed) * maxSpeedIncrease;
+                    }
+
+                    // Slight rotation change due to nebula influence
+                    asteroid.rotationSpeed += subtlePullStrength * 0.001;
                 }
             });
         });
@@ -1205,6 +1464,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.meteors = [];
         this.blackHoles = [];
         this.ufos = [];
+        this.asteroids = [];
 
         // Recreate scene
         this.createDeepSpaceBackground(width, height);
@@ -1341,9 +1601,12 @@ class RealisticSpaceScene extends Phaser.Scene {
                 }
             }
 
-            // UFO laser defense system - shoot at nearby meteors
+            // UFO laser defense system - shoot at nearby meteors and asteroids
             const currentTime = this.time.now;
             if (currentTime - ufo.lastLaserTime > ufo.laserCooldown) {
+                let targetFound = false;
+
+                // First check for meteors
                 for (let j = 0; j < this.meteors.length; j++) {
                     const meteor = this.meteors[j];
                     if (!meteor.isActive) continue;
@@ -1354,9 +1617,29 @@ class RealisticSpaceScene extends Phaser.Scene {
 
                     if (meteorDistance < ufo.laserRange) {
                         // Fire laser at meteor
-                        this.fireLaser(ufo, meteor);
+                        this.fireLaserAtMeteor(ufo, meteor);
                         ufo.lastLaserTime = currentTime;
-                        break; // Only shoot one meteor at a time
+                        targetFound = true;
+                        break; // Only shoot one target at a time
+                    }
+                }
+
+                // If no meteors in range, check for asteroids
+                if (!targetFound) {
+                    for (let k = 0; k < this.asteroids.length; k++) {
+                        const asteroid = this.asteroids[k];
+                        if (!asteroid.isActive) continue;
+
+                        const asteroidDistance = Phaser.Math.Distance.Between(
+                            ufo.currentX, ufo.currentY, asteroid.currentX, asteroid.currentY
+                        );
+
+                        if (asteroidDistance < ufo.laserRange) {
+                            // Fire laser at asteroid
+                            this.fireLaserAtAsteroid(ufo, asteroid);
+                            ufo.lastLaserTime = currentTime;
+                            break; // Only shoot one target at a time
+                        }
                     }
                 }
             }
@@ -1579,7 +1862,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         });
     }
 
-    fireLaser(ufo, meteor) {
+    fireLaserAtMeteor(ufo, meteor) {
         // Create laser beam visual effect
         const laserGraphics = this.add.graphics();
 
@@ -1603,6 +1886,43 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Create explosion effect at meteor location
         this.createMeteorExplosion(endX, endY);
+
+        // Remove laser after short duration
+        this.tweens.add({
+            targets: laserGraphics,
+            alpha: 0,
+            duration: 200,
+            ease: 'Power2',
+            onComplete: () => {
+                laserGraphics.destroy();
+            }
+        });
+    }
+
+    fireLaserAtAsteroid(ufo, asteroid) {
+        // Create laser beam visual effect
+        const laserGraphics = this.add.graphics();
+
+        // Calculate laser path
+        const startX = ufo.currentX;
+        const startY = ufo.currentY;
+        const endX = asteroid.currentX;
+        const endY = asteroid.currentY;
+
+        // Draw bright laser beam
+        laserGraphics.lineStyle(3, 0x00ff00, 1); // Green laser
+        laserGraphics.lineBetween(startX, startY, endX, endY);
+
+        // Add laser glow effect
+        laserGraphics.lineStyle(6, 0x00ff00, 0.3);
+        laserGraphics.lineBetween(startX, startY, endX, endY);
+
+        // Destroy asteroid immediately
+        asteroid.isActive = false;
+        this.removeAsteroid(asteroid);
+
+        // Create explosion effect at asteroid location
+        this.createAsteroidExplosion(endX, endY);
 
         // Remove laser after short duration
         this.tweens.add({
@@ -1649,6 +1969,47 @@ class RealisticSpaceScene extends Phaser.Scene {
 
                     explosionGraphics.fillStyle(0xffffff, (1 - tween.progress) * 0.8);
                     explosionGraphics.fillCircle(sparkleX, sparkleY, 2);
+                }
+            },
+            onComplete: () => {
+                explosionGraphics.destroy();
+            }
+        });
+    }
+
+    createAsteroidExplosion(x, y) {
+        // Create explosion effect when asteroid is destroyed
+        const explosionGraphics = this.add.graphics();
+        let explosionSize = 0;
+
+        this.tweens.add({
+            targets: { size: 0 },
+            size: 40,
+            duration: 500,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                explosionSize = tween.targets[0].size;
+                explosionGraphics.clear();
+
+                // Draw explosion with multiple layers - asteroid colors (gray/brown)
+                explosionGraphics.fillStyle(0xffffff, 1 - tween.progress);
+                explosionGraphics.fillCircle(x, y, explosionSize * 0.3);
+
+                explosionGraphics.fillStyle(0xcccccc, (1 - tween.progress) * 0.8);
+                explosionGraphics.fillCircle(x, y, explosionSize * 0.6);
+
+                explosionGraphics.fillStyle(0x8b4513, (1 - tween.progress) * 0.6);
+                explosionGraphics.fillCircle(x, y, explosionSize);
+
+                // Add debris fragments
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const fragmentDistance = explosionSize * 1.3;
+                    const fragmentX = x + Math.cos(angle) * fragmentDistance;
+                    const fragmentY = y + Math.sin(angle) * fragmentDistance;
+
+                    explosionGraphics.fillStyle(0x696969, (1 - tween.progress) * 0.7);
+                    explosionGraphics.fillCircle(fragmentX, fragmentY, 3);
                 }
             },
             onComplete: () => {
