@@ -1457,21 +1457,44 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.createMeteorExplosion(meteor.currentX, meteor.currentY);
         this.removeMeteor(meteor);
 
-        // Asteroid bounces off
-        const angle = Phaser.Math.Angle.Between(
-            asteroid.currentX, asteroid.currentY,
-            meteor.currentX, meteor.currentY
+        // Calculate collision angle (from meteor to asteroid)
+        const collisionAngle = Phaser.Math.Angle.Between(
+            meteor.currentX, meteor.currentY,
+            asteroid.currentX, asteroid.currentY
         );
 
-        // Calculate bounce velocity (asteroid gets knocked back)
-        const bounceSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + 
-                                     asteroid.velocityY * asteroid.velocityY) * 1.3;
+        // Get current asteroid velocity magnitude
+        const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + 
+                                      asteroid.velocityY * asteroid.velocityY);
         
-        asteroid.velocityX = Math.cos(angle) * bounceSpeed;
-        asteroid.velocityY = Math.sin(angle) * bounceSpeed;
+        // Calculate incoming meteor velocity direction
+        const meteorAngle = Math.atan2(meteor.velocityY, meteor.velocityX);
+        
+        // Calculate reflection angle based on collision
+        // Use the collision normal (perpendicular to collision line)
+        const normalAngle = collisionAngle;
+        
+        // Calculate incident angle relative to normal
+        const incidentAngle = meteorAngle - normalAngle;
+        
+        // Reflection formula: reflected = incident - 2 * (incident · normal) * normal
+        const reflectedAngle = normalAngle - incidentAngle;
+        
+        // Transfer some momentum from meteor to asteroid
+        const meteorMomentum = Math.sqrt(meteor.velocityX * meteor.velocityX + 
+                                        meteor.velocityY * meteor.velocityY);
+        
+        // Calculate final bounce speed (combine asteroid momentum + meteor impact)
+        const momentumTransfer = meteorMomentum * 0.6; // 60% of meteor momentum transferred
+        const finalSpeed = Math.max(currentSpeed * 0.8, momentumTransfer * 1.2);
+        
+        // Apply the reflected velocity
+        asteroid.velocityX = Math.cos(reflectedAngle) * finalSpeed;
+        asteroid.velocityY = Math.sin(reflectedAngle) * finalSpeed;
 
-        // Add rotation change due to impact
-        asteroid.rotationSpeed += (Math.random() - 0.5) * 0.03;
+        // Add rotation change based on impact angle and speed
+        const rotationImpact = (Math.sin(incidentAngle) * finalSpeed) / 1000;
+        asteroid.rotationSpeed += rotationImpact;
     }
 
     destroyBlackHole(blackHole) {
