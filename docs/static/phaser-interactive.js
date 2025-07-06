@@ -861,32 +861,10 @@ class RealisticSpaceScene extends Phaser.Scene {
             rotation: 0,
             consumedStars: [],
             isManuallyCreated: true,
-            // Gargantua-like properties
-            kerr: 0.998, // Spinning black hole parameter (near maximum)
-            mass: 100000000, // Supermassive black hole
-            photonSphere: 0,
-            eventHorizon: 0,
-            innerStableOrbit: 0,
-            ergosphere: 0,
-            ringPhases: [0, 0, 0], // Multiple ring phases
-            relativistic: {
-                frameRate: 1.0,
-                timeDialation: 1.0,
-                redshift: 0
-            }
         };
 
-        // Calculate relativistic parameters
-        blackHole.eventHorizon = blackHole.maxSize * 0.5;
-        blackHole.photonSphere = blackHole.maxSize * 0.75;
-        blackHole.innerStableOrbit = blackHole.maxSize * 1.5;
-        blackHole.ergosphere = blackHole.maxSize * 1.2;
-
-        // Add multiple graphics layers for advanced effects
+        // Simple accretion disk
         blackHole.accretionDisk = this.add.graphics();
-        blackHole.lensingEffect = this.add.graphics();
-        blackHole.spacetimeDistortion = this.add.graphics();
-        blackHole.photonRing = this.add.graphics();
 
         this.blackHoles.push(blackHole);
 
@@ -912,38 +890,23 @@ class RealisticSpaceScene extends Phaser.Scene {
                 return;
             }
 
-            // Update rotation for Kerr black hole effects
-            blackHole.rotation += 0.08 * blackHole.kerr; // Faster rotation for spinning black hole
+            // Update rotation
+            blackHole.rotation += 0.05;
 
-            // Update ring phases for multiple disk structures
-            blackHole.ringPhases[0] += 0.05;
-            blackHole.ringPhases[1] += 0.03;
-            blackHole.ringPhases[2] += 0.07;
-
-            // Clear all graphics layers
+            // Clear graphics
             blackHole.graphics.clear();
             blackHole.accretionDisk.clear();
-            blackHole.lensingEffect.clear();
-            blackHole.spacetimeDistortion.clear();
-            blackHole.photonRing.clear();
 
-            // Draw spacetime distortion grid
-            this.drawSpacetimeDistortion(blackHole);
+            // Draw simple accretion disk with colorful swirl
+            this.drawSimpleAccretionDisk(blackHole);
 
-            // Draw gravitational lensing effect
-            this.drawGravitationalLensing(blackHole);
+            // Draw event horizon (black center)
+            blackHole.graphics.fillStyle(0x000000, 1);
+            blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.size * 0.8);
 
-            // Draw Gargantua-style accretion disk
-            this.drawGargantuaAccretionDisk(blackHole);
-
-            // Draw photon sphere and light ring
-            this.drawPhotonSphere(blackHole);
-
-            // Draw event horizon with ergosphere
-            this.drawEventHorizon(blackHole);
-
-            // Advanced physics effects
-            this.applyRelativisticEffects(blackHole);
+            // Draw gravitational lensing ring
+            blackHole.graphics.lineStyle(2, 0x666666, 0.3);
+            blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, blackHole.size * 1.5);
 
             // Distort and consume nearby stars
             this.distortAndConsumeStars(blackHole);
@@ -952,6 +915,61 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.affectMeteors(blackHole);
             this.affectAsteroids(blackHole);
         });
+    }
+
+    drawSimpleAccretionDisk(blackHole) {
+        // Draw colorful rotating accretion disk inspired by Gargantua
+        const numParticles = 60;
+        const baseRadius = blackHole.size * 1.2;
+        
+        for (let i = 0; i < numParticles; i++) {
+            const angle = (i / numParticles) * Math.PI * 2 + blackHole.rotation;
+            const radius = baseRadius + Math.sin(angle * 3) * 20;
+            const x = blackHole.x + Math.cos(angle) * radius;
+            const y = blackHole.y + Math.sin(angle) * radius;
+            
+            // Create Doppler effect coloring
+            const approaching = Math.cos(angle) > 0;
+            const alpha = 0.4 + Math.sin(angle * 2 + blackHole.rotation) * 0.3;
+            const size = 1.5 + Math.sin(angle * 4) * 0.8;
+            
+            if (approaching) {
+                // Blue-shifted (approaching side)
+                const blueIntensity = 0.5 + Math.sin(angle + blackHole.rotation) * 0.5;
+                blackHole.accretionDisk.fillStyle(
+                    Phaser.Display.Color.GetColor(
+                        Math.floor(100 + blueIntensity * 155),
+                        Math.floor(150 + blueIntensity * 105),
+                        255
+                    ),
+                    alpha
+                );
+            } else {
+                // Red-shifted (receding side)
+                const redIntensity = 0.5 + Math.sin(angle + blackHole.rotation) * 0.5;
+                blackHole.accretionDisk.fillStyle(
+                    Phaser.Display.Color.GetColor(
+                        255,
+                        Math.floor(100 + redIntensity * 100),
+                        Math.floor(50 + redIntensity * 50)
+                    ),
+                    alpha
+                );
+            }
+            
+            blackHole.accretionDisk.fillCircle(x, y, size);
+        }
+        
+        // Add inner bright ring
+        for (let i = 0; i < 30; i++) {
+            const angle = (i / 30) * Math.PI * 2 + blackHole.rotation * 1.5;
+            const radius = blackHole.size * 1.0;
+            const x = blackHole.x + Math.cos(angle) * radius;
+            const y = blackHole.y + Math.sin(angle) * radius;
+            
+            blackHole.accretionDisk.fillStyle(0xffffff, 0.6);
+            blackHole.accretionDisk.fillCircle(x, y, 1);
+        }
     }
 
     drawSpacetimeDistortion(blackHole) {
@@ -1442,33 +1460,11 @@ class RealisticSpaceScene extends Phaser.Scene {
                 maxSize: 80,
                 rotation: 0,
                 consumedStars: [],
-                isManuallyCreated: false,
-                // Gargantua-like properties for random black holes
-                kerr: 0.998,
-                mass: 100000000,
-                photonSphere: 0,
-                eventHorizon: 0,
-                innerStableOrbit: 0,
-                ergosphere: 0,
-                ringPhases: [0, 0, 0],
-                relativistic: {
-                    frameRate: 1.0,
-                    timeDialation: 1.0,
-                    redshift: 0
-                }
+                isManuallyCreated: false
             };
 
-            // Calculate relativistic parameters
-            blackHole.eventHorizon = blackHole.maxSize * 0.5;
-            blackHole.photonSphere = blackHole.maxSize * 0.75;
-            blackHole.innerStableOrbit = blackHole.maxSize * 1.5;
-            blackHole.ergosphere = blackHole.maxSize * 1.2;
-
-            // Add multiple graphics layers for advanced effects
+            // Simple accretion disk
             blackHole.accretionDisk = this.add.graphics();
-            blackHole.lensingEffect = this.add.graphics();
-            blackHole.spacetimeDistortion = this.add.graphics();
-            blackHole.photonRing = this.add.graphics();
 
             this.blackHoles.push(blackHole);
 
@@ -1738,9 +1734,6 @@ class RealisticSpaceScene extends Phaser.Scene {
             onComplete: () => {
                 blackHole.graphics.destroy();
                 blackHole.accretionDisk.destroy();
-                blackHole.lensingEffect.destroy();
-                blackHole.spacetimeDistortion.destroy();
-                blackHole.photonRing.destroy();
 
                 // Remove from array
                 const index = this.blackHoles.indexOf(blackHole);
