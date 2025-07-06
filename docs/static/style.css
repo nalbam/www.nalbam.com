@@ -54,6 +54,34 @@ html, body {
   outline: none;
 }
 
+.clock-widget {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: none;
+}
+
+.clock-widget .clock-container {
+  text-align: left;
+}
+
+.clock-time {
+  color: #ccd6f6;
+  animation: slideUp 0.8s ease-out;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-bottom: 5px;
+}
+
+.clock-date {
+  color: #8892b0;
+  animation: slideUp 1s ease-out;
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
 .profile-toggle-btn:hover {
   background: rgba(100, 255, 218, 0.1);
   border-color: #ffd700;
@@ -227,4 +255,3 @@ html, body {
     padding: 8px;
   }
 }
-
