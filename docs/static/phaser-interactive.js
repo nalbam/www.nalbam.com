@@ -1251,7 +1251,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Create UFO sprite
         const ufoSprite = this.add.image(startX, startY, 'ufo');
         
-        // Scale down from 300x300 to approximately 60x60
+        // Scale down from 300x158 to approximately 60x32
         ufoSprite.setScale(0.2);
         
         // Add subtle glow effect
@@ -1590,6 +1590,8 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Create UFO sprite
         const ufoSprite = this.add.image(startX, startY, 'ufo');
+        
+        // Scale down from 300x158 to approximately 60x32
         ufoSprite.setScale(0.2);
         ufoSprite.setTint(0xffffff);
         
