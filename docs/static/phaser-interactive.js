@@ -1832,17 +1832,36 @@ class RealisticSpaceScene extends Phaser.Scene {
         } while (this.input.activePointer &&
                  Phaser.Math.Distance.Between(newX, newY, this.input.activePointer.x, this.input.activePointer.y) < safeDistance);
 
-        // Create warp effect
-        this.createWarpEffect(ufo.currentX, ufo.currentY, newX, newY);
+        // Create escape warp effect with pre-warp energy surge
+        this.createEscapeWarpEffect(ufo, newX, newY);
 
-        // Update UFO position
-        ufo.currentX = newX;
-        ufo.currentY = newY;
-        ufo.sprite.setPosition(newX, newY);
+        // UFO disappears briefly during warp
+        ufo.sprite.setAlpha(0);
 
-        // Reset velocity to prevent carrying momentum
-        ufo.velocityX *= 0.3;
-        ufo.velocityY *= 0.3;
+        // Reappear at new location after warp delay
+        this.time.delayedCall(300, () => {
+            // Update UFO position
+            ufo.currentX = newX;
+            ufo.currentY = newY;
+            ufo.sprite.setPosition(newX, newY);
+
+            // Dramatic reappearance
+            this.createArrivalBurst(newX, newY);
+            ufo.sprite.setAlpha(1);
+            ufo.sprite.setScale(0.05);
+
+            this.tweens.add({
+                targets: ufo.sprite,
+                scaleX: 0.2,
+                scaleY: 0.2,
+                duration: 400,
+                ease: 'Back.easeOut'
+            });
+
+            // Reset velocity to prevent carrying momentum
+            ufo.velocityX *= 0.3;
+            ufo.velocityY *= 0.3;
+        });
 
         // Add some random velocity to escape
         const escapeAngle = Math.random() * Math.PI * 2;
@@ -1852,8 +1871,69 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     createWarpEffect(startX, startY, endX, endY) {
-        // Create effect for warp
+        // Simplified warp effect with correct direction
+        const warpGraphics = this.add.graphics();
+        const warpDuration = 500;
 
+        // Calculate warp direction and distance
+        const warpAngle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
+        const warpDistance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+
+        // Create fewer, simpler warp streaks
+        const streaks = [];
+        for (let i = 0; i < 8; i++) {
+            const spread = (Math.random() - 0.5) * 0.2; // Smaller spread
+            const streakAngle = warpAngle + spread;
+            const offsetDist = (Math.random() - 0.5) * 20;
+
+            streaks.push({
+                startX: startX + Math.cos(warpAngle + Math.PI/2) * offsetDist,
+                startY: startY + Math.sin(warpAngle + Math.PI/2) * offsetDist,
+                angle: streakAngle,
+                length: 30 + Math.random() * 20
+            });
+        }
+
+        this.tweens.add({
+            targets: { progress: 0 },
+            progress: 1,
+            duration: warpDuration,
+            ease: 'Power2.easeIn',
+            onUpdate: (tween) => {
+                const progress = tween.targets[0].progress;
+                warpGraphics.clear();
+
+                // Draw accelerating streaks in correct direction
+                streaks.forEach(streak => {
+                    const currentLength = streak.length * (1 + progress * 3);
+                    const alpha = 0.8 * (1 - progress * 0.6);
+
+                    if (alpha > 0.1) {
+                        // Draw streak pointing toward target
+                        const streakEndX = streak.startX + Math.cos(streak.angle) * currentLength * progress;
+                        const streakEndY = streak.startY + Math.sin(streak.angle) * currentLength * progress;
+
+                        // White core
+                        warpGraphics.lineStyle(2, 0xffffff, alpha);
+                        warpGraphics.lineBetween(streak.startX, streak.startY, streakEndX, streakEndY);
+
+                        // Blue glow
+                        warpGraphics.lineStyle(4, 0x4da6ff, alpha * 0.5);
+                        warpGraphics.lineBetween(streak.startX, streak.startY, streakEndX, streakEndY);
+                    }
+                });
+
+                // Simple flash at end
+                if (progress > 0.8) {
+                    const flashAlpha = (progress - 0.8) * 5 * (1 - progress);
+                    warpGraphics.fillStyle(0xffffff, flashAlpha);
+                    warpGraphics.fillCircle(endX, endY, 15);
+                }
+            },
+            onComplete: () => {
+                warpGraphics.destroy();
+            }
+        });
     }
 
     createInvestigationUfo(targetX, targetY) {
@@ -1869,10 +1949,11 @@ class RealisticSpaceScene extends Phaser.Scene {
         const clampedX = Math.max(100, Math.min(width - 100, startX));
         const clampedY = Math.max(100, Math.min(height - 100, startY));
 
-        // Create UFO sprite at warp location
+        // Create UFO sprite at warp location (initially invisible for warp-in effect)
         const ufoSprite = this.add.image(clampedX, clampedY, 'ufo');
         ufoSprite.setScale(0.2);
         ufoSprite.setTint(0xffffff);
+        ufoSprite.setAlpha(0); // Start invisible
 
         // Store UFO data with investigation behavior
         const ufo = {
@@ -1905,9 +1986,30 @@ class RealisticSpaceScene extends Phaser.Scene {
         };
 
         // Create warp-in effect from farther away
-        const warpFromX = clampedX + Math.cos(warpAngle + Math.PI) * 100;
-        const warpFromY = clampedY + Math.sin(warpAngle + Math.PI) * 100;
+        const warpFromX = clampedX + Math.cos(warpAngle + Math.PI) * 200;
+        const warpFromY = clampedY + Math.sin(warpAngle + Math.PI) * 200;
         this.createWarpEffect(warpFromX, warpFromY, clampedX, clampedY);
+
+        // UFO appears with dramatic warp-in effect
+        this.time.delayedCall(400, () => {
+            // Create arrival energy burst
+            this.createArrivalBurst(clampedX, clampedY);
+
+            // UFO materializes with scale and alpha animation
+            ufoSprite.setAlpha(1);
+            ufoSprite.setScale(0.05); // Start very small
+
+            this.tweens.add({
+                targets: ufoSprite,
+                scaleX: 0.2,
+                scaleY: 0.2,
+                duration: 600,
+                ease: 'Back.easeOut',
+                onComplete: () => {
+                    // UFO is fully materialized, can start investigation
+                }
+            });
+        });
 
         this.ufos.push(ufo);
 
@@ -1923,6 +2025,74 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Create investigation scanning effect
         this.createScanningEffect(targetX, targetY);
+    }
+
+    createEscapeWarpEffect(ufo, newX, newY) {
+        // Quick escape warp effect
+        const escapeGraphics = this.add.graphics();
+        const currentX = ufo.currentX;
+        const currentY = ufo.currentY;
+
+        // Quick red energy flash
+        this.tweens.add({
+            targets: { progress: 0 },
+            progress: 1,
+            duration: 150,
+            ease: 'Power3.easeIn',
+            onUpdate: (tween) => {
+                const progress = tween.targets[0].progress;
+                escapeGraphics.clear();
+
+                const size = 12 + progress * 20;
+                const alpha = 0.8 * (1 - progress * 0.5);
+
+                // Red panic energy
+                escapeGraphics.fillStyle(0xff6666, alpha);
+                escapeGraphics.fillCircle(currentX, currentY, size);
+
+                escapeGraphics.fillStyle(0xffffff, alpha * 0.7);
+                escapeGraphics.fillCircle(currentX, currentY, size * 0.5);
+            },
+            onComplete: () => {
+                this.createWarpEffect(currentX, currentY, newX, newY);
+                escapeGraphics.destroy();
+            }
+        });
+    }
+
+    createArrivalBurst(x, y) {
+        // Simple arrival burst effect
+        const burstGraphics = this.add.graphics();
+
+        this.tweens.add({
+            targets: { radius: 0, alpha: 1 },
+            radius: 40,
+            alpha: 0,
+            duration: 400,
+            ease: 'Power2.easeOut',
+            onUpdate: (tween) => {
+                const radius = tween.targets[0].radius;
+                const alpha = tween.targets[0].alpha;
+
+                burstGraphics.clear();
+
+                // Simple expanding ring
+                burstGraphics.lineStyle(2, 0xffffff, alpha);
+                burstGraphics.strokeCircle(x, y, radius);
+
+                burstGraphics.lineStyle(3, 0x4da6ff, alpha * 0.6);
+                burstGraphics.strokeCircle(x, y, radius * 0.7);
+
+                // Small center flash
+                if (alpha > 0.5) {
+                    burstGraphics.fillStyle(0xffffff, alpha);
+                    burstGraphics.fillCircle(x, y, 8);
+                }
+            },
+            onComplete: () => {
+                burstGraphics.destroy();
+            }
+        });
     }
 
     createScanningEffect(x, y) {
@@ -2108,17 +2278,73 @@ class RealisticSpaceScene extends Phaser.Scene {
         });
     }
 
+    createDepartureChargeUp(x, y) {
+        // Simple charge-up effect before UFO warps out
+        const chargeGraphics = this.add.graphics();
+
+        this.tweens.add({
+            targets: { progress: 0 },
+            progress: 1,
+            duration: 400,
+            ease: 'Power2.easeIn',
+            onUpdate: (tween) => {
+                const progress = tween.targets[0].progress;
+                chargeGraphics.clear();
+
+                // Simple pulsing core
+                const coreSize = 8 + progress * 15;
+                const alpha = 0.8;
+
+                // Blue to white color progression
+                const color = progress < 0.5 ? 0x4da6ff : 0xffffff;
+
+                chargeGraphics.fillStyle(color, alpha * (1 - progress * 0.3));
+                chargeGraphics.fillCircle(x, y, coreSize);
+
+                // Simple ring
+                chargeGraphics.lineStyle(2, color, alpha * progress);
+                chargeGraphics.strokeCircle(x, y, coreSize * 1.5);
+            },
+            onComplete: () => {
+                chargeGraphics.destroy();
+            }
+        });
+    }
+
     warpOutUfo(ufo) {
         const warpOutAngle = Math.atan2(ufo.velocityY, ufo.velocityX);
-        const warpToX = ufo.currentX + Math.cos(warpOutAngle) * 150;
-        const warpToY = ufo.currentY + Math.sin(warpOutAngle) * 150;
+        const warpToX = ufo.currentX + Math.cos(warpOutAngle) * 300;
+        const warpToY = ufo.currentY + Math.sin(warpOutAngle) * 300;
 
-        // Create warp-out effect to farther destination
-        this.createWarpEffect(ufo.currentX, ufo.currentY, warpToX, warpToY);
+        // Create departure charge-up effect first
+        this.createDepartureChargeUp(ufo.currentX, ufo.currentY);
 
-        // Remove UFO immediately after warp effect
-        this.time.delayedCall(200, () => {
-            this.removeUfo(ufo);
+        // UFO starts shrinking and accelerating
+        this.tweens.add({
+            targets: ufo.sprite,
+            scaleX: 0.05,
+            scaleY: 0.05,
+            alpha: 0.3,
+            duration: 600,
+            ease: 'Power2.easeIn',
+            onComplete: () => {
+                // Create dramatic warp-out effect to farther destination
+                this.createWarpEffect(ufo.currentX, ufo.currentY, warpToX, warpToY);
+
+                // Remove UFO after warp effect completes
+                this.time.delayedCall(800, () => {
+                    this.removeUfo(ufo);
+                });
+            }
+        });
+
+        // Accelerate UFO movement during warp-out
+        this.tweens.add({
+            targets: ufo,
+            velocityX: ufo.velocityX * 3,
+            velocityY: ufo.velocityY * 3,
+            duration: 600,
+            ease: 'Power3.easeIn'
         });
     }
 }
