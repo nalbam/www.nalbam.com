@@ -24,12 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateClockVisibility() {
     const profileBox = document.getElementById('profile-box');
     const isProfileVisible = profileBox.style.display !== 'none';
+    const profileOpacity = parseFloat(profileBox.style.opacity) || 1;
 
-    // Show clock when profile is hidden, hide clock when profile is visible
-    clockWidget.style.display = isProfileVisible ? 'none' : 'block';
+    // Show clock when profile is hidden or fully transparent, hide clock when profile is visible and opaque
+    const shouldShowClock = !isProfileVisible || profileOpacity <= 0.1;
+    clockWidget.style.display = shouldShowClock ? 'block' : 'none';
   }
 
-  // Watch for profile visibility changes
+  // Watch for profile visibility changes (both display and opacity)
   const profileBox = document.getElementById('profile-box');
   const observer = new MutationObserver(updateClockVisibility);
   observer.observe(profileBox, { attributes: true, attributeFilter: ['style'] });

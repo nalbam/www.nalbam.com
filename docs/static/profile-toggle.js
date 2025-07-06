@@ -16,10 +16,22 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateToggleButton() {
     if (isProfileVisible) {
       profileBox.style.display = 'flex';
+      profileBox.style.opacity = '0';
+      profileBox.style.transform = 'scale(0.8)';
+      setTimeout(() => {
+        profileBox.style.transition = 'opacity 0.6s ease-in-out, transform 0.6s ease-in-out';
+        profileBox.style.opacity = '1';
+        profileBox.style.transform = 'scale(1)';
+      }, 10);
       toggleIcon.className = 'fa-solid fa-eye';
       toggleBtn.setAttribute('aria-label', 'Hide profile');
     } else {
-      profileBox.style.display = 'none';
+      profileBox.style.transition = 'opacity 0.6s ease-in-out, transform 0.6s ease-in-out';
+      profileBox.style.opacity = '0';
+      profileBox.style.transform = 'scale(0.8)';
+      setTimeout(() => {
+        profileBox.style.display = 'none';
+      }, 600);
       toggleIcon.className = 'fa-solid fa-eye-slash';
       toggleBtn.setAttribute('aria-label', 'Show profile');
     }
