@@ -1059,7 +1059,8 @@ class RealisticSpaceScene extends Phaser.Scene {
                 }
 
                 // Chance for UFO to appear and investigate the black hole site
-                if (Math.random() < 0.7) { // 70% chance
+                // Only if no other UFOs are currently active
+                if (Math.random() < 0.7 && this.ufos.length === 0) { // 70% chance and no existing UFOs
                     this.time.delayedCall(1000 + Math.random() * 2000, () => {
                         this.createInvestigationUfo(blackHoleX, blackHoleY);
                     });
@@ -1237,7 +1238,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             currentY: startY,
             velocityX: 0,
             velocityY: 0,
-            speed: 80, // Slower than meteors
+            speed: 150, // Faster movement
             isActive: true,
             avoidanceRadius: 150, // Distance to start avoiding mouse
             avoidanceForce: 500, // Increased strength of avoidance
@@ -1335,7 +1336,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                         });
                         
                         const exitDistance = Phaser.Math.Distance.Between(ufo.currentX, ufo.currentY, nearestExit.x, nearestExit.y);
-                        const exitDuration = (exitDistance / (ufo.speed * 1.5)) * 1000;
+                        const exitDuration = (exitDistance / (ufo.speed * 2)) * 1000;
                         
                         ufo.velocityX = (nearestExit.x - ufo.currentX) / (exitDuration / 1000);
                         ufo.velocityY = (nearestExit.y - ufo.currentY) / (exitDuration / 1000);
@@ -1550,7 +1551,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             currentY: startY,
             velocityX: 0,
             velocityY: 0,
-            speed: 60, // Slower, more cautious approach
+            speed: 120, // Faster movement
             isActive: true,
             avoidanceRadius: 150,
             avoidanceForce: 500,
