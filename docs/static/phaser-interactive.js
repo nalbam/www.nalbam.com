@@ -1852,41 +1852,8 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     createWarpEffect(startX, startY, endX, endY) {
-        // Create sparkle effect for warp
-        const warpGraphics = this.add.graphics();
+        // Create effect for warp
 
-        // Draw warp out effect at original position
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const distance = 20;
-            const sparkleX = startX + Math.cos(angle) * distance;
-            const sparkleY = startY + Math.sin(angle) * distance;
-
-            warpGraphics.fillStyle(0x00ffff, 0.8);
-            warpGraphics.fillCircle(sparkleX, sparkleY, 3);
-        }
-
-        // Draw warp in effect at new position
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const distance = 20;
-            const sparkleX = endX + Math.cos(angle) * distance;
-            const sparkleY = endY + Math.sin(angle) * distance;
-
-            warpGraphics.fillStyle(0xff00ff, 0.8);
-            warpGraphics.fillCircle(sparkleX, sparkleY, 3);
-        }
-
-        // Fade out effect
-        this.tweens.add({
-            targets: warpGraphics,
-            alpha: 0,
-            duration: 800,
-            ease: 'Power2',
-            onComplete: () => {
-                warpGraphics.destroy();
-            }
-        });
     }
 
     createInvestigationUfo(targetX, targetY) {
