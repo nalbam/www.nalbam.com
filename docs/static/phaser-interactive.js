@@ -860,11 +860,33 @@ class RealisticSpaceScene extends Phaser.Scene {
             maxSize: 80,
             rotation: 0,
             consumedStars: [],
-            isManuallyCreated: true // Mark as manually created (mouse click)
+            isManuallyCreated: true,
+            // Gargantua-like properties
+            kerr: 0.998, // Spinning black hole parameter (near maximum)
+            mass: 100000000, // Supermassive black hole
+            photonSphere: 0,
+            eventHorizon: 0,
+            innerStableOrbit: 0,
+            ergosphere: 0,
+            ringPhases: [0, 0, 0], // Multiple ring phases
+            relativistic: {
+                frameRate: 1.0,
+                timeDialation: 1.0,
+                redshift: 0
+            }
         };
 
-        // Add swirling effect around black hole
+        // Calculate relativistic parameters
+        blackHole.eventHorizon = blackHole.maxSize * 0.5;
+        blackHole.photonSphere = blackHole.maxSize * 0.75;
+        blackHole.innerStableOrbit = blackHole.maxSize * 1.5;
+        blackHole.ergosphere = blackHole.maxSize * 1.2;
+
+        // Add multiple graphics layers for advanced effects
         blackHole.accretionDisk = this.add.graphics();
+        blackHole.lensingEffect = this.add.graphics();
+        blackHole.spacetimeDistortion = this.add.graphics();
+        blackHole.photonRing = this.add.graphics();
 
         this.blackHoles.push(blackHole);
 
@@ -890,52 +912,38 @@ class RealisticSpaceScene extends Phaser.Scene {
                 return;
             }
 
-            // Update rotation for swirling effect
-            blackHole.rotation += 0.05;
+            // Update rotation for Kerr black hole effects
+            blackHole.rotation += 0.08 * blackHole.kerr; // Faster rotation for spinning black hole
 
-            // Clear and redraw black hole
+            // Update ring phases for multiple disk structures
+            blackHole.ringPhases[0] += 0.05;
+            blackHole.ringPhases[1] += 0.03;
+            blackHole.ringPhases[2] += 0.07;
+
+            // Clear all graphics layers
             blackHole.graphics.clear();
             blackHole.accretionDisk.clear();
+            blackHole.lensingEffect.clear();
+            blackHole.spacetimeDistortion.clear();
+            blackHole.photonRing.clear();
 
-            // Draw accretion disk (swirling matter)
-            const diskRadius = blackHole.size * 2;
-            for (let i = 0; i < 60; i++) {
-                const angle = (i / 60) * Math.PI * 2 + blackHole.rotation;
-                const radius = blackHole.size * 1.2 + Math.sin(angle * 3) * 20;
-                const x = blackHole.x + Math.cos(angle) * radius;
-                const y = blackHole.y + Math.sin(angle) * radius;
-
-                const alpha = 0.3 + Math.sin(angle * 2 + blackHole.rotation) * 0.2;
-                const size = 1 + Math.sin(angle * 4) * 0.5;
-
-                // Color varies from orange to red
-                const colorIntensity = Math.sin(angle + blackHole.rotation * 2) * 0.5 + 0.5;
-                const color = Phaser.Display.Color.Interpolate.ColorWithColor(
-                    { r: 255, g: 140, b: 0 },  // Orange
-                    { r: 255, g: 0, b: 0 },    // Red
-                    1,
-                    colorIntensity
-                );
-
-                blackHole.accretionDisk.fillStyle(
-                    Phaser.Display.Color.GetColor(color.r, color.g, color.b),
-                    alpha
-                );
-                blackHole.accretionDisk.fillCircle(x, y, size);
-            }
-
-            // Draw event horizon (black center)
-            blackHole.graphics.fillStyle(0x000000, 1);
-            blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.size * 0.8);
+            // Draw spacetime distortion grid
+            this.drawSpacetimeDistortion(blackHole);
 
             // Draw gravitational lensing effect
-            const lensRadius = blackHole.size * 1.5;
-            blackHole.graphics.lineStyle(2, 0x666666, 0.3);
-            blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius);
+            this.drawGravitationalLensing(blackHole);
 
-            // Subtle outer glow
-            blackHole.graphics.lineStyle(1, 0x333333, 0.2);
-            blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius * 1.3);
+            // Draw Gargantua-style accretion disk
+            this.drawGargantuaAccretionDisk(blackHole);
+
+            // Draw photon sphere and light ring
+            this.drawPhotonSphere(blackHole);
+
+            // Draw event horizon with ergosphere
+            this.drawEventHorizon(blackHole);
+
+            // Advanced physics effects
+            this.applyRelativisticEffects(blackHole);
 
             // Distort and consume nearby stars
             this.distortAndConsumeStars(blackHole);
@@ -943,6 +951,196 @@ class RealisticSpaceScene extends Phaser.Scene {
             // Affect nearby meteors and asteroids
             this.affectMeteors(blackHole);
             this.affectAsteroids(blackHole);
+        });
+    }
+
+    drawSpacetimeDistortion(blackHole) {
+        const gridSize = 20;
+        const maxDistortion = blackHole.size * 3;
+
+        blackHole.spacetimeDistortion.lineStyle(1, 0x444444, 0.1);
+
+        // Draw distorted grid around black hole
+        for (let i = -5; i <= 5; i++) {
+            for (let j = -5; j <= 5; j++) {
+                const baseX = blackHole.x + i * gridSize;
+                const baseY = blackHole.y + j * gridSize;
+
+                const distance = Math.sqrt(i * i + j * j) * gridSize;
+                if (distance > maxDistortion) continue;
+
+                // Apply gravitational distortion
+                const distortionFactor = 1 - (distance / maxDistortion);
+                const angle = Math.atan2(j, i);
+                const distortion = distortionFactor * blackHole.size * 0.3;
+
+                // Curved spacetime effect
+                const curveX = baseX + Math.cos(angle + blackHole.rotation * 0.1) * distortion;
+                const curveY = baseY + Math.sin(angle + blackHole.rotation * 0.1) * distortion;
+
+                // Draw grid lines with curvature
+                if (i < 5) {
+                    const nextX = blackHole.x + (i + 1) * gridSize;
+                    const nextDistortion = 1 - (Math.sqrt((i + 1) * (i + 1) + j * j) * gridSize / maxDistortion);
+                    const nextCurveX = nextX + Math.cos(angle + blackHole.rotation * 0.1) * nextDistortion * blackHole.size * 0.3;
+
+                    blackHole.spacetimeDistortion.lineBetween(curveX, curveY, nextCurveX, curveY);
+                }
+
+                if (j < 5) {
+                    const nextY = blackHole.y + (j + 1) * gridSize;
+                    const nextDistortion = 1 - (Math.sqrt(i * i + (j + 1) * (j + 1)) * gridSize / maxDistortion);
+                    const nextCurveY = nextY + Math.sin(angle + blackHole.rotation * 0.1) * nextDistortion * blackHole.size * 0.3;
+
+                    blackHole.spacetimeDistortion.lineBetween(curveX, curveY, curveX, nextCurveY);
+                }
+            }
+        }
+    }
+
+    drawGravitationalLensing(blackHole) {
+        const lensRadius = blackHole.size * 2.5;
+        const strongLensRadius = blackHole.size * 1.8;
+
+        // Einstein ring effect
+        blackHole.lensingEffect.lineStyle(2, 0x88ccff, 0.4);
+        blackHole.lensingEffect.strokeCircle(blackHole.x, blackHole.y, lensRadius);
+
+        // Multiple lensing rings
+        blackHole.lensingEffect.lineStyle(1, 0x66aaff, 0.3);
+        blackHole.lensingEffect.strokeCircle(blackHole.x, blackHole.y, strongLensRadius);
+
+        blackHole.lensingEffect.lineStyle(1, 0x44aaff, 0.2);
+        blackHole.lensingEffect.strokeCircle(blackHole.x, blackHole.y, lensRadius * 1.2);
+
+        // Draw light bending visualization
+        const numRays = 12;
+        for (let i = 0; i < numRays; i++) {
+            const angle = (i / numRays) * Math.PI * 2;
+            const startX = blackHole.x + Math.cos(angle) * lensRadius * 2;
+            const startY = blackHole.y + Math.sin(angle) * lensRadius * 2;
+
+            // Calculate bent light path
+            const bendAngle = angle + (Math.PI / 6) * (lensRadius / (lensRadius + 10));
+            const endX = blackHole.x + Math.cos(bendAngle) * lensRadius * 0.5;
+            const endY = blackHole.y + Math.sin(bendAngle) * lensRadius * 0.5;
+
+            blackHole.lensingEffect.lineStyle(1, 0xffffff, 0.1);
+            blackHole.lensingEffect.lineBetween(startX, startY, endX, endY);
+        }
+    }
+
+    drawGargantuaAccretionDisk(blackHole) {
+        const numRings = 3;
+        const baseRadius = blackHole.innerStableOrbit;
+
+        for (let ring = 0; ring < numRings; ring++) {
+            const ringRadius = baseRadius + (ring * blackHole.size * 0.4);
+            const ringPhase = blackHole.ringPhases[ring];
+            const numParticles = 80 + (ring * 20);
+
+            for (let i = 0; i < numParticles; i++) {
+                const angle = (i / numParticles) * Math.PI * 2 + ringPhase;
+                const radius = ringRadius + Math.sin(angle * 8) * 10;
+                const x = blackHole.x + Math.cos(angle) * radius;
+                const y = blackHole.y + Math.sin(angle) * radius;
+
+                // Apply frame-dragging effect for Kerr black hole
+                const frameDragAngle = angle + (blackHole.kerr * 0.1 * blackHole.rotation);
+                const dragX = blackHole.x + Math.cos(frameDragAngle) * radius;
+                const dragY = blackHole.y + Math.sin(frameDragAngle) * radius;
+
+                // Calculate relativistic effects
+                const velocity = (ringRadius - baseRadius) / (ringRadius + baseRadius);
+                const gamma = 1 / Math.sqrt(1 - velocity * velocity);
+
+                // Doppler shift coloring
+                const approaching = Math.cos(angle) > 0;
+                let color, alpha;
+
+                if (approaching) {
+                    // Blue-shifted (approaching)
+                    color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                        { r: 100, g: 150, b: 255 },  // Blue
+                        { r: 255, g: 255, b: 255 },  // White
+                        1,
+                        gamma * 0.5
+                    );
+                    alpha = 0.6 + (gamma - 1) * 0.3;
+                } else {
+                    // Red-shifted (receding)
+                    color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                        { r: 255, g: 100, b: 50 },   // Red-orange
+                        { r: 255, g: 200, b: 0 },    // Yellow
+                        1,
+                        Math.sin(angle * 2 + ringPhase) * 0.5 + 0.5
+                    );
+                    alpha = 0.4 + Math.sin(angle * 4 + ringPhase) * 0.2;
+                }
+
+                const size = 1 + Math.sin(angle * 12 + ringPhase) * 0.5;
+
+                blackHole.accretionDisk.fillStyle(
+                    Phaser.Display.Color.GetColor(color.r, color.g, color.b),
+                    alpha
+                );
+                blackHole.accretionDisk.fillCircle(dragX, dragY, size);
+            }
+        }
+    }
+
+    drawPhotonSphere(blackHole) {
+        // Draw photon sphere (unstable light orbit)
+        blackHole.photonRing.lineStyle(1, 0xffffff, 0.2);
+        blackHole.photonRing.strokeCircle(blackHole.x, blackHole.y, blackHole.photonSphere);
+
+        // Draw light ring with rotating photons
+        const numPhotons = 24;
+        for (let i = 0; i < numPhotons; i++) {
+            const angle = (i / numPhotons) * Math.PI * 2 + blackHole.rotation * 2;
+            const x = blackHole.x + Math.cos(angle) * blackHole.photonSphere;
+            const y = blackHole.y + Math.sin(angle) * blackHole.photonSphere;
+
+            const alpha = 0.3 + Math.sin(angle * 4 + blackHole.rotation * 3) * 0.2;
+            blackHole.photonRing.fillStyle(0xffffff, alpha);
+            blackHole.photonRing.fillCircle(x, y, 1);
+        }
+    }
+
+    drawEventHorizon(blackHole) {
+        // Draw ergosphere (region where spacetime is dragged)
+        blackHole.graphics.fillStyle(0x220000, 0.1);
+        blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.ergosphere);
+
+        // Draw event horizon
+        blackHole.graphics.fillStyle(0x000000, 1);
+        blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.eventHorizon);
+
+        // Draw subtle horizon glow
+        blackHole.graphics.lineStyle(1, 0x444444, 0.5);
+        blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, blackHole.eventHorizon);
+    }
+
+    applyRelativisticEffects(blackHole) {
+        // Calculate time dilation effects
+        const schwarzschildRadius = blackHole.eventHorizon;
+        const maxTimeDialation = blackHole.size * 5;
+
+        // Apply effects to nearby objects
+        this.stars.forEach(star => {
+            const distance = Phaser.Math.Distance.Between(
+                star.x, star.y, blackHole.x, blackHole.y
+            );
+
+            if (distance < maxTimeDialation) {
+                const timeDilation = 1 / Math.sqrt(1 - (schwarzschildRadius / distance));
+                star.relativistic = star.relativistic || {};
+                star.relativistic.timeDilation = timeDilation;
+
+                // Apply gravitational redshift
+                const redshift = Math.sqrt(1 - (schwarzschildRadius / distance)) - 1;
+                star.relativistic.redshift = redshift;
+            }
         });
     }
 
@@ -1244,11 +1442,33 @@ class RealisticSpaceScene extends Phaser.Scene {
                 maxSize: 80,
                 rotation: 0,
                 consumedStars: [],
-                isManuallyCreated: false // Mark as randomly created
+                isManuallyCreated: false,
+                // Gargantua-like properties for random black holes
+                kerr: 0.998,
+                mass: 100000000,
+                photonSphere: 0,
+                eventHorizon: 0,
+                innerStableOrbit: 0,
+                ergosphere: 0,
+                ringPhases: [0, 0, 0],
+                relativistic: {
+                    frameRate: 1.0,
+                    timeDialation: 1.0,
+                    redshift: 0
+                }
             };
 
-            // Add swirling effect around black hole
+            // Calculate relativistic parameters
+            blackHole.eventHorizon = blackHole.maxSize * 0.5;
+            blackHole.photonSphere = blackHole.maxSize * 0.75;
+            blackHole.innerStableOrbit = blackHole.maxSize * 1.5;
+            blackHole.ergosphere = blackHole.maxSize * 1.2;
+
+            // Add multiple graphics layers for advanced effects
             blackHole.accretionDisk = this.add.graphics();
+            blackHole.lensingEffect = this.add.graphics();
+            blackHole.spacetimeDistortion = this.add.graphics();
+            blackHole.photonRing = this.add.graphics();
 
             this.blackHoles.push(blackHole);
 
@@ -1375,7 +1595,6 @@ class RealisticSpaceScene extends Phaser.Scene {
                 // Check if asteroids are colliding (considering their sizes)
                 const collisionDistance = (asteroid1.size + asteroid2.size) / 2;
                 if (distance < collisionDistance) {
-                    console.log('Asteroid collision detected!', { distance, collisionDistance });
                     this.handleAsteroidCollision(asteroid1, asteroid2);
                 }
             }
@@ -1398,7 +1617,6 @@ class RealisticSpaceScene extends Phaser.Scene {
                 // Check if asteroid and meteor are colliding
                 const collisionDistance = (asteroid.size + meteor.size) / 2;
                 if (distance < collisionDistance) {
-                    console.log('Collision detected!', { distance, collisionDistance, asteroidSize: asteroid.size, meteorSize: meteor.size });
                     this.handleAsteroidMeteorCollision(asteroid, meteor);
                 }
             }
@@ -1520,6 +1738,9 @@ class RealisticSpaceScene extends Phaser.Scene {
             onComplete: () => {
                 blackHole.graphics.destroy();
                 blackHole.accretionDisk.destroy();
+                blackHole.lensingEffect.destroy();
+                blackHole.spacetimeDistortion.destroy();
+                blackHole.photonRing.destroy();
 
                 // Remove from array
                 const index = this.blackHoles.indexOf(blackHole);
