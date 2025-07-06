@@ -9,6 +9,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.backgroundGraphics = null;
         this.lastMeteorTime = 0;
         this.atmosphericDistortion = 0;
+        this.blackHoles = [];
     }
 
     create() {
@@ -22,6 +23,28 @@ class RealisticSpaceScene extends Phaser.Scene {
         
         // Start atmospheric effects
         this.startAtmosphericEffects();
+        
+        // Enable mouse interaction - multiple methods
+        this.input.on('pointerdown', this.onPointerDown, this);
+        this.input.on('pointerup', (pointer) => {
+            console.log('Pointer up at:', pointer.x, pointer.y);
+            this.createBlackHole(pointer.x, pointer.y);
+        });
+        
+        // Create invisible interactive zone
+        const zone = this.add.zone(width/2, height/2, width, height);
+        zone.setInteractive();
+        zone.on('pointerdown', (pointer) => {
+            console.log('Zone clicked at:', pointer.x, pointer.y);
+            this.createBlackHole(pointer.x, pointer.y);
+        });
+        
+        // Alternative click detection
+        this.input.setDefaultCursor('pointer');
+        this.input.topOnly = false;
+        
+        // Debug log
+        console.log('Mouse interaction enabled with zone');
         
         // Handle resize
         this.scale.on('resize', this.handleResize, this);
@@ -257,9 +280,12 @@ class RealisticSpaceScene extends Phaser.Scene {
             const finalBrightness = star.brightness * twinkle * star.twinkleIntensity;
             const finalSize = star.size * (1 + distortion);
             
-            // Draw star
+            // Draw star (use visual position if distorted by black hole)
+            const drawX = star.visualX !== undefined ? star.visualX : star.x;
+            const drawY = star.visualY !== undefined ? star.visualY : star.y;
+            
             this.twinkleGraphics.fillStyle(star.color, finalBrightness);
-            this.twinkleGraphics.fillCircle(star.x, star.y, finalSize);
+            this.twinkleGraphics.fillCircle(drawX, drawY, finalSize);
             
             // Add diffraction spikes for brighter stars
             if (star.size > 1.5) {
@@ -269,14 +295,14 @@ class RealisticSpaceScene extends Phaser.Scene {
                 
                 // Vertical spike
                 this.twinkleGraphics.lineBetween(
-                    star.x, star.y - spikeLength,
-                    star.x, star.y + spikeLength
+                    drawX, drawY - spikeLength,
+                    drawX, drawY + spikeLength
                 );
                 
                 // Horizontal spike
                 this.twinkleGraphics.lineBetween(
-                    star.x - spikeLength, star.y,
-                    star.x + spikeLength, star.y
+                    drawX - spikeLength, drawY,
+                    drawX + spikeLength, drawY
                 );
             }
         });
@@ -292,6 +318,9 @@ class RealisticSpaceScene extends Phaser.Scene {
                 this.lastMeteorTime = currentTime;
             }
         }
+        
+        // Update black holes
+        this.updateBlackHoles();
     }
 
     createMeteor() {
@@ -377,6 +406,330 @@ class RealisticSpaceScene extends Phaser.Scene {
         });
     }
 
+    onPointerDown(pointer) {
+        // Debug log
+        console.log('Clicked at:', pointer.x, pointer.y);
+        
+        // Create black hole at click position
+        this.createBlackHole(pointer.x, pointer.y);
+    }
+
+    createBlackHole(x, y) {
+        console.log('Creating black hole at:', x, y);
+        
+        const blackHole = {
+            x: x,
+            y: y,
+            graphics: this.add.graphics(),
+            createdAt: this.time.now,
+            size: 0,
+            maxSize: 80,
+            rotation: 0,
+            consumedStars: []
+        };
+
+        // Add swirling effect around black hole
+        blackHole.accretionDisk = this.add.graphics();
+        
+        this.blackHoles.push(blackHole);
+        
+        console.log('Black holes count:', this.blackHoles.length);
+
+        // Animate black hole creation
+        this.tweens.add({
+            targets: blackHole,
+            size: blackHole.maxSize,
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => {
+                // Start countdown for destruction (3 seconds)
+                this.time.delayedCall(3000, () => {
+                    this.destroyBlackHole(blackHole);
+                });
+            }
+        });
+    }
+
+    updateBlackHoles() {
+        this.blackHoles.forEach((blackHole, index) => {
+            if (!blackHole.graphics.active) {
+                this.blackHoles.splice(index, 1);
+                return;
+            }
+
+            // Update rotation for swirling effect
+            blackHole.rotation += 0.05;
+
+            // Clear and redraw black hole
+            blackHole.graphics.clear();
+            blackHole.accretionDisk.clear();
+
+            // Draw accretion disk (swirling matter)
+            const diskRadius = blackHole.size * 2;
+            for (let i = 0; i < 60; i++) {
+                const angle = (i / 60) * Math.PI * 2 + blackHole.rotation;
+                const radius = blackHole.size * 1.2 + Math.sin(angle * 3) * 20;
+                const x = blackHole.x + Math.cos(angle) * radius;
+                const y = blackHole.y + Math.sin(angle) * radius;
+                
+                const alpha = 0.3 + Math.sin(angle * 2 + blackHole.rotation) * 0.2;
+                const size = 1 + Math.sin(angle * 4) * 0.5;
+                
+                // Color varies from orange to red
+                const colorIntensity = Math.sin(angle + blackHole.rotation * 2) * 0.5 + 0.5;
+                const color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                    { r: 255, g: 140, b: 0 },  // Orange
+                    { r: 255, g: 0, b: 0 },    // Red
+                    1,
+                    colorIntensity
+                );
+                
+                blackHole.accretionDisk.fillStyle(
+                    Phaser.Display.Color.GetColor(color.r, color.g, color.b), 
+                    alpha
+                );
+                blackHole.accretionDisk.fillCircle(x, y, size);
+            }
+
+            // Draw event horizon (black center)
+            blackHole.graphics.fillStyle(0x000000, 1);
+            blackHole.graphics.fillCircle(blackHole.x, blackHole.y, blackHole.size * 0.8);
+            
+            // Draw gravitational lensing effect
+            const lensRadius = blackHole.size * 1.5;
+            blackHole.graphics.lineStyle(2, 0x666666, 0.3);
+            blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius);
+            
+            // Subtle outer glow
+            blackHole.graphics.lineStyle(1, 0x333333, 0.2);
+            blackHole.graphics.strokeCircle(blackHole.x, blackHole.y, lensRadius * 1.3);
+
+            // Distort and consume nearby stars
+            this.distortAndConsumeStars(blackHole);
+        });
+    }
+
+    distortAndConsumeStars(blackHole) {
+        const maxDistance = blackHole.size * 4;
+        const consumeDistance = blackHole.size * 1.2;
+        
+        for (let i = this.stars.length - 1; i >= 0; i--) {
+            const star = this.stars[i];
+            const distance = Phaser.Math.Distance.Between(
+                star.x, star.y, blackHole.x, blackHole.y
+            );
+            
+            if (distance < consumeDistance) {
+                // Star gets consumed by black hole
+                blackHole.consumedStars.push({
+                    x: star.x,
+                    y: star.y,
+                    size: star.size,
+                    color: star.color,
+                    brightness: star.brightness,
+                    twinkleIntensity: star.twinkleIntensity,
+                    twinkleSpeed: star.twinkleSpeed,
+                    twinklePhase: star.twinklePhase
+                });
+                
+                // Remove star from array
+                this.stars.splice(i, 1);
+                
+                // Create absorption effect
+                this.createAbsorptionEffect(star.x, star.y, blackHole.x, blackHole.y);
+                
+            } else if (distance < maxDistance) {
+                // Gravitational pull effect
+                const pullStrength = (maxDistance - distance) / maxDistance;
+                const angle = Phaser.Math.Angle.Between(
+                    star.x, star.y, blackHole.x, blackHole.y
+                );
+                
+                // Pull star towards black hole
+                const pullDistance = pullStrength * 3;
+                star.x += Math.cos(angle) * pullDistance;
+                star.y += Math.sin(angle) * pullDistance;
+                
+                // Gravitational lensing effect
+                const bendAngle = angle + pullStrength * 0.3;
+                star.visualX = star.x + Math.cos(bendAngle) * pullStrength * 8;
+                star.visualY = star.y + Math.sin(bendAngle) * pullStrength * 8;
+            } else {
+                star.visualX = star.x;
+                star.visualY = star.y;
+            }
+        }
+    }
+
+    createAbsorptionEffect(starX, starY, blackHoleX, blackHoleY) {
+        // Create particle trail effect when star gets absorbed
+        const graphics = this.add.graphics();
+        const particles = [];
+        
+        for (let i = 0; i < 8; i++) {
+            particles.push({
+                x: starX,
+                y: starY,
+                angle: Math.random() * Math.PI * 2,
+                speed: 2 + Math.random() * 3
+            });
+        }
+        
+        const updateParticles = () => {
+            graphics.clear();
+            
+            particles.forEach((particle, index) => {
+                // Move particle towards black hole
+                const angle = Phaser.Math.Angle.Between(particle.x, particle.y, blackHoleX, blackHoleY);
+                particle.x += Math.cos(angle) * particle.speed;
+                particle.y += Math.sin(angle) * particle.speed;
+                
+                // Fade particle
+                const alpha = 1 - (index * 0.1);
+                graphics.fillStyle(0xffffff, alpha);
+                graphics.fillCircle(particle.x, particle.y, 1);
+                
+                // Remove if close to black hole
+                const distance = Phaser.Math.Distance.Between(particle.x, particle.y, blackHoleX, blackHoleY);
+                if (distance < 10) {
+                    particles.splice(index, 1);
+                }
+            });
+            
+            if (particles.length === 0) {
+                graphics.destroy();
+            }
+        };
+        
+        this.tweens.add({
+            targets: {},
+            duration: 100,
+            repeat: 30,
+            onRepeat: updateParticles,
+            onComplete: () => graphics.destroy()
+        });
+    }
+
+    destroyBlackHole(blackHole) {
+        // Restore consumed stars first
+        this.restoreConsumedStars(blackHole);
+        
+        // Animate destruction
+        this.tweens.add({
+            targets: blackHole,
+            size: 0,
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => {
+                blackHole.graphics.destroy();
+                blackHole.accretionDisk.destroy();
+                
+                // Remove from array
+                const index = this.blackHoles.indexOf(blackHole);
+                if (index > -1) {
+                    this.blackHoles.splice(index, 1);
+                }
+            }
+        });
+    }
+
+    restoreConsumedStars(blackHole) {
+        // Create explosion effect and restore stars
+        const explosionGraphics = this.add.graphics();
+        let explosionRadius = 0;
+        
+        // Animate explosion
+        this.tweens.add({
+            targets: { radius: 0 },
+            radius: blackHole.maxSize * 3,
+            duration: 1000,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                explosionRadius = tween.targets[0].radius;
+                explosionGraphics.clear();
+                
+                // Draw explosion ring
+                explosionGraphics.lineStyle(3, 0xffffff, 1 - tween.progress);
+                explosionGraphics.strokeCircle(blackHole.x, blackHole.y, explosionRadius);
+                explosionGraphics.lineStyle(6, 0xffd700, (1 - tween.progress) * 0.5);
+                explosionGraphics.strokeCircle(blackHole.x, blackHole.y, explosionRadius * 0.8);
+            },
+            onComplete: () => {
+                explosionGraphics.destroy();
+            }
+        });
+        
+        // Restore consumed stars with scatter effect
+        blackHole.consumedStars.forEach((starData, index) => {
+            this.time.delayedCall(index * 100, () => {
+                // Calculate random position around black hole
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                const newX = blackHole.x + Math.cos(angle) * distance;
+                const newY = blackHole.y + Math.sin(angle) * distance;
+                
+                // Restore star with new position
+                const restoredStar = {
+                    x: newX,
+                    y: newY,
+                    size: starData.size,
+                    color: starData.color,
+                    brightness: starData.brightness,
+                    twinkleIntensity: starData.twinkleIntensity,
+                    twinkleSpeed: starData.twinkleSpeed,
+                    twinklePhase: starData.twinklePhase
+                };
+                
+                this.stars.push(restoredStar);
+                
+                // Create restoration effect
+                this.createRestorationEffect(blackHole.x, blackHole.y, newX, newY);
+            });
+        });
+    }
+
+    createRestorationEffect(startX, startY, endX, endY) {
+        // Create sparkle effect for star restoration
+        const graphics = this.add.graphics();
+        let progress = 0;
+        
+        this.tweens.add({
+            targets: { value: 0 },
+            value: 1,
+            duration: 800,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                progress = tween.targets[0].value;
+                graphics.clear();
+                
+                // Draw moving sparkle
+                const currentX = startX + (endX - startX) * progress;
+                const currentY = startY + (endY - startY) * progress;
+                
+                graphics.fillStyle(0xffffff, 1 - progress * 0.5);
+                graphics.fillCircle(currentX, currentY, 2);
+                graphics.fillStyle(0xffd700, 1 - progress * 0.3);
+                graphics.fillCircle(currentX, currentY, 4);
+                
+                // Add sparkle trail
+                for (let i = 0; i < 5; i++) {
+                    const trailProgress = Math.max(0, progress - i * 0.1);
+                    if (trailProgress > 0) {
+                        const trailX = startX + (endX - startX) * trailProgress;
+                        const trailY = startY + (endY - startY) * trailProgress;
+                        const alpha = (1 - progress) * (1 - i * 0.2);
+                        
+                        graphics.fillStyle(0xffffff, alpha);
+                        graphics.fillCircle(trailX, trailY, 1);
+                    }
+                }
+            },
+            onComplete: () => {
+                graphics.destroy();
+            }
+        });
+    }
+
     handleResize(gameSize) {
         const { width, height } = gameSize;
         
@@ -384,6 +737,7 @@ class RealisticSpaceScene extends Phaser.Scene {
         this.children.removeAll(true);
         this.stars = [];
         this.meteorShowers = [];
+        this.blackHoles = [];
         
         // Recreate scene
         this.createDeepSpaceBackground(width, height);
@@ -410,11 +764,8 @@ const config = {
         antialias: true,
         pixelArt: false
     },
-    physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false
-        }
+    input: {
+        activePointers: 1
     }
 };
 
