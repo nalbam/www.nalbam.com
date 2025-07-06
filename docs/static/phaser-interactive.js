@@ -462,14 +462,14 @@ class RealisticSpaceScene extends Phaser.Scene {
     update() {
         const currentTime = this.time.now;
 
-        // Create meteors occasionally - one at a time, every 10 seconds
-        if (currentTime - this.lastMeteorTime > 10000 && this.meteors.length === 0) {
+        // Create meteors occasionally - one at a time, every 12 seconds
+        if (currentTime - this.lastMeteorTime > 12000 && this.meteors.length === 0) {
             this.createMeteor();
             this.lastMeteorTime = currentTime;
         }
 
-        // Create asteroids occasionally - every 5 seconds
-        if (currentTime - this.lastAsteroidTime > 5000) {
+        // Create asteroids occasionally - every 7 seconds
+        if (currentTime - this.lastAsteroidTime > 7000) {
             this.createAsteroid();
             this.lastAsteroidTime = currentTime;
         }
