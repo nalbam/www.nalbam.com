@@ -1987,7 +1987,7 @@ class RealisticSpaceScene extends Phaser.Scene {
             investigationRadius: 80,
             laserRange: 200,
             lastLaserTime: 0,
-            laserCooldown: 800, // Faster laser cooldown
+            laserCooldown: 300, // Much faster laser cooldown
             investigationPhase: 'approaching', // approaching, investigating, leaving, warping-out
             leaveDirection: null
         };
