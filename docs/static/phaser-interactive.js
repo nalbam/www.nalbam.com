@@ -696,7 +696,8 @@ class RealisticSpaceScene extends Phaser.Scene {
             size: 0,
             maxSize: 80,
             rotation: 0,
-            consumedStars: []
+            consumedStars: [],
+            isManuallyCreated: true // Mark as manually created (mouse click)
         };
 
         // Add swirling effect around black hole
@@ -986,7 +987,36 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         // Only create if not too close to existing black holes
         if (!tooClose) {
-            this.createBlackHole(x, y);
+            const blackHole = {
+                x: x,
+                y: y,
+                graphics: this.add.graphics(),
+                createdAt: this.time.now,
+                size: 0,
+                maxSize: 80,
+                rotation: 0,
+                consumedStars: [],
+                isManuallyCreated: false // Mark as randomly created
+            };
+
+            // Add swirling effect around black hole
+            blackHole.accretionDisk = this.add.graphics();
+
+            this.blackHoles.push(blackHole);
+
+            // Animate black hole creation
+            this.tweens.add({
+                targets: blackHole,
+                size: blackHole.maxSize,
+                duration: 2000,
+                ease: 'Power2',
+                onComplete: () => {
+                    // Start countdown for destruction (3 seconds)
+                    this.time.delayedCall(3000, () => {
+                        this.destroyBlackHole(blackHole);
+                    });
+                }
+            });
         }
     }
 
@@ -1059,8 +1089,8 @@ class RealisticSpaceScene extends Phaser.Scene {
                 }
 
                 // Chance for UFO to appear and investigate the black hole site
-                // Only if no other UFOs are currently active
-                if (Math.random() < 0.7 && this.ufos.length === 0) { // 70% chance and no existing UFOs
+                // Only if no other UFOs are currently active AND only for randomly created black holes
+                if (Math.random() < 0.7 && this.ufos.length === 0 && !blackHole.isManuallyCreated) { // 70% chance, no existing UFOs, and not manually created
                     this.time.delayedCall(1000 + Math.random() * 2000, () => {
                         this.createInvestigationUfo(blackHoleX, blackHoleY);
                     });
@@ -1243,6 +1273,9 @@ class RealisticSpaceScene extends Phaser.Scene {
             avoidanceRadius: 150, // Distance to start avoiding mouse
             avoidanceForce: 500, // Increased strength of avoidance
             captureRadius: 30, // Distance at which UFO gets "caught"
+            laserRange: 200, // Range to detect meteors
+            lastLaserTime: 0,
+            laserCooldown: 1000, // 1 second cooldown between laser shots
             originalPath: { x: endX - startX, y: endY - startY },
             wobbleTime: 0,
             wobbleIntensity: 10,
@@ -1385,6 +1418,26 @@ class RealisticSpaceScene extends Phaser.Scene {
                     if (currentSpeed > maxPanicSpeed) {
                         ufo.velocityX = (ufo.velocityX / currentSpeed) * maxPanicSpeed;
                         ufo.velocityY = (ufo.velocityY / currentSpeed) * maxPanicSpeed;
+                    }
+                }
+            }
+
+            // UFO laser defense system - shoot at nearby meteors
+            const currentTime = this.time.now;
+            if (currentTime - ufo.lastLaserTime > ufo.laserCooldown) {
+                for (let j = 0; j < this.meteors.length; j++) {
+                    const meteor = this.meteors[j];
+                    if (!meteor.isActive) continue;
+
+                    const meteorDistance = Phaser.Math.Distance.Between(
+                        ufo.currentX, ufo.currentY, meteor.currentX, meteor.currentY
+                    );
+
+                    if (meteorDistance < ufo.laserRange) {
+                        // Fire laser at meteor
+                        this.fireLaser(ufo, meteor);
+                        ufo.lastLaserTime = currentTime;
+                        break; // Only shoot one meteor at a time
                     }
                 }
             }
@@ -1564,7 +1617,10 @@ class RealisticSpaceScene extends Phaser.Scene {
             investigationTime: 0,
             investigationDuration: 5000 + Math.random() * 5000, // 5-10 seconds
             hasReachedTarget: false,
-            investigationRadius: 80
+            investigationRadius: 80,
+            laserRange: 200, // Range to detect meteors
+            lastLaserTime: 0,
+            laserCooldown: 1000 // 1 second cooldown between laser shots
         };
 
         // Calculate initial velocity toward investigation site
@@ -1617,6 +1673,84 @@ class RealisticSpaceScene extends Phaser.Scene {
             },
             onComplete: () => {
                 scanGraphics.destroy();
+            }
+        });
+    }
+
+    fireLaser(ufo, meteor) {
+        // Create laser beam visual effect
+        const laserGraphics = this.add.graphics();
+        
+        // Calculate laser path
+        const startX = ufo.currentX;
+        const startY = ufo.currentY;
+        const endX = meteor.currentX;
+        const endY = meteor.currentY;
+        
+        // Draw bright laser beam
+        laserGraphics.lineStyle(3, 0x00ff00, 1); // Green laser
+        laserGraphics.lineBetween(startX, startY, endX, endY);
+        
+        // Add laser glow effect
+        laserGraphics.lineStyle(6, 0x00ff00, 0.3);
+        laserGraphics.lineBetween(startX, startY, endX, endY);
+        
+        // Destroy meteor immediately
+        meteor.isActive = false;
+        this.removeMeteor(meteor);
+        
+        // Create explosion effect at meteor location
+        this.createMeteorExplosion(endX, endY);
+        
+        // Remove laser after short duration
+        this.tweens.add({
+            targets: laserGraphics,
+            alpha: 0,
+            duration: 200,
+            ease: 'Power2',
+            onComplete: () => {
+                laserGraphics.destroy();
+            }
+        });
+    }
+
+    createMeteorExplosion(x, y) {
+        // Create explosion effect when meteor is destroyed
+        const explosionGraphics = this.add.graphics();
+        let explosionSize = 0;
+        
+        this.tweens.add({
+            targets: { size: 0 },
+            size: 30,
+            duration: 400,
+            ease: 'Power2',
+            onUpdate: (tween) => {
+                explosionSize = tween.targets[0].size;
+                explosionGraphics.clear();
+                
+                // Draw explosion with multiple layers
+                explosionGraphics.fillStyle(0xffffff, 1 - tween.progress);
+                explosionGraphics.fillCircle(x, y, explosionSize * 0.3);
+                
+                explosionGraphics.fillStyle(0xffff00, (1 - tween.progress) * 0.8);
+                explosionGraphics.fillCircle(x, y, explosionSize * 0.6);
+                
+                explosionGraphics.fillStyle(0xff6600, (1 - tween.progress) * 0.6);
+                explosionGraphics.fillCircle(x, y, explosionSize);
+                
+                // Add sparkle effects
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const sparkleDistance = explosionSize * 1.2;
+                    const sparkleX = x + Math.cos(angle) * sparkleDistance;
+                    const sparkleY = y + Math.sin(angle) * sparkleDistance;
+                    
+                    explosionGraphics.fillStyle(0xffffff, (1 - tween.progress) * 0.8);
+                    explosionGraphics.fillCircle(sparkleX, sparkleY, 2);
+                }
+            },
+            onComplete: () => {
+                explosionGraphics.destroy();
             }
         });
     }
