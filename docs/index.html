@@ -44,7 +44,12 @@
 
   <div id="phaser-game"></div>
 
-  <div class="pop-box">
+  <!-- Profile Toggle Button -->
+  <button id="profile-toggle" class="profile-toggle-btn" aria-label="Toggle profile visibility">
+    <i class="fa-solid fa-eye-slash"></i>
+  </button>
+
+  <div class="pop-box" id="profile-box">
     <div class="pop-container">
       <div class="pop-pic"><img src="static/profiles/nalbam-2022.jpg" alt="Jungyoul Yu profile picture" /></div>
       <h1 class="pop-name fw-bold">Jungyoul Yu (nalbam)</h1>
@@ -67,6 +72,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.1/js/bootstrap.min.js"></script>
   <script src="static/phaser-interactive.js"></script>
   <script src="static/analytics/nalbam.js"></script>
+  
+  <script>
+    // Profile toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleBtn = document.getElementById('profile-toggle');
+      const profileBox = document.getElementById('profile-box');
+      const toggleIcon = toggleBtn.querySelector('i');
+      
+      let isProfileVisible = true;
+      
+      toggleBtn.addEventListener('click', function() {
+        isProfileVisible = !isProfileVisible;
+        
+        if (isProfileVisible) {
+          profileBox.style.display = 'flex';
+          toggleIcon.className = 'fa-solid fa-eye-slash';
+          toggleBtn.setAttribute('aria-label', 'Hide profile');
+        } else {
+          profileBox.style.display = 'none';
+          toggleIcon.className = 'fa-solid fa-eye';
+          toggleBtn.setAttribute('aria-label', 'Show profile');
+        }
+      });
+    });
+  </script>
 
 </body>
 
