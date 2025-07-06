@@ -37,17 +37,9 @@ class RealisticSpaceScene extends Phaser.Scene {
         // Start atmospheric effects
         this.startAtmosphericEffects();
 
-        // Enable mouse interaction - multiple methods
-        this.input.on('pointerdown', this.onPointerDown, this);
+        // Enable mouse interaction - only on pointer up
         this.input.on('pointerup', (pointer) => {
-            this.createBlackHole(pointer.x, pointer.y);
-        });
-
-        // Create invisible interactive zone
-        const zone = this.add.zone(width/2, height/2, width, height);
-        zone.setInteractive();
-        zone.on('pointerdown', (pointer) => {
-            this.createBlackHole(pointer.x, pointer.y);
+            this.createAsteroidAtPosition(pointer.x, pointer.y);
         });
 
         // Alternative click detection
@@ -591,7 +583,8 @@ class RealisticSpaceScene extends Phaser.Scene {
             maxTrailLength: 15,
             scale: 1.0,
             alpha: 1.0,
-            originalSize: 2
+            originalSize: 2,
+            size: 4 // For collision detection (diameter)
         };
 
         this.meteors.push(meteor);
@@ -665,7 +658,8 @@ class RealisticSpaceScene extends Phaser.Scene {
             angle: angle,
             rotationSpeed: (Math.random() - 0.5) * 0.02, // Random rotation
             scale: 0.13,
-            alpha: 1.0
+            alpha: 1.0,
+            size: 40 // For collision detection
         };
 
         this.asteroids.push(asteroid);
@@ -676,6 +670,40 @@ class RealisticSpaceScene extends Phaser.Scene {
 
         asteroid.velocityX = (endX - startX) / (duration / 1000);
         asteroid.velocityY = (endY - startY) / (duration / 1000);
+    }
+
+    createAsteroidAtPosition(x, y) {
+        // Create asteroid sprite at clicked position
+        const asteroidSprite = this.add.image(x, y, 'asteroid');
+        
+        // Scale down from 300x300 to approximately 40x40
+        asteroidSprite.setScale(0.13);
+        
+        // Random initial rotation
+        const initialRotation = Math.random() * Math.PI * 2;
+        asteroidSprite.setRotation(initialRotation);
+
+        // Store asteroid data
+        const asteroid = {
+            sprite: asteroidSprite,
+            startX: x,
+            startY: y,
+            endX: x, // Will be set by initial velocity
+            endY: y,
+            currentX: x,
+            currentY: y,
+            velocityX: (Math.random() - 0.5) * 100, // Random initial velocity
+            velocityY: (Math.random() - 0.5) * 100,
+            isActive: true,
+            speed: 60,
+            angle: initialRotation,
+            rotationSpeed: (Math.random() - 0.5) * 0.02, // Random rotation
+            scale: 0.13,
+            alpha: 1.0,
+            size: 40 // For collision detection
+        };
+
+        this.asteroids.push(asteroid);
     }
 
     updateMeteors() {
@@ -815,9 +843,6 @@ class RealisticSpaceScene extends Phaser.Scene {
         }
     }
 
-    onPointerDown(pointer) {
-        this.createBlackHole(pointer.x, pointer.y);
-    }
 
     createBlackHole(x, y) {
         const blackHole = {
@@ -1344,6 +1369,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 // Check if asteroids are colliding (considering their sizes)
                 const collisionDistance = (asteroid1.size + asteroid2.size) / 2;
                 if (distance < collisionDistance) {
+                    console.log('Asteroid collision detected!', { distance, collisionDistance });
                     this.handleAsteroidCollision(asteroid1, asteroid2);
                 }
             }
@@ -1366,6 +1392,7 @@ class RealisticSpaceScene extends Phaser.Scene {
                 // Check if asteroid and meteor are colliding
                 const collisionDistance = (asteroid.size + meteor.size) / 2;
                 if (distance < collisionDistance) {
+                    console.log('Collision detected!', { distance, collisionDistance, asteroidSize: asteroid.size, meteorSize: meteor.size });
                     this.handleAsteroidMeteorCollision(asteroid, meteor);
                 }
             }
