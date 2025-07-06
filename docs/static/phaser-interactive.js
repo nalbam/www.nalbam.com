@@ -213,32 +213,55 @@ class RealisticSpaceScene extends Phaser.Scene {
                 layers: []
             };
 
-            // Generate layer data
-            for (let layer = 0; layer < 5; layer++) {
-                const layerSize = nebula.size * (1 - layer * 0.15);
-                const layerAlpha = nebula.alpha * (1 - layer * 0.3);
+            // Layer 0: Central core (single opaque circle for each nebula)
+            const coreLayer = [{
+                angle: 0,
+                distance: 0,
+                size: nebula.size * 0.3, // Core size
+                alpha: nebula.alpha * 2.5, // More opaque core
+                individualSpeed: 0.1,
+                driftPhase: 0,
+                sizeVariation: 1.0,
+                flowPhaseX: 0,
+                flowPhaseY: 0,
+                flowAmplitudeX: 2,
+                flowAmplitudeY: 2,
+                turbulenceScale: 0.005,
+                spiralRadius: 5,
+                spiralSpeed: 0.0005,
+                isCore: true
+            }];
+            nebulaObj.layers.push(coreLayer);
+            
+            // Layers 1-4: Surrounding cloud layers (more transparent)
+            for (let layer = 1; layer < 5; layer++) {
+                const layerSize = nebula.size * (1.2 - layer * 0.2);
+                const layerAlpha = nebula.alpha * (0.6 - layer * 0.1); // More transparent
                 const layerData = [];
 
-                for (let i = 0; i < 8; i++) {
-                    const angle = (i / 8) * Math.PI * 2;
-                    const distance = Math.random() * layerSize * 0.5;
-                    const size = layerSize * (0.3 + Math.random() * 0.4);
+                // Fewer, larger cloud puffs for more realistic look
+                const cloudCount = Math.max(3, 8 - layer); // Fewer clouds in outer layers
+                for (let i = 0; i < cloudCount; i++) {
+                    const angle = (i / cloudCount) * Math.PI * 2 + Math.random() * 0.5;
+                    const distance = (layer * 0.3 + Math.random() * 0.4) * layerSize;
+                    const size = layerSize * (0.4 + Math.random() * 0.6); // Larger cloud puffs
 
                     layerData.push({
                         angle: angle,
                         distance: distance,
                         size: size,
                         alpha: layerAlpha,
-                        individualSpeed: 0.3 + Math.random() * 0.7, // Individual flow speed
-                        driftPhase: Math.random() * Math.PI * 2, // Random phase offset
-                        sizeVariation: 0.7 + Math.random() * 0.6, // Size variation
-                        flowPhaseX: Math.random() * Math.PI * 2, // Flow phase for X direction
-                        flowPhaseY: Math.random() * Math.PI * 2, // Flow phase for Y direction
-                        flowAmplitudeX: 5 + Math.random() * 15, // Flow amplitude X
-                        flowAmplitudeY: 3 + Math.random() * 10, // Flow amplitude Y
-                        turbulenceScale: 0.01 + Math.random() * 0.02, // Turbulence frequency
-                        spiralRadius: Math.random() * 20 + 10, // Spiral component radius
-                        spiralSpeed: (Math.random() - 0.5) * 0.002 // Spiral speed
+                        individualSpeed: 0.3 + Math.random() * 0.7,
+                        driftPhase: Math.random() * Math.PI * 2,
+                        sizeVariation: 0.8 + Math.random() * 0.4,
+                        flowPhaseX: Math.random() * Math.PI * 2,
+                        flowPhaseY: Math.random() * Math.PI * 2,
+                        flowAmplitudeX: 8 + Math.random() * 20, // Increased flow
+                        flowAmplitudeY: 5 + Math.random() * 15,
+                        turbulenceScale: 0.008 + Math.random() * 0.015,
+                        spiralRadius: Math.random() * 30 + 15,
+                        spiralSpeed: (Math.random() - 0.5) * 0.001,
+                        isCore: false
                     });
                 }
 
@@ -382,39 +405,57 @@ class RealisticSpaceScene extends Phaser.Scene {
                     // Nebula-like flowing movement
                     const individualTime = nebula.time * cloudlet.individualSpeed;
 
-                    // Create flowing turbulence like real nebulae
-                    const turbulenceX = Math.sin(individualTime * cloudlet.turbulenceScale + cloudlet.flowPhaseX) * cloudlet.flowAmplitudeX;
-                    const turbulenceY = Math.cos(individualTime * cloudlet.turbulenceScale * 0.7 + cloudlet.flowPhaseY) * cloudlet.flowAmplitudeY;
+                    let x, y, size, finalAlpha;
 
-                    // Add secondary turbulence for more complex flow
-                    const turbulence2X = Math.sin(individualTime * cloudlet.turbulenceScale * 2.3 + cloudlet.flowPhaseX + 1) * cloudlet.flowAmplitudeX * 0.4;
-                    const turbulence2Y = Math.cos(individualTime * cloudlet.turbulenceScale * 1.7 + cloudlet.flowPhaseY + 2) * cloudlet.flowAmplitudeY * 0.4;
+                    if (cloudlet.isCore) {
+                        // Core stays centered with minimal movement
+                        x = nebula.currentX + Math.sin(individualTime * 0.001) * cloudlet.flowAmplitudeX;
+                        y = nebula.currentY + Math.cos(individualTime * 0.001) * cloudlet.flowAmplitudeY;
+                        
+                        // Steady size with subtle pulsing
+                        const corePulse = Math.sin(individualTime * 0.002) * 2;
+                        size = cloudlet.size + corePulse;
+                        
+                        // More stable alpha for core
+                        const coreAlphaFlow = 0.95 + Math.sin(individualTime * 0.001) * 0.05;
+                        finalAlpha = cloudlet.alpha * coreAlphaFlow;
+                    } else {
+                        // Surrounding clouds with more movement
+                        // Create flowing turbulence like real nebulae
+                        const turbulenceX = Math.sin(individualTime * cloudlet.turbulenceScale + cloudlet.flowPhaseX) * cloudlet.flowAmplitudeX;
+                        const turbulenceY = Math.cos(individualTime * cloudlet.turbulenceScale * 0.7 + cloudlet.flowPhaseY) * cloudlet.flowAmplitudeY;
 
-                    // Gentle spiral motion
-                    const spiralAngle = individualTime * cloudlet.spiralSpeed + cloudlet.angle;
-                    const spiralX = Math.cos(spiralAngle) * cloudlet.spiralRadius * Math.sin(individualTime * 0.001);
-                    const spiralY = Math.sin(spiralAngle) * cloudlet.spiralRadius * 0.6 * Math.cos(individualTime * 0.0008);
+                        // Add secondary turbulence for more complex flow
+                        const turbulence2X = Math.sin(individualTime * cloudlet.turbulenceScale * 2.3 + cloudlet.flowPhaseX + 1) * cloudlet.flowAmplitudeX * 0.3;
+                        const turbulence2Y = Math.cos(individualTime * cloudlet.turbulenceScale * 1.7 + cloudlet.flowPhaseY + 2) * cloudlet.flowAmplitudeY * 0.3;
 
-                    // Base position with gentle rotation
-                    const angle = cloudlet.angle + layerDrift + layerRotation;
-                    const distance = cloudlet.distance + Math.sin(individualTime * 0.002 + cloudlet.driftPhase) * 8;
-                    const baseX = Math.cos(angle) * distance;
-                    const baseY = Math.sin(angle) * distance;
+                        // Gentle spiral motion
+                        const spiralAngle = individualTime * cloudlet.spiralSpeed + cloudlet.angle;
+                        const spiralX = Math.cos(spiralAngle) * cloudlet.spiralRadius * Math.sin(individualTime * 0.001);
+                        const spiralY = Math.sin(spiralAngle) * cloudlet.spiralRadius * 0.6 * Math.cos(individualTime * 0.0008);
 
-                    // Combine all movements for nebula-like flow
-                    const x = nebula.currentX + baseX + turbulenceX + turbulence2X + spiralX;
-                    const y = nebula.currentY + baseY + turbulenceY + turbulence2Y + spiralY;
+                        // Base position with gentle rotation
+                        const angle = cloudlet.angle + layerDrift + layerRotation;
+                        const distance = cloudlet.distance + Math.sin(individualTime * 0.002 + cloudlet.driftPhase) * 8;
+                        const baseX = Math.cos(angle) * distance;
+                        const baseY = Math.sin(angle) * distance;
 
-                    // Gentle size pulsing like gas clouds
-                    const sizePulse1 = Math.sin(individualTime * 0.004 + cloudlet.driftPhase) * 3;
-                    const sizePulse2 = Math.cos(individualTime * 0.007 + cloudlet.driftPhase + 1) * 2;
-                    const size = cloudlet.size * cloudlet.sizeVariation + sizePulse1 + sizePulse2;
+                        // Combine all movements for nebula-like flow
+                        x = nebula.currentX + baseX + turbulenceX + turbulence2X + spiralX;
+                        y = nebula.currentY + baseY + turbulenceY + turbulence2Y + spiralY;
 
-                    // Gentle alpha variation like flowing gas
-                    const alphaFlow = 0.85 + Math.sin(individualTime * 0.003 + cloudlet.driftPhase) * 0.15;
-                    const alphaFlow2 = 0.9 + Math.cos(individualTime * 0.005 + cloudlet.driftPhase + 1) * 0.1;
+                        // Gentle size pulsing like gas clouds
+                        const sizePulse1 = Math.sin(individualTime * 0.004 + cloudlet.driftPhase) * 4;
+                        const sizePulse2 = Math.cos(individualTime * 0.007 + cloudlet.driftPhase + 1) * 3;
+                        size = cloudlet.size * cloudlet.sizeVariation + sizePulse1 + sizePulse2;
 
-                    nebula.graphics.fillStyle(nebula.color, cloudlet.alpha * alphaFlow * alphaFlow2);
+                        // More transparent and variable alpha for clouds
+                        const alphaFlow = 0.7 + Math.sin(individualTime * 0.003 + cloudlet.driftPhase) * 0.3;
+                        const alphaFlow2 = 0.8 + Math.cos(individualTime * 0.005 + cloudlet.driftPhase + 1) * 0.2;
+                        finalAlpha = cloudlet.alpha * alphaFlow * alphaFlow2;
+                    }
+
+                    nebula.graphics.fillStyle(nebula.color, finalAlpha);
                     nebula.graphics.fillCircle(x, y, Math.max(1, size));
                 });
             });
