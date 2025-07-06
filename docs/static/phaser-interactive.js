@@ -1290,16 +1290,16 @@ class RealisticSpaceScene extends Phaser.Scene {
                 const gravityRange = nebula.size * 4;
 
                 if (distance < gravityRange && distance > 5) {
-                    // Subtle gravitational pull - asteroids are heavier so slightly less affected
+                    // Subtle gravitational pull - asteroids are heavier so much less affected
                     const pullStrength = Math.pow((gravityRange - distance) / gravityRange, 1.2);
-                    const subtlePullStrength = pullStrength * 0.25; // Slightly less than meteors
+                    const subtlePullStrength = pullStrength * 0.15; // Much less than meteors (0.3)
 
                     const angleToNebula = Phaser.Math.Angle.Between(
                         asteroid.currentX, asteroid.currentY, nebula.currentX, nebula.currentY
                     );
 
                     // Calculate subtle deflection force
-                    const deflectionForce = subtlePullStrength * 70; // Slightly less than meteors
+                    const deflectionForce = subtlePullStrength * 50; // Much less than meteors (80)
                     const deflectAccelX = Math.cos(angleToNebula) * deflectionForce;
                     const deflectAccelY = Math.sin(angleToNebula) * deflectionForce;
 
@@ -1310,14 +1310,14 @@ class RealisticSpaceScene extends Phaser.Scene {
 
                     // Limit the total speed change
                     const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + asteroid.velocityY * asteroid.velocityY);
-                    const maxSpeedIncrease = asteroid.speed * 1.4; // Slightly less speed increase than meteors
+                    const maxSpeedIncrease = asteroid.speed * 1.2; // Much less speed increase than meteors (1.5)
                     if (currentSpeed > maxSpeedIncrease) {
                         asteroid.velocityX = (asteroid.velocityX / currentSpeed) * maxSpeedIncrease;
                         asteroid.velocityY = (asteroid.velocityY / currentSpeed) * maxSpeedIncrease;
                     }
 
-                    // Slight rotation change due to nebula influence
-                    asteroid.rotationSpeed += subtlePullStrength * 0.001;
+                    // Very slight rotation change due to nebula influence
+                    asteroid.rotationSpeed += subtlePullStrength * 0.0005;
                 }
             });
         });
