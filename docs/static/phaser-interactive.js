@@ -22,7 +22,9 @@ class RealisticSpaceScene extends Phaser.Scene {
     preload() {
         // Load UFO and asteroid images
         this.load.image('ufo', 'static/images/ufo.png');
-        this.load.image('asteroid', 'static/images/asteroid.png');
+        this.load.image('asteroid1', 'static/images/asteroid1.png');
+        this.load.image('asteroid2', 'static/images/asteroid2.png');
+        this.load.image('asteroid3', 'static/images/asteroid3.png');
     }
 
     create() {
@@ -633,8 +635,10 @@ class RealisticSpaceScene extends Phaser.Scene {
                 break;
         }
 
-        // Create asteroid sprite
-        const asteroidSprite = this.add.image(startX, startY, 'asteroid');
+        // Create asteroid sprite with random image
+        const asteroidImages = ['asteroid1', 'asteroid2', 'asteroid3'];
+        const randomImage = asteroidImages[Math.floor(Math.random() * asteroidImages.length)];
+        const asteroidSprite = this.add.image(startX, startY, randomImage);
         
         // Scale down from 300x300 to approximately 40x40
         asteroidSprite.setScale(0.13);
@@ -673,8 +677,10 @@ class RealisticSpaceScene extends Phaser.Scene {
     }
 
     createAsteroidAtPosition(x, y) {
-        // Create asteroid sprite at clicked position
-        const asteroidSprite = this.add.image(x, y, 'asteroid');
+        // Create asteroid sprite at clicked position with random image
+        const asteroidImages = ['asteroid1', 'asteroid2', 'asteroid3'];
+        const randomImage = asteroidImages[Math.floor(Math.random() * asteroidImages.length)];
+        const asteroidSprite = this.add.image(x, y, randomImage);
         
         // Scale down from 300x300 to approximately 40x40
         asteroidSprite.setScale(0.13);
