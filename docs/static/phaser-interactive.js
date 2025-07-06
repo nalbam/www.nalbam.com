@@ -468,8 +468,8 @@ class RealisticSpaceScene extends Phaser.Scene {
             this.lastMeteorTime = currentTime;
         }
 
-        // Create asteroids occasionally - every 15 seconds
-        if (currentTime - this.lastAsteroidTime > 15000) {
+        // Create asteroids occasionally - every 5 seconds
+        if (currentTime - this.lastAsteroidTime > 5000) {
             this.createAsteroid();
             this.lastAsteroidTime = currentTime;
         }
@@ -639,10 +639,10 @@ class RealisticSpaceScene extends Phaser.Scene {
         const asteroidImages = ['asteroid1', 'asteroid2', 'asteroid3'];
         const randomImage = asteroidImages[Math.floor(Math.random() * asteroidImages.length)];
         const asteroidSprite = this.add.image(startX, startY, randomImage);
-        
+
         // Scale down from 300x300 to approximately 40x40
         asteroidSprite.setScale(0.13);
-        
+
         const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
         asteroidSprite.setRotation(angle);
 
@@ -681,10 +681,10 @@ class RealisticSpaceScene extends Phaser.Scene {
         const asteroidImages = ['asteroid1', 'asteroid2', 'asteroid3'];
         const randomImage = asteroidImages[Math.floor(Math.random() * asteroidImages.length)];
         const asteroidSprite = this.add.image(x, y, randomImage);
-        
+
         // Scale down from 300x300 to approximately 40x40
         asteroidSprite.setScale(0.13);
-        
+
         // Random initial rotation
         const initialRotation = Math.random() * Math.PI * 2;
         asteroidSprite.setRotation(initialRotation);
@@ -1441,12 +1441,12 @@ class RealisticSpaceScene extends Phaser.Scene {
             asteroid1.currentX, asteroid1.currentY,
             asteroid2.currentX, asteroid2.currentY
         );
-        
+
         if (currentDistance < separationDistance) {
             const separationRatio = (separationDistance - currentDistance) / 2;
             const separationX = Math.cos(angle) * separationRatio;
             const separationY = Math.sin(angle) * separationRatio;
-            
+
             asteroid1.currentX -= separationX;
             asteroid1.currentY -= separationY;
             asteroid2.currentX += separationX;
@@ -1470,30 +1470,30 @@ class RealisticSpaceScene extends Phaser.Scene {
         );
 
         // Get current asteroid velocity magnitude
-        const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX + 
+        const currentSpeed = Math.sqrt(asteroid.velocityX * asteroid.velocityX +
                                       asteroid.velocityY * asteroid.velocityY);
-        
+
         // Calculate incoming meteor velocity direction
         const meteorAngle = Math.atan2(meteor.velocityY, meteor.velocityX);
-        
+
         // Calculate reflection angle based on collision
         // Use the collision normal (perpendicular to collision line)
         const normalAngle = collisionAngle;
-        
+
         // Calculate incident angle relative to normal
         const incidentAngle = meteorAngle - normalAngle;
-        
+
         // Reflection formula: reflected = incident - 2 * (incident · normal) * normal
         const reflectedAngle = normalAngle - incidentAngle;
-        
+
         // Transfer some momentum from meteor to asteroid
-        const meteorMomentum = Math.sqrt(meteor.velocityX * meteor.velocityX + 
+        const meteorMomentum = Math.sqrt(meteor.velocityX * meteor.velocityX +
                                         meteor.velocityY * meteor.velocityY);
-        
+
         // Calculate final bounce speed (combine asteroid momentum + meteor impact)
         const momentumTransfer = meteorMomentum * 0.6; // 60% of meteor momentum transferred
         const finalSpeed = Math.max(currentSpeed * 0.8, momentumTransfer * 1.2);
-        
+
         // Apply the reflected velocity
         asteroid.velocityX = Math.cos(reflectedAngle) * finalSpeed;
         asteroid.velocityY = Math.sin(reflectedAngle) * finalSpeed;
