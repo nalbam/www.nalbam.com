@@ -1,6 +1,6 @@
 # nalbam
 
-Personal website and portfolio of Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS Hero
+Personal website and portfolio of Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS AI Hero
 
 🌐 **Live Site**: [https://nalbam.com](https://nalbam.com)
 
@@ -12,7 +12,7 @@ This is the personal website of Jungyoul Yu (nalbam), featuring:
 
 - **Interactive Space Scene**: A realistic space environment with stars, meteors, nebulae, UFOs, asteroids, and **scientifically-accurate black holes**
 - **Interstellar-inspired Black Holes**: Gargantua-style black holes with Doppler effect, gravitational lensing, and photon rings
-- **Professional Profile**: SRE / DevOps Engineer and AWS Hero with dynamic profile toggle system
+- **Professional Profile**: SRE / DevOps Engineer and AWS AI Hero with dynamic profile toggle system
 - **Portfolio Showcase**: Various projects including Ether (gem visualization), Spickr (image gallery), and utility tools
 - **Social Media Integration**: Links to GitHub, LinkedIn, Twitter, Instagram, YouTube, and Facebook
 - **Advanced Physics Simulation**: Real-time gravitational effects, star consumption, and relativistic color shifting
@@ -95,7 +95,7 @@ docs/
 - **Manual Creation**: Click anywhere to create interactive black holes
 - **Automatic Spawning**: Random black holes appear periodically
 - **Gravitational Effects**: Watch objects get pulled into black holes
-- **Doppler Visualization**: 
+- **Doppler Visualization**:
   - **Blue side**: Matter approaching you (blue-shifted)
   - **Red side**: Matter receding from you (red-shifted)
 - **Star Consumption**: Stars disappear when consumed by black holes
