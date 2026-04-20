@@ -4,98 +4,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS AI Hero">
-  <meta name="keywords" content="nalbam, DevOps, SRE, AWS, Cloud, Engineer">
+  <meta name="description" content="Jungyoul Yu (nalbam) — SRE / DevOps Engineer at Karrot, AWS AI Hero">
+  <meta name="keywords" content="nalbam, Jungyoul Yu, DevOps, SRE, AWS, Karrot, AWS Hero">
   <meta name="author" content="Jungyoul Yu">
 
-  <!-- Open Graph meta tags -->
-  <meta property="og:title" content="nalbam | DevOps Engineer">
-  <meta property="og:description" content="Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS AI Hero">
+  <meta property="og:title" content="nalbam | Jungyoul Yu">
+  <meta property="og:description" content="SRE / DevOps Engineer at Karrot, AWS AI Hero">
   <meta property="og:image" content="https://www.nalbam.com/static/profiles/nalbam-2025.png">
   <meta property="og:url" content="https://www.nalbam.com/">
   <meta property="og:type" content="website">
 
-  <!-- Twitter Card meta tags -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="nalbam | DevOps Engineer">
-  <meta name="twitter:description" content="Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS AI Hero">
+  <meta name="twitter:title" content="nalbam | Jungyoul Yu">
+  <meta name="twitter:description" content="SRE / DevOps Engineer at Karrot, AWS AI Hero">
   <meta name="twitter:image" content="https://www.nalbam.com/static/profiles/nalbam-2025.png">
 
-  <title>nalbam | DevOps Engineer</title>
-  <style>
-    @font-face {
-      font-family: 'SF Mono';
-      src: url('static/fonts/sf-mono-regular.woff2') format('woff2'),
-           url('static/fonts/sf-mono-regular.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'SF Mono';
-      src: url('static/fonts/sf-mono-medium.woff2') format('woff2'),
-           url('static/fonts/sf-mono-medium.woff') format('woff');
-      font-weight: 500;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'SF Mono';
-      src: url('static/fonts/sf-mono-bold.woff2') format('woff2'),
-           url('static/fonts/sf-mono-bold.woff') format('woff');
-      font-weight: bold;
-      font-style: normal;
-      font-display: swap;
-    }
-  </style>
+  <title>nalbam | Jungyoul Yu</title>
   <link rel="stylesheet" href="static/style.css" />
   <script src="https://kit.fontawesome.com/94bd0a58a5.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.88.2/dist/phaser.min.js"></script>
 </head>
 
 <body>
-
-  <div id="phaser-game"></div>
-
-  <!-- Clock Widget -->
-  <div id="clock-widget" class="clock-widget">
-    <div class="clock-container">
-      <div id="clock-time" class="clock-time">00:00:00</div>
-      <div id="clock-date" class="clock-date">0000-00-00</div>
+  <main class="card">
+    <div class="profile-photo-wrapper" role="button" tabindex="0" aria-label="Change profile photo">
+      <img class="profile-photo" src="static/profiles/nalbam-2025.png" alt="Jungyoul Yu profile photo" />
     </div>
-  </div>
 
-  <!-- Profile Toggle Button -->
-  <button id="profile-toggle" class="profile-toggle-btn" aria-label="Hide profile">
-    <i class="fa-solid fa-eye"></i>
-  </button>
+    <h1 class="name">Jungyoul Yu</h1>
+    <p class="handle">(nalbam)</p>
 
-  <div class="pop-box" id="profile-box">
-    <div class="pop-container">
-      <div class="pop-pic"><img src="static/profiles/nalbam-2025.png" alt="Jungyoul Yu profile picture" /></div>
-      <h1 class="pop-name">Jungyoul Yu (nalbam)</h1>
-      <div class="pop-bio">
-        <span>
-          <img src="static/logo/karrot.png" alt="Karrot logo" style="width: 24px; height: 24px; vertical-align: middle;"> SRE / DevOps |
-          <a href="https://builder.aws.com/community/heroes/JungyoulYu" target="_blank" class="aws-hero-link"><img src="static/logo/builder-favicon.svg" alt="AWS Hero" style="width: 24px; height: 24px; vertical-align: middle;"> AWS AI Hero</a>
-        </span>
-      </div>
-      <div class="pop-sns">
-        <a href="https://github.com/nalbam" target="_blank"><i class="fa-brands fa-github"></i></a>
-        <a href="https://facebook.com/nalbam" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://linkedin.com/in/nalbam/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-        <a href="https://twitter.com/nalbam" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-        <a href="https://instagram.com/nalbam/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://youtube.com/user/nalbam" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-      </div>
-    </div>
-  </div>
+    <p class="bio">
+      <img class="inline-logo" src="static/logo/karrot.png" alt="Karrot logo" />
+      SRE / DevOps @ Karrot
+      &nbsp;·&nbsp;
+      <a href="https://builder.aws.com/community/@nalbam" target="_blank" rel="noopener noreferrer">
+        <img class="inline-logo" src="static/logo/aws-hero.png" alt="AWS Hero badge" />
+        AWS AI Hero
+      </a>
+    </p>
 
-  <script src="static/phaser-interactive.js"></script>
-  <script src="static/profile-toggle.js"></script>
-  <script src="static/clock-widget.js"></script>
+    <nav class="social" aria-label="Social profiles">
+      <a href="https://github.com/nalbam" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="https://linkedin.com/in/nalbam/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+      <a href="https://twitter.com/nalbam" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+      <a href="https://facebook.com/nalbam" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="https://instagram.com/nalbam/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://youtube.com/user/nalbam" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+    </nav>
+
+    <a class="resume-btn" href="https://resume.nalbam.com" target="_blank" rel="noopener noreferrer">
+      Resume <span class="arrow">→</span>
+    </a>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 nalbam · <a href="/space.html">space</a>
+  </footer>
+
+  <script src="static/profile-photo.js"></script>
   <script src="static/analytics/nalbam.js"></script>
-
 </body>
 
 </html>
