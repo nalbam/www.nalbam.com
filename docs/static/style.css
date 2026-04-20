@@ -1,267 +1,214 @@
-* {
-  margin: 0;
-  padding: 0;
+:root {
+  --bg: #ffffff;
+  --text: #24292e;
+  --text-secondary: #586069;
+  --link: #0366d6;
+  --btn-bg: #24292e;
+  --btn-text: #ffffff;
+  --btn-bg-hover: #0366d6;
 }
 
-html {
-  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 30%, #16213e 60%, #0f0f23 100%);
-  color: #eee;
-  font-family: 'SF Mono', Menlo, Noto Mono;
-  scroll-behavior: smooth;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --text: #c9d1d9;
+    --text-secondary: #8b949e;
+    --link: #58a6ff;
+    --btn-bg: #c9d1d9;
+    --btn-text: #0d1117;
+    --btn-bg-hover: #58a6ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html, body {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
 }
 
-#phaser-game {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: auto;
-}
-
-#phaser-game canvas {
-  pointer-events: auto;
-}
-
-.profile-toggle-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  width: 50px;
-  height: 50px;
-  border: 2px solid #64ffda;
-  border-radius: 50%;
-  background: rgba(10, 10, 26, 0.9);
-  color: #64ffda;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(100, 255, 218, 0.5);
+body {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none;
+  padding: 48px 24px 64px;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.clock-widget {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  display: none;
-}
-
-.clock-widget .clock-container {
-  text-align: left;
-}
-
-.clock-time {
-  color: #ccd6f6;
-  animation: slideUp 0.8s ease-out;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-weight: bold;
-  font-size: 2.5rem;
-  margin-bottom: 5px;
-}
-
-.clock-date {
-  color: #8892b0;
-  animation: slideUp 1s ease-out;
-  font-weight: 500;
-  font-size: 1.25rem;
-}
-
-.profile-toggle-btn:hover {
-  background: rgba(100, 255, 218, 0.1);
-  border-color: #ffd700;
-  color: #ffd700;
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
-}
-
-.profile-toggle-btn:active {
-  transform: scale(0.95);
-}
-
-.pop-box {
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
+.card {
   width: 100%;
-  z-index: 200;
-}
-
-.pop-box .pop-container {
-  height: 100%;
-  left: 0;
-  position: relative;
+  max-width: 480px;
+  padding: 48px 32px;
   text-align: center;
-  top: 0;
-  width: 100%;
 }
 
-.pop-box .pop-container .pop-pic {
-  height: 40%;
-  margin-top: 7%;
-  padding: 1%;
-  animation: fadeIn 1s ease-in;
-}
-
-.pop-box .pop-container .pop-pic img {
-  height: 100%;
-  border-radius: 100%;
-  border: 3px solid #64ffda;
-  box-shadow: 0 0 20px rgba(100, 255, 218, 0.3), 0 0 40px rgba(100, 255, 218, 0.1);
-  transition: all 0.5s ease;
+.profile-photo-wrapper {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 24px;
+  perspective: 800px;
   cursor: pointer;
 }
 
-.pop-box .pop-container .pop-pic img:hover {
-  transform: scale(1.08) rotate(5deg);
-  box-shadow: 0 0 40px rgba(100, 255, 218, 0.6), 0 0 80px rgba(255, 215, 0, 0.4);
-  border: 3px solid #ffd700;
-}
-
-.pop-box .pop-container .pop-name {
-  color: #ccd6f6;
-  padding: 2%;
-  animation: slideUp 0.8s ease-out;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-weight: bold;
-}
-
-.pop-box .pop-container .pop-bio {
-  color: #8892b0;
-  padding: 2%;
-  animation: slideUp 1s ease-out;
-  font-weight: 500;
-  font-size: 1.25rem;
-}
-
-.pop-box .pop-container .pop-bio img {
-  height: 25px;
-}
-
-.pop-box .pop-container .pop-sns {
-  color: #ccd6f6;
-  padding: 2%;
-  animation: slideUp 1.2s ease-out;
-  font-size: 3rem;
-}
-
-.pop-box .pop-container .pop-sns a {
+.profile-photo {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  color: #64ffda;
-  margin: 0 15px;
-  padding: 10px;
-  text-align: center;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.profile-photo-wrapper:hover .profile-photo {
+  transform: scale(1.02);
+}
+
+.profile-photo-wrapper.flipping .profile-photo {
+  transform: rotateY(90deg);
+}
+
+.name {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.handle {
+  margin: 4px 0 16px;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.bio {
+  margin: 0 0 28px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.bio img.inline-logo {
+  width: 20px;
+  height: 20px;
+  vertical-align: -4px;
+  margin-right: 4px;
+}
+
+.bio a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.bio a:hover {
+  text-decoration: underline;
+}
+
+.social {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.social a {
+  color: var(--text);
+  font-size: 20px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.social a:hover {
+  opacity: 1;
+  color: var(--link);
+}
+
+.resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.resume-btn .arrow {
   display: inline-block;
-  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.pop-box .pop-container .pop-sns a:hover {
-  transform: translateY(-8px) scale(1.2) rotate(10deg);
-  color: #ffd700;
-  background-color: rgba(100, 255, 218, 0.2);
-  box-shadow: 0 8px 25px rgba(100, 255, 218, 0.4);
+.resume-btn:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+.resume-btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.site-footer {
+  position: fixed;
+  bottom: 16px;
+  right: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.site-footer a {
+  color: inherit;
   text-decoration: none;
 }
 
-.aws-hero-link {
-  color: #64ffda;
-  text-decoration: none;
-  transition: all 0.3s ease;
+.site-footer a:hover {
+  text-decoration: underline;
 }
 
-.aws-hero-link:hover {
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .pop-box .pop-container .pop-pic {
-    height: 30%;
-    margin-top: 15%;
-  }
-
-  .pop-box .pop-container .pop-name {
-    font-size: 1.5rem;
-  }
-
-  .pop-box .pop-container .pop-bio {
-    font-size: 1rem;
-  }
-
-  .pop-box .pop-container .pop-sns {
-    font-size: 1.5rem;
-  }
-
-  .pop-box .pop-container .pop-sns a:hover {
-    transform: translateY(-5px) scale(1.1) rotate(5deg);
-  }
+a:focus-visible,
+button:focus-visible,
+.profile-photo-wrapper:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 @media (max-width: 480px) {
-  .pop-box .pop-container .pop-pic {
-    height: 25%;
-    margin-top: 20%;
+  .card {
+    padding: 32px 24px;
   }
-
-  .pop-box .pop-container .pop-name {
-    font-size: 1.3rem;
-    padding: 3%;
+  .profile-photo-wrapper {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 20px;
   }
-
-  .pop-box .pop-container .pop-bio {
-    font-size: 0.9rem;
-    padding: 3%;
+  .name {
+    font-size: 24px;
   }
+}
 
-  .pop-box .pop-container .pop-bio img {
-    height: 20px;
+@media (prefers-reduced-motion: reduce) {
+  .profile-photo {
+    transition: opacity 0.2s ease;
   }
-
-  .pop-box .pop-container .pop-sns {
-    font-size: 1.3rem;
-    padding: 3%;
+  .profile-photo-wrapper.flipping .profile-photo {
+    transform: none;
+    opacity: 0;
   }
-
-  .pop-box .pop-container .pop-sns a {
-    margin: 0 10px;
-    padding: 8px;
+  .resume-btn .arrow,
+  .resume-btn:hover .arrow {
+    transition: none;
+    transform: none;
   }
 }
