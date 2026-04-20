@@ -10,67 +10,50 @@ Personal website and portfolio of Jungyoul Yu (nalbam) - SRE / DevOps Engineer /
 
 This is the personal website of Jungyoul Yu (nalbam), featuring:
 
-- **Interactive Space Scene**: A realistic space environment with stars, meteors, nebulae, UFOs, asteroids, and **scientifically-accurate black holes**
-- **Interstellar-inspired Black Holes**: Gargantua-style black holes with Doppler effect, gravitational lensing, and photon rings
-- **Professional Profile**: SRE / DevOps Engineer and AWS AI Hero with dynamic profile toggle system
-- **Portfolio Showcase**: Various projects including Ether (gem visualization), Spickr (image gallery), and utility tools
-- **Social Media Integration**: Links to GitHub, LinkedIn, Twitter, Instagram, YouTube, and Facebook
-- **Advanced Physics Simulation**: Real-time gravitational effects, star consumption, and relativistic color shifting
-- **Real-time Clock Widget**: Digital clock display with date information
-- **Resume Integration**: Seamless redirect to dedicated resume site
+- **Minimal Homepage**: Clean about.me-style landing page with profile photo, bio, social links, and resume CTA
+- **Random Profile Rotation**: Three profile photos selected randomly on load; click the photo to flip to the next
+- **Auto Light/Dark Theme**: Follows system `prefers-color-scheme` — no manual toggle
+- **Interactive Space Scene**: Full Phaser-based space environment preserved at [`/space.html`](https://www.nalbam.com/space.html) with scientifically-accurate black holes, meteors, UFOs, and physics simulation
+- **Resume Redirect**: `/resume.html` points to the dedicated `resume.nalbam.com`
 
 ## Features
 
-### 🌌 Interactive Space Scene
-- **Realistic Cosmic Environment**: Multi-layered star fields, nebulae, and atmospheric effects
-- **Dynamic Objects**: Meteors, asteroids, and UFOs with physics-based movement
-- **Real-time Interactions**: Click to create asteroids that respond to gravitational forces
+### 🏠 Minimal Homepage (`/`)
+- **Profile Photo**: Randomized initial pick from three photos (2020, 2022, 2025); click-to-flip rotation
+- **Social Integration**: GitHub, LinkedIn, Twitter, Facebook, Instagram, YouTube
+- **AWS AI Hero Badge**: Links to the AWS Builder profile
+- **Theme**: Automatic light/dark based on OS preference
+- **Responsive**: Mobile-first layout down to 320px
 
-### 🕳️ Scientific Black Holes (Interstellar-inspired)
-- **Gargantua-style Accretion Disk**: 60-particle rotating disk with realistic physics
-- **Doppler Effect**: Blue-shifted (approaching) and red-shifted (receding) color changes
-- **Gravitational Lensing**: Visual light-bending effects around the event horizon
-- **Photon Ring**: Inner bright ring representing unstable photon orbits
-- **Star Consumption**: Black holes dynamically consume nearby stars
-- **Auto-spawning**: Random black hole generation every 45-75 seconds
-- **Interactive Creation**: Click anywhere to manually create black holes
-
-### 🎮 Advanced Physics Engine
-- **Phaser.js 3.80.1**: Professional 2D game engine with real-time rendering
-- **Gravitational Effects**: Objects affected by black hole gravity fields
-- **Collision Detection**: Realistic object interactions and physics
-- **Performance Optimized**: Smooth 60fps with thousands of particles
-
-### 💼 Professional Features
-- **Profile Toggle System**: Auto-hide profile with random peek functionality
-- **Real-time Clock Widget**: Digital clock display with date information
-- **Custom Typography**: SF Mono font family for technical aesthetics
-- **Analytics Integration**: Custom tracking for different projects
-- **Resume Integration**: Seamless redirect to dedicated resume hosting
+### 🌌 Space Scene (`/space.html`)
+- **Interstellar-inspired Black Holes**: Gargantua-style accretion disk with Doppler effect, gravitational lensing, photon rings
+- **Dynamic Objects**: Meteors, asteroids, UFOs with physics-based movement
+- **Real-time Interactions**: Click anywhere to create asteroids or black holes
+- **Advanced Physics**: Phaser.js 3.88.2, real-time gravitational effects, star consumption
+- **Profile Toggle & Clock Widget**: Preserved overlay widgets
 
 ## Project Structure
 
 ```
 docs/
-├── index.html                    # Main homepage with interactive space scene
-├── resume.html                   # Resume redirect page
-├── timer.html                    # Timer utility
-└── static/                       # Static assets
-    ├── style.css                 # Main stylesheet with space-themed styling
-    ├── phaser-interactive.js     # Advanced space simulation with black holes
-    │                             # - Gargantua-inspired black holes
-    │                             # - Doppler effect physics
-    │                             # - Gravitational lensing
-    │                             # - Real-time star consumption
-    ├── profile-toggle.js         # Profile auto-hide functionality
-    ├── clock-widget.js           # Real-time clock widget
-    ├── images/                   # Game assets
-    │   ├── ufo.png              # UFO sprite
-    │   ├── asteroid1.png        # Asteroid variants
-    │   ├── asteroid2.png
-    │   └── asteroid3.png
-    ├── timer/                    # Timer utility
-    └── analytics/                # Custom analytics modules
+├── index.html              # Minimal homepage
+├── space.html              # Interactive space scene (Phaser)
+├── resume.html             # Redirect to resume.nalbam.com
+├── timer.html              # Timer utility
+└── static/
+    ├── style.css           # Homepage styles (theme tokens, card layout)
+    ├── space.css           # Space scene styles (SF Mono, overlays, animations)
+    ├── profile-photo.js    # Random photo selection + flip rotation
+    ├── phaser-interactive.js  # Space simulation (space.html only)
+    ├── profile-toggle.js      # Profile overlay toggle (space.html only)
+    ├── clock-widget.js        # Clock widget (space.html only)
+    ├── profiles/           # nalbam-2020.jpg, nalbam-2022.jpg, nalbam-2025.png
+    ├── logo/               # Karrot, AWS Hero icons
+    ├── fonts/              # SF Mono (space.html only)
+    ├── images/             # Space scene sprites (UFO, asteroids)
+    ├── bg/                 # Background assets
+    ├── timer/              # Timer utility assets
+    └── analytics/          # Tracking modules
 ```
 
 ## Technologies Used
