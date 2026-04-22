@@ -1,29 +1,14 @@
 :root {
-  --bg: #ffffff;
-  --bg-accent: #eef2f7;
-  --dot: rgba(27, 31, 36, 0.08);
-  --text: #1f2328;
-  --text-secondary: #656d76;
-  --link: #0969da;
-  --btn-bg: #1f2328;
-  --btn-text: #ffffff;
-  --btn-bg-hover: #0969da;
-  --ring-bg: var(--bg);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117;
-    --bg-accent: #161f2e;
-    --dot: rgba(201, 209, 217, 0.06);
-    --text: #e6edf3;
-    --text-secondary: #8d96a0;
-    --link: #58a6ff;
-    --btn-bg: #e6edf3;
-    --btn-text: #0d1117;
-    --btn-bg-hover: #58a6ff;
-    --ring-bg: var(--bg);
-  }
+  --bg: #0a0a1a;
+  --bg-accent: #16213e;
+  --dot: rgba(201, 209, 217, 0.06);
+  --text: #e6edf3;
+  --text-secondary: #8d96a0;
+  --link: #64ffda;
+  --btn-bg: #e6edf3;
+  --btn-text: #0a0a1a;
+  --btn-bg-hover: #64ffda;
+  --ring-bg: rgba(10, 10, 26, 0.6);
 }
 
 * {
@@ -33,6 +18,10 @@
 html, body {
   margin: 0;
   padding: 0;
+}
+
+html {
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 30%, #16213e 60%, #0f0f23 100%);
 }
 
 body {
@@ -46,16 +35,21 @@ body {
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(ellipse 80% 60% at 50% 0%, var(--bg-accent) 0%, transparent 70%),
-    radial-gradient(circle, var(--dot) 1px, transparent 1px);
-  background-size: auto, 24px 24px;
-  background-position: 0 0, 0 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: transparent;
+  position: relative;
+}
+
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
 }
 
 .card {
+  position: relative;
+  z-index: 2;
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
@@ -195,6 +189,8 @@ body {
 }
 
 .site-footer {
+  position: relative;
+  z-index: 2;
   text-align: center;
   padding: 32px 24px 0;
   font-size: 18px;
