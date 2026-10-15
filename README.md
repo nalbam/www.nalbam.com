@@ -1,6 +1,6 @@
 # nalbam
 
-Personal website and portfolio of Jungyoul Yu (nalbam) - SRE / DevOps Engineer / AWS AI Hero
+Personal website and portfolio of Jungyoul Yu (nalbam) - Agent Platform Engineer / AWS AI Hero
 
 🌐 **Live Site**: [https://nalbam.com](https://nalbam.com)
 
