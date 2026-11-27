@@ -1,5 +1,6 @@
 (function () {
   const PHOTOS = [
+    'static/profiles/nalbam-2026.png',
     'static/profiles/nalbam-2025.png',
     'static/profiles/nalbam-2022.jpg',
     'static/profiles/nalbam-2020.jpg'
