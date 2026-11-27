@@ -47,7 +47,7 @@ docs/
     ├── phaser-interactive.js  # Space simulation (space.html only)
     ├── profile-toggle.js      # Profile overlay toggle (space.html only)
     ├── clock-widget.js        # Clock widget (space.html only)
-    ├── profiles/           # nalbam-2020.jpg, nalbam-2022.jpg, nalbam-2025.png
+    ├── profiles/           # nalbam-2020.jpg, nalbam-2022.jpg, nalbam-2025.png, nalbam-2026.png
     ├── logo/               # Karrot, AWS Hero icons
     ├── fonts/              # SF Mono (space.html only)
     ├── images/             # Space scene sprites (UFO, asteroids)
